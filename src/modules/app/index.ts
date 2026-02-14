@@ -2,6 +2,7 @@ import { BaseModel } from "@/core/model/base.model";
 import { Success } from "@/core/response";
 import Elysia from "elysia";
 import { SuccessSchema } from "@/core/response";
+import { OpenApiKey } from "./openapi";
 
 export const appInfo = new Elysia().get(
   "/health-check",
@@ -15,6 +16,7 @@ export const appInfo = new Elysia().get(
   {
     detail: {
       summary: "Health Check",
+      tags: [OpenApiKey.App],
     },
     response: {
       200: SuccessSchema(BaseModel.HealthCheckSchema),

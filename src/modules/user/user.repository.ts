@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { type DrizzleTransaction, db } from "@/lib/db";
 import { userTable } from "@/lib/db/schema";
-import type { UserModel } from "./user.model";
+import { UserModel } from "./user.model";
 
 export abstract class UserRepository {
   static async create(
