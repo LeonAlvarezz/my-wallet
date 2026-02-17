@@ -15,7 +15,7 @@ export const user = new Elysia().use(authGuard).group("/users", (app) => {
       return Success(data);
     },
     {
-      protected: true,
+      authenticated: true,
       detail: {
         summary: "Get all users list",
         tags: [OpenApiKey.User],

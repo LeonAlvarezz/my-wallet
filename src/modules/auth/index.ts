@@ -20,7 +20,7 @@ export const auth = new Elysia().use(authGuard).group("/auths", (app) => {
       return Success(user);
     },
     {
-      protected: true,
+      authenticated: true,
       cookie: BaseModel.CookieSchema,
       detail: {
         summary: "Get user info",

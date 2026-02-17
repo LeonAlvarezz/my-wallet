@@ -10,6 +10,14 @@ export const authGuard = new Elysia({ name: "auth-guard" })
       cookie: BaseModel.CookieSchema,
       async resolve({ cookie }) {
         if (!cookie.session_token.value) throw new UnauthorizedException();
+        await AuthService.getMe(cookie.session_token.value as string);
+        return {};
+      },
+    },
+    authenticated: {
+      cookie: BaseModel.CookieSchema,
+      async resolve({ cookie }) {
+        if (!cookie.session_token.value) throw new UnauthorizedException();
         const user = await AuthService.getMe(
           cookie.session_token.value as string,
         );
