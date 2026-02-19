@@ -15,6 +15,7 @@ const envSchema = z.object({
   DATABASE_URL: z.string().startsWith("postgres://"),
   HASH_PASSWORD_ALGORITHM: z.enum(["argon2id", "argon2d", "argon2i", "bcrypt"]),
   HASH_PASSWORD_COST: z.coerce.number(),
+  REDIS_URL: z.string(),
 });
 
 // Validate `process.env` against our schema

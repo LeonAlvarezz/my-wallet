@@ -34,17 +34,22 @@ export abstract class SessionRepository {
       .where(eq(sessionTable.id, sessionId));
   }
 
-  static async updateTime(id: number, time: number) {
+  static async updateTime(id: number, time: number): Promise<string | null> {
+    // If expired, delete session and return null
     if (Date.now() >= time) {
       await SessionRepository.deleteSessionById(id);
-      return { session: null, auth: null };
+      return null;
     }
+
     //If token expires tomorrow, then extends 15 days
     if (Date.now() >= time - SESSION_EXTENDS_EXPIRES_DATE_MS) {
       const extendedTime = new Date(
         Date.now() + SESSION_EXPIRES_DATE_MS,
       ).toISOString();
       await this.updateSessionExpiredAt(id, extendedTime);
+      return extendedTime;
     }
+
+    return new Date(time).toISOString();
   }
 }

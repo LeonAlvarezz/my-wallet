@@ -12,6 +12,8 @@ import {
 import { authGuard } from "./guard";
 import { AuthService } from "./auth.service";
 import { OpenApiKey } from "../app/openapi";
+import { redis } from "@/lib/redis";
+import { RedisService } from "@/lib/redis/redis.service";
 
 export const auth = new Elysia().use(authGuard).group("/auths", (app) => {
   app.get(
@@ -50,6 +52,7 @@ export const auth = new Elysia().use(authGuard).group("/auths", (app) => {
     async ({ cookie: { session_token }, body }) => {
       const data = await AuthService.signIn(body);
       session_token.value = data.session_token;
+      await RedisService.setSession(data.session_token, data.user);
       return Success(data);
     },
     {

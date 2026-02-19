@@ -37,7 +37,9 @@ export class AuthService {
     });
   }
 
-  static async signIn(payload: AuthModel.SignInDto) {
+  static async signIn(
+    payload: AuthModel.SignInDto,
+  ): Promise<UserModel.UserPublicSessionDto> {
     const user = await UserRepository.findByEmail(payload.email);
     if (!user) throw new UnauthorizedException();
     const auth = await AuthRepository.findByUserId(user.id);
@@ -69,13 +71,25 @@ export class AuthService {
     };
   }
 
-  static async getMe(sessionToken: string) {
+  static async getMe(
+    sessionToken: string,
+  ): Promise<UserModel.UserPublicSessionDto> {
     const hashedSession = hashSessionToken(sessionToken);
     const session = await SessionRepository.findByToken(hashedSession);
     if (!session) throw new UnauthorizedException();
-    const time = new Date(session.expires_at).getTime();
-    await SessionRepository.updateTime(session.id, time);
-    return UserModel.UserPublicSchema.parse(session.user);
+    const time = new Date(session.expires_at);
+    const timeAsNum = time.getTime();
+    const updatedExpiresAt = await SessionRepository.updateTime(
+      session.id,
+      timeAsNum,
+    );
+    // Session was expired and deleted
+    if (!updatedExpiresAt) throw new UnauthorizedException();
+    return {
+      expires_at: updatedExpiresAt,
+      session_token: sessionToken,
+      user: UserModel.UserPublicSchema.parse(session.user),
+    };
   }
 
   static async signOut(sessionToken: string) {
