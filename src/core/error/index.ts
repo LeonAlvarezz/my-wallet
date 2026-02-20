@@ -48,6 +48,16 @@ export class BadRequestException extends ErrorException {
   }
 }
 
+export class RateLimitException extends ErrorException {
+  constructor(params?: ErrorParams) {
+    super(
+      ErrorCode.RATE_LIMIT,
+      params?.message || DefaultErrorMessage.RATE_LIMIT,
+      params?.options,
+    );
+  }
+}
+
 export class NotFoundException extends ErrorException {
   constructor(params?: ErrorParams) {
     super(

@@ -5,12 +5,14 @@ import env from "@/lib/env";
 import { appInfo } from "./modules/app";
 import { routeHandler } from "./routes/route-handler";
 import openapi from "@elysiajs/openapi";
+import { ip } from "./core/request/ip";
 
 const app = new Elysia({
   prefix: "/v1",
 })
   .use(cors())
   .use(openapi())
+  .use(ip)
   .use(errorHandler)
   .use(appInfo)
   .use(routeHandler)

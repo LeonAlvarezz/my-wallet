@@ -4,6 +4,7 @@ export enum ErrorCode {
   FORBIDDEN = 403,
   NOT_FOUND = 404,
   INVALID_COOKIE = 420,
+  RATE_LIMIT = 429,
   INTERNAL_SERVER = 500,
 }
 
@@ -13,6 +14,7 @@ export enum DefaultErrorMessage {
   INVALID_CREDENTIAL = "Invalid Credential",
   FORBIDDEN = "Forbidden",
   NOT_FOUND = "Not Found",
+  RATE_LIMIT = "Too many requests",
   INTERNAL_SERVER = "Internal Server",
   NETWORK_ERROR = "Network Error",
   REQUEST_TIMEOUT = "Request timeout",
