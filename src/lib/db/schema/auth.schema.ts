@@ -14,9 +14,9 @@ export const authTable = pgTable("auths", {
   password_hash: text().notNull(),
   password_updated_at: timestamp({ mode: "string" }).notNull().defaultNow(),
 
-  // basic security controls
-  failed_login_attempts: integer().notNull().default(0),
-  locked_until: timestamp(),
+  // // basic security controls
+  // failed_login_attempts: integer().notNull().default(0),
+  // locked_until: timestamp(),
 });
 
 export const authRelation = relations(authTable, ({ one }) => ({

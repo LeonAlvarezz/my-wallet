@@ -3,7 +3,7 @@ import { type DrizzleTransaction, db } from "@/lib/db";
 import { userTable } from "@/lib/db/schema";
 import { UserModel } from "./user.model";
 
-export abstract class UserRepository {
+export class UserRepository {
   static async create(
     payload: UserModel.UpsertUserDto,
     tx?: DrizzleTransaction,

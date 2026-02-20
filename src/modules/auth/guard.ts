@@ -7,35 +7,34 @@ import { redis } from "bun";
 
 // user middleware (compute user and session and pass to routes)
 export const authGuard = new Elysia({ name: "auth-guard" })
-  .macro({
-    protected: {
-      cookie: BaseModel.CookieSchema,
-      async resolve({ cookie }) {
-        const sessionToken = cookie.session_token.value as string;
-        if (!sessionToken) throw new UnauthorizedException();
-        const userCache = await RedisService.getSession(sessionToken);
-        if (!userCache) {
-          const user = await AuthService.getMe(sessionToken);
-          RedisService.setSession(user.session_token, user.user);
-        }
+  .macro("protected", {
+    cookie: BaseModel.CookieSchema,
 
-        return {};
-      },
+    async resolve({ cookie }) {
+      const sessionToken = cookie.session_token.value;
+      if (!sessionToken) throw new UnauthorizedException();
+      const userCache = await RedisService.getSession(sessionToken);
+      if (!userCache) {
+        const user = await AuthService.getMe(sessionToken);
+        RedisService.setSession(user.session_token, user.user);
+      }
+
+      return {};
     },
-    authenticated: {
-      cookie: BaseModel.CookieSchema,
-      async resolve({ cookie }) {
-        const sessionToken = cookie.session_token.value as string;
-        if (!sessionToken) throw new UnauthorizedException();
-        const userCache = await RedisService.getSession(sessionToken);
-        if (!userCache) {
-          const user = await AuthService.getMe(sessionToken);
-          RedisService.setSession(user.session_token, user.user);
-          return user.user;
-        }
-        console.log("Use Cache");
-        return { user: userCache };
-      },
+  })
+  .macro("authenticated", {
+    cookie: BaseModel.CookieSchema,
+    async resolve({ cookie }) {
+      const sessionToken = cookie.session_token.value as string;
+      if (!sessionToken) throw new UnauthorizedException();
+      const userCache = await RedisService.getSession(sessionToken);
+      if (!userCache) {
+        const user = await AuthService.getMe(sessionToken);
+        RedisService.setSession(user.session_token, user.user);
+        return user.user;
+      }
+      console.log("Use Cache");
+      return { user: userCache };
     },
   })
   .as("global");

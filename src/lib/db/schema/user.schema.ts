@@ -4,6 +4,7 @@ import { relations } from "drizzle-orm";
 import { authTable } from "./auth.schema";
 import { sessionTable } from "./session.schema";
 import { isoTimestamp as timestamp } from "@/lib/db/common/iso-timestamp";
+import { transactionTable } from "./transaction.schema";
 
 export const userTable = pgTable("users", {
   id: serial().primaryKey(),
@@ -21,4 +22,5 @@ export const userRelation = relations(userTable, ({ one, many }) => ({
     references: [authTable.user_id],
   }),
   session: many(sessionTable),
+  transaction: many(transactionTable),
 }));

@@ -7,7 +7,7 @@ import {
   SESSION_EXTENDS_EXPIRES_DATE_MS,
 } from "@/constant/app";
 
-export abstract class SessionRepository {
+export class SessionRepository {
   static async create(payload: SessionModel.CreateSessionDto) {
     const [result] = await db.insert(sessionTable).values(payload).returning();
     return result;

@@ -8,6 +8,7 @@ import { SessionRepository } from "@/modules/session/session.repository";
 import { SimpleSuccess } from "@/core/response";
 import { UserRepository } from "@/modules/user/user.repository";
 import { UserModel } from "@/modules/user/user.model";
+import { RedisService } from "@/lib/redis/redis.service";
 
 export class AuthService {
   static async signUp(payload: AuthModel.SignUpDto) {
@@ -43,6 +44,7 @@ export class AuthService {
     const user = await UserRepository.findByEmail(payload.email);
     if (!user) throw new UnauthorizedException();
     const auth = await AuthRepository.findByUserId(user.id);
+    console.log("auth:", auth);
     if (!auth) throw new UnauthorizedException();
     const isValidPassword = await verifyPassword(
       payload.password,
@@ -96,6 +98,9 @@ export class AuthService {
     const hashedSession = hashSessionToken(sessionToken);
     const session = await SessionRepository.findByToken(hashedSession);
     if (!session) throw new UnauthorizedException();
+    console.log("sessionToken:", sessionToken);
+    console.log("hashedSession:", hashedSession);
+    await RedisService.deleteSession(sessionToken);
     await SessionRepository.deleteSessionById(session.id);
   }
 

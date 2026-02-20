@@ -12,7 +12,6 @@ import {
 import { authGuard } from "./guard";
 import { AuthService } from "./auth.service";
 import { OpenApiKey } from "../app/openapi";
-import { redis } from "@/lib/redis";
 import { RedisService } from "@/lib/redis/redis.service";
 import { rateLimitGuard } from "../../lib/rate-limit/rate-limit.guard";
 
@@ -64,7 +63,7 @@ export const auth = new Elysia()
         parse: "application/json",
         body: AuthModel.SignInSchema,
         cookie: BaseModel.CookieSchema,
-        rateLimit: { maxRequests: 2 },
+        rateLimit: true,
         detail: {
           summary: "Sign in",
           tags: [OpenApiKey.Auth],
@@ -77,6 +76,7 @@ export const auth = new Elysia()
     app.post(
       "/sign-out",
       async ({ cookie: { session_token } }) => {
+        console.log("session_token.value:", session_token.value);
         if (!session_token.value)
           throw new BadRequestException({ message: "Missing Token" });
         await AuthService.signOut(session_token.value);

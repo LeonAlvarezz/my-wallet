@@ -3,7 +3,7 @@ import { authTable } from "@/lib/db/schema";
 import { AuthModel } from "./auth.model";
 import { eq } from "drizzle-orm";
 
-export abstract class AuthRepository {
+export class AuthRepository {
   static async create(
     payload: AuthModel.UpsertAuthDto,
     tx?: DrizzleTransaction,

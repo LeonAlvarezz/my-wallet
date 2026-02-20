@@ -1,7 +1,7 @@
 import { UserModel } from "@/modules/user/user.model";
 import { redis } from "./index";
 import { REDIS_SESSION_EXPERATION, REDIS_SESSION_KEY } from "./redis.constant";
-export abstract class RedisService {
+export class RedisService {
   static async setSession(
     session_token: string,
     user: UserModel.UserPublicDto,
@@ -21,5 +21,11 @@ export abstract class RedisService {
       return null;
     }
     return UserModel.UserPublicSchema.parse(JSON.parse(userStr));
+  }
+
+  static async deleteSession(session_token: string) {
+    const key = `${REDIS_SESSION_KEY}:${session_token}`;
+    console.log("key:", key);
+    await redis.del(key);
   }
 }

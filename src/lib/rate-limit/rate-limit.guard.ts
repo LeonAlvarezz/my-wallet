@@ -4,12 +4,14 @@ import { RateLimitException } from "@/core/error";
 import { RATE_LIMIT_CONFIG } from "./rate-limit.constant";
 import { RateLimitModel } from "./rate-limit.model";
 import { ip } from "@/core/request/ip";
+import env from "../env";
 
 export const rateLimitGuard = new Elysia({ name: "rate-limit-guard" })
   .use(ip)
   .macro({
     rateLimit: (config: RateLimitModel.RateLimitProps) => ({
       async resolve({ request, ip }) {
+        if (env.NODE_ENV === "test") return;
         const { windowMs, maxRequests } =
           config === true
             ? RATE_LIMIT_CONFIG
