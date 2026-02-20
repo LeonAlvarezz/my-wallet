@@ -26,12 +26,13 @@ export const authGuard = new Elysia({ name: "auth-guard" })
     cookie: BaseModel.CookieSchema,
     async resolve({ cookie }) {
       const sessionToken = cookie.session_token.value as string;
+      console.log("sessionToken:", sessionToken);
       if (!sessionToken) throw new UnauthorizedException();
       const userCache = await RedisService.getSession(sessionToken);
       if (!userCache) {
         const user = await AuthService.getMe(sessionToken);
         RedisService.setSession(user.session_token, user.user);
-        return user.user;
+        return { user: user.user };
       }
       console.log("Use Cache");
       return { user: userCache };

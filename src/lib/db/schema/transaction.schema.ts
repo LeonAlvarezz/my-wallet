@@ -10,7 +10,7 @@ export const transactionTable = pgTable("transactions", {
   user_id: integer()
     .notNull()
     .references(() => userTable.id, { onDelete: "cascade" }),
-  amount: numeric({ precision: 10, scale: 2 }),
+  amount: numeric({ precision: 10, scale: 2, mode: "number" }).notNull(),
   description: text(),
   ...timestamps,
 });

@@ -24,6 +24,12 @@ export namespace UserModel {
     last_login_at: true,
   });
 
+  export const UserSessionSchema = z.object({
+    session_token: z.string(),
+    expires_at: z.iso.datetime(),
+    user: z.lazy(() => UserSchema),
+  });
+
   export const UserPublicSessionSchema = z.object({
     session_token: z.string(),
     expires_at: z.iso.datetime(),
@@ -32,5 +38,6 @@ export namespace UserModel {
 
   export type UserPublicDto = z.infer<typeof UserPublicSchema>;
   export type UpsertUserDto = z.infer<typeof UpsertUserSchema>;
+  export type UserSessionDto = z.infer<typeof UserSessionSchema>;
   export type UserPublicSessionDto = z.infer<typeof UserPublicSessionSchema>;
 }

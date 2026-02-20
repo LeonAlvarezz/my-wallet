@@ -40,11 +40,10 @@ export class AuthService {
 
   static async signIn(
     payload: AuthModel.SignInDto,
-  ): Promise<UserModel.UserPublicSessionDto> {
+  ): Promise<UserModel.UserSessionDto> {
     const user = await UserRepository.findByEmail(payload.email);
     if (!user) throw new UnauthorizedException();
     const auth = await AuthRepository.findByUserId(user.id);
-    console.log("auth:", auth);
     if (!auth) throw new UnauthorizedException();
     const isValidPassword = await verifyPassword(
       payload.password,
@@ -69,13 +68,11 @@ export class AuthService {
     return {
       session_token: sessionToken,
       expires_at: expiresAt,
-      user: UserModel.UserPublicSchema.parse(user),
+      user,
     };
   }
 
-  static async getMe(
-    sessionToken: string,
-  ): Promise<UserModel.UserPublicSessionDto> {
+  static async getMe(sessionToken: string): Promise<UserModel.UserSessionDto> {
     const hashedSession = hashSessionToken(sessionToken);
     const session = await SessionRepository.findByToken(hashedSession);
     if (!session) throw new UnauthorizedException();
@@ -90,7 +87,7 @@ export class AuthService {
     return {
       expires_at: updatedExpiresAt,
       session_token: sessionToken,
-      user: UserModel.UserPublicSchema.parse(session.user),
+      user: session.user,
     };
   }
 

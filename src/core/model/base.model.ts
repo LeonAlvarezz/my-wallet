@@ -11,8 +11,11 @@ export namespace BaseModel {
   export const BaseRowSchema = z.object({
     id: z.number(),
     created_at: z.iso.datetime(),
-    updated_at: z.iso.datetime().optional().nullable(),
-    deleted_at: z.iso.datetime().optional().nullable(),
+    // updated_at: z.iso.datetime().optional().nullable(),
+    // deleted_at: z.iso.datetime().optional().nullable(),
+
+    updated_at: z.iso.datetime().nullable().optional(),
+    deleted_at: z.iso.datetime().nullable().optional(),
   });
 
   export const BaseRowNullableSchema = BaseRowSchema.extend({
@@ -29,5 +32,10 @@ export namespace BaseModel {
     session_token: z.string().optional(),
   });
 
+  export const NumberIdSchema = z.object({
+    id: z.coerce.number(),
+  });
+
   export type CookieDto = z.infer<typeof CookieSchema>;
+  export type NumberIdDto = z.infer<typeof NumberIdSchema>;
 }

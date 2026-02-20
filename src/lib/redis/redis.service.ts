@@ -20,7 +20,7 @@ export class RedisService {
     if (!userStr) {
       return null;
     }
-    return UserModel.UserPublicSchema.parse(JSON.parse(userStr));
+    return UserModel.UserSchema.parse(JSON.parse(userStr));
   }
 
   static async deleteSession(session_token: string) {

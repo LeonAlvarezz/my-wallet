@@ -22,7 +22,8 @@ export const auth = new Elysia()
     app.get(
       "/me",
       async ({ user }) => {
-        return Success(user);
+        const data = UserModel.UserPublicSchema.parse(user);
+        return Success(data);
       },
       {
         authenticated: true,
@@ -57,7 +58,8 @@ export const auth = new Elysia()
         const data = await AuthService.signIn(body);
         session_token.value = data.session_token;
         await RedisService.setSession(data.session_token, data.user);
-        return Success(data);
+        const publicData = UserModel.UserPublicSessionSchema.parse(data);
+        return Success(publicData);
       },
       {
         parse: "application/json",
