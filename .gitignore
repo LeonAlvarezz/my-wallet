@@ -28,6 +28,8 @@ yarn-error.log*
 .env
 .env.local
 .env.development.local
+.turbo
+node_modules/.cache/turbo
 .env.test.local
 .env.production.local
 
@@ -41,3 +43,4 @@ yarn-error.log*
 **/*.log
 package-lock.json
 **/*.bun
+**/node_modules
