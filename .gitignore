@@ -44,3 +44,5 @@ node_modules/.cache/turbo
 package-lock.json
 **/*.bun
 **/node_modules
+
+apps/backend/server

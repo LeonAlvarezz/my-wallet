@@ -4,6 +4,7 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "dev": "bun run --watch src/app.ts",
+        "build": "bun build --compile --minify-whitespace --minify-syntax --target bun --outfile server src/app.ts",
         "db:push": "bunx drizzle-kit push",
         "db:gen": "bunx drizzle-kit generate",
         "db:migrate": "bunx drizzle-kit migrate",
@@ -17,7 +18,8 @@
         "elysia": "latest",
         "pg": "^8.18.0",
         "winston": "^3.19.0",
-        "zod": "^4.3.6"
+        "zod": "^4.3.6",
+        "@my-wallet/type-check": "workspace:*"
     },
     "devDependencies": {
         "@biomejs/biome": "2.3.15",

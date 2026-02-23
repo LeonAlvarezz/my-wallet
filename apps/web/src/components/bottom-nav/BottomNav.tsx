@@ -1,0 +1,24 @@
+import React from "react";
+import BottomNavItem, { type BottomNavItemData } from "./BottomNavItem";
+
+export default function BottomNav() {
+  const bottomNavItems: BottomNavItemData[] = [
+    {
+      title: "Transaction",
+      to: "/transaction",
+      icon: "solar:bill-list-line-duotone",
+    },
+    { title: "Add", to: "/", icon: "solar:add-circle-line-duotone" },
+    { title: "Settings", to: "/settings", icon: "solar:settings-line-duotone" },
+  ];
+  return (
+    <div
+      id="bottom-nav"
+      className="bg-secondary w-mobile fixed inset-x-0 bottom-0 m-auto flex h-20 justify-between px-10"
+    >
+      {bottomNavItems.map((item) => (
+        <BottomNavItem key={item.to} {...item} />
+      ))}
+    </div>
+  );
+}
