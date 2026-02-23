@@ -6,7 +6,7 @@ function App() {
   return (
     <>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <div className="max-w-mobile relative m-auto flex min-h-dvh gap-2 border">
+        <div className="max-w-mobile relative m-auto flex min-h-dvh flex-col border">
           {/* <div>
             {Array.from({ length: 50 }).map((_, i) => (
               <div key={i}>

@@ -1,4 +1,3 @@
-import React from "react";
 import BottomNavItem, { type BottomNavItemData } from "./BottomNavItem";
 
 export default function BottomNav() {
@@ -14,7 +13,11 @@ export default function BottomNav() {
   return (
     <div
       id="bottom-nav"
-      className="bg-secondary w-mobile fixed inset-x-0 bottom-0 m-auto flex h-20 justify-between px-10"
+      style={{
+        height: "var(--bottom-nav-total-h)",
+        paddingBottom: "var(--safe-area-bottom)",
+      }}
+      className="bg-secondary w-mobile fixed inset-x-0 bottom-0 m-auto flex items-center justify-between px-10"
     >
       {bottomNavItems.map((item) => (
         <BottomNavItem key={item.to} {...item} />
