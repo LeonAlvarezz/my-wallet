@@ -12,10 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TransactionIndexRouteImport } from './routes/transaction/index'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
-import { Route as RegisterIndexRouteImport } from './routes/register/index'
+import { Route as ProfileIndexRouteImport } from './routes/profile/index'
 import { Route as SettingsNotificationsIndexRouteImport } from './routes/settings/notifications/index'
 import { Route as SettingsBudgetGoalsIndexRouteImport } from './routes/settings/budget-goals/index'
-import { Route as AuthProfileIndexRouteImport } from './routes/auth/profile/index'
+import { Route as AuthRegisterIndexRouteImport } from './routes/auth/register/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/auth/login/index'
 
 const IndexRoute = IndexRouteImport.update({
@@ -33,9 +33,9 @@ const SettingsIndexRoute = SettingsIndexRouteImport.update({
   path: '/settings/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RegisterIndexRoute = RegisterIndexRouteImport.update({
-  id: '/register/',
-  path: '/register/',
+const ProfileIndexRoute = ProfileIndexRouteImport.update({
+  id: '/profile/',
+  path: '/profile/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsNotificationsIndexRoute =
@@ -50,9 +50,9 @@ const SettingsBudgetGoalsIndexRoute =
     path: '/settings/budget-goals/',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AuthProfileIndexRoute = AuthProfileIndexRouteImport.update({
-  id: '/auth/profile/',
-  path: '/auth/profile/',
+const AuthRegisterIndexRoute = AuthRegisterIndexRouteImport.update({
+  id: '/auth/register/',
+  path: '/auth/register/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
@@ -63,32 +63,32 @@ const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/register/': typeof RegisterIndexRoute
+  '/profile/': typeof ProfileIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/transaction/': typeof TransactionIndexRoute
   '/auth/login/': typeof AuthLoginIndexRoute
-  '/auth/profile/': typeof AuthProfileIndexRoute
+  '/auth/register/': typeof AuthRegisterIndexRoute
   '/settings/budget-goals/': typeof SettingsBudgetGoalsIndexRoute
   '/settings/notifications/': typeof SettingsNotificationsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/register': typeof RegisterIndexRoute
+  '/profile': typeof ProfileIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/transaction': typeof TransactionIndexRoute
   '/auth/login': typeof AuthLoginIndexRoute
-  '/auth/profile': typeof AuthProfileIndexRoute
+  '/auth/register': typeof AuthRegisterIndexRoute
   '/settings/budget-goals': typeof SettingsBudgetGoalsIndexRoute
   '/settings/notifications': typeof SettingsNotificationsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/register/': typeof RegisterIndexRoute
+  '/profile/': typeof ProfileIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/transaction/': typeof TransactionIndexRoute
   '/auth/login/': typeof AuthLoginIndexRoute
-  '/auth/profile/': typeof AuthProfileIndexRoute
+  '/auth/register/': typeof AuthRegisterIndexRoute
   '/settings/budget-goals/': typeof SettingsBudgetGoalsIndexRoute
   '/settings/notifications/': typeof SettingsNotificationsIndexRoute
 }
@@ -96,42 +96,42 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/register/'
+    | '/profile/'
     | '/settings/'
     | '/transaction/'
     | '/auth/login/'
-    | '/auth/profile/'
+    | '/auth/register/'
     | '/settings/budget-goals/'
     | '/settings/notifications/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/register'
+    | '/profile'
     | '/settings'
     | '/transaction'
     | '/auth/login'
-    | '/auth/profile'
+    | '/auth/register'
     | '/settings/budget-goals'
     | '/settings/notifications'
   id:
     | '__root__'
     | '/'
-    | '/register/'
+    | '/profile/'
     | '/settings/'
     | '/transaction/'
     | '/auth/login/'
-    | '/auth/profile/'
+    | '/auth/register/'
     | '/settings/budget-goals/'
     | '/settings/notifications/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  RegisterIndexRoute: typeof RegisterIndexRoute
+  ProfileIndexRoute: typeof ProfileIndexRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
   TransactionIndexRoute: typeof TransactionIndexRoute
   AuthLoginIndexRoute: typeof AuthLoginIndexRoute
-  AuthProfileIndexRoute: typeof AuthProfileIndexRoute
+  AuthRegisterIndexRoute: typeof AuthRegisterIndexRoute
   SettingsBudgetGoalsIndexRoute: typeof SettingsBudgetGoalsIndexRoute
   SettingsNotificationsIndexRoute: typeof SettingsNotificationsIndexRoute
 }
@@ -159,11 +159,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/register/': {
-      id: '/register/'
-      path: '/register'
-      fullPath: '/register/'
-      preLoaderRoute: typeof RegisterIndexRouteImport
+    '/profile/': {
+      id: '/profile/'
+      path: '/profile'
+      fullPath: '/profile/'
+      preLoaderRoute: typeof ProfileIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings/notifications/': {
@@ -180,11 +180,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsBudgetGoalsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth/profile/': {
-      id: '/auth/profile/'
-      path: '/auth/profile'
-      fullPath: '/auth/profile/'
-      preLoaderRoute: typeof AuthProfileIndexRouteImport
+    '/auth/register/': {
+      id: '/auth/register/'
+      path: '/auth/register'
+      fullPath: '/auth/register/'
+      preLoaderRoute: typeof AuthRegisterIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/login/': {
@@ -199,11 +199,11 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  RegisterIndexRoute: RegisterIndexRoute,
+  ProfileIndexRoute: ProfileIndexRoute,
   SettingsIndexRoute: SettingsIndexRoute,
   TransactionIndexRoute: TransactionIndexRoute,
   AuthLoginIndexRoute: AuthLoginIndexRoute,
-  AuthProfileIndexRoute: AuthProfileIndexRoute,
+  AuthRegisterIndexRoute: AuthRegisterIndexRoute,
   SettingsBudgetGoalsIndexRoute: SettingsBudgetGoalsIndexRoute,
   SettingsNotificationsIndexRoute: SettingsNotificationsIndexRoute,
 }

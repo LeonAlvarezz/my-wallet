@@ -22,7 +22,7 @@ export default function RegisterPage() {
           <p className="text-muted-foreground">
             Already have an account?{" "}
             <Link
-              to="/login"
+              to="/auth/login"
               className="text-primary font-semibold transition-all hover:tracking-wide hover:underline"
             >
               Sign in
