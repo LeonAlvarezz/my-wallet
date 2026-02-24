@@ -57,9 +57,6 @@ export function AmountInput({
     setValue(sanitized);
   };
 
-  const displayValue = value === "" ? "0" : value;
-  const inputWidthCh = Math.max(displayValue.length, 1);
-
   return (
     <div
       onClick={() => {
@@ -78,11 +75,14 @@ export function AmountInput({
         onChange={handleChange}
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
-        style={{ width: `${inputWidthCh + 0.25}ch` }}
+        // style={{ width: `${inputWidthCh + 0.25}ch` }}
         className={cn(
-          "w-auto appearance-none bg-transparent p-0 text-5xl leading-none font-semibold tabular-nums outline-none placeholder:opacity-100",
+          "appearance-none bg-transparent p-0 text-5xl leading-none font-semibold tabular-nums outline-none placeholder:opacity-100",
           !isEditing && "pointer-events-none caret-transparent",
         )}
+        style={{
+          fieldSizing: "content",
+        }}
       />
     </div>
   );

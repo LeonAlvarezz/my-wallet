@@ -16,7 +16,7 @@ function App() {
             ))} 
           </div> */}
 
-          <div className="w-mobile fixed inset-x-0 bottom-0 m-auto">
+          <div className="max-w-mobile fixed inset-x-0 bottom-0 m-auto">
             <ThemeToggle className="mr-2 mb-24 place-self-end" />
           </div>
 

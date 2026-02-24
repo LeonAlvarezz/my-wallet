@@ -12,6 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TransactionIndexRouteImport } from './routes/transaction/index'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
+import { Route as ProfileIndexRouteImport } from './routes/profile/index'
+import { Route as SettingsNotificationsIndexRouteImport } from './routes/settings/notifications/index'
+import { Route as SettingsBudgetGoalsIndexRouteImport } from './routes/settings/budget-goals/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +31,83 @@ const SettingsIndexRoute = SettingsIndexRouteImport.update({
   path: '/settings/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfileIndexRoute = ProfileIndexRouteImport.update({
+  id: '/profile/',
+  path: '/profile/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsNotificationsIndexRoute =
+  SettingsNotificationsIndexRouteImport.update({
+    id: '/settings/notifications/',
+    path: '/settings/notifications/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SettingsBudgetGoalsIndexRoute =
+  SettingsBudgetGoalsIndexRouteImport.update({
+    id: '/settings/budget-goals/',
+    path: '/settings/budget-goals/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/profile/': typeof ProfileIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/transaction/': typeof TransactionIndexRoute
+  '/settings/budget-goals/': typeof SettingsBudgetGoalsIndexRoute
+  '/settings/notifications/': typeof SettingsNotificationsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/profile': typeof ProfileIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/transaction': typeof TransactionIndexRoute
+  '/settings/budget-goals': typeof SettingsBudgetGoalsIndexRoute
+  '/settings/notifications': typeof SettingsNotificationsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/profile/': typeof ProfileIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/transaction/': typeof TransactionIndexRoute
+  '/settings/budget-goals/': typeof SettingsBudgetGoalsIndexRoute
+  '/settings/notifications/': typeof SettingsNotificationsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/settings/' | '/transaction/'
+  fullPaths:
+    | '/'
+    | '/profile/'
+    | '/settings/'
+    | '/transaction/'
+    | '/settings/budget-goals/'
+    | '/settings/notifications/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/settings' | '/transaction'
-  id: '__root__' | '/' | '/settings/' | '/transaction/'
+  to:
+    | '/'
+    | '/profile'
+    | '/settings'
+    | '/transaction'
+    | '/settings/budget-goals'
+    | '/settings/notifications'
+  id:
+    | '__root__'
+    | '/'
+    | '/profile/'
+    | '/settings/'
+    | '/transaction/'
+    | '/settings/budget-goals/'
+    | '/settings/notifications/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ProfileIndexRoute: typeof ProfileIndexRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
   TransactionIndexRoute: typeof TransactionIndexRoute
+  SettingsBudgetGoalsIndexRoute: typeof SettingsBudgetGoalsIndexRoute
+  SettingsNotificationsIndexRoute: typeof SettingsNotificationsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,13 +133,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profile/': {
+      id: '/profile/'
+      path: '/profile'
+      fullPath: '/profile/'
+      preLoaderRoute: typeof ProfileIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/notifications/': {
+      id: '/settings/notifications/'
+      path: '/settings/notifications'
+      fullPath: '/settings/notifications/'
+      preLoaderRoute: typeof SettingsNotificationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/budget-goals/': {
+      id: '/settings/budget-goals/'
+      path: '/settings/budget-goals'
+      fullPath: '/settings/budget-goals/'
+      preLoaderRoute: typeof SettingsBudgetGoalsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ProfileIndexRoute: ProfileIndexRoute,
   SettingsIndexRoute: SettingsIndexRoute,
   TransactionIndexRoute: TransactionIndexRoute,
+  SettingsBudgetGoalsIndexRoute: SettingsBudgetGoalsIndexRoute,
+  SettingsNotificationsIndexRoute: SettingsNotificationsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
