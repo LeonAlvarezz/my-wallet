@@ -138,6 +138,15 @@ export default function AddTransactionForm() {
     }
     if (result.category !== undefined) {
       form.setFieldValue("category", result.category);
+
+      // If smart input selects a category that's currently hidden,
+      // expand so the user can see the selected state.
+      const isInPreview = mockCategories
+        .slice(0, CATEGORY_PREVIEW_COUNT)
+        .some((c) => c.title === result.category);
+      if (!isCategoryExpanded && !isInPreview) {
+        setIsCategoryExpanded(true);
+      }
     }
     if (result.note !== undefined) {
       form.setFieldValue(
@@ -318,7 +327,9 @@ export default function AddTransactionForm() {
                 setSmartAppliedOnce(false);
               }}
               onKeyDown={(e) => {
-                if (e.key === "Enter") handleSmartSubmit();
+                if (e.key !== "Enter") return;
+                e.preventDefault();
+                handleSmartSubmit();
               }}
               className="w-full"
             />
