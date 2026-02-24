@@ -2,6 +2,7 @@ import * as React from "react";
 import { Outlet, createRootRoute } from "@tanstack/react-router";
 import { ThemeProvider } from "@/modules/theme/theme-provider";
 import BottomNav from "@/components/bottom-nav/BottomNav";
+import { Toaster } from "sonner";
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -15,8 +16,8 @@ function RootComponent() {
           <main className="h-[calc(100dvh-var(--bottom-nav-total-h))]">
             <Outlet />
           </main>
-
           <BottomNav />
+          <Toaster position="top-center" />
         </div>
       </ThemeProvider>
     </React.Fragment>

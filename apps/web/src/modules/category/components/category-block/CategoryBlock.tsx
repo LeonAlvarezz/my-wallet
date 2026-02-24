@@ -57,7 +57,7 @@ export default function CategoryBlock({
         "flex h-full w-full flex-col items-center justify-center rounded-sm! border p-4 transition-all",
         colors.bg,
         "border-transparent",
-        "data-[state=on]:border-primary data-[state=on]:ring-primary data-[state=on]:scale-105 data-[state=on]:ring-2",
+        "data-[state=on]:border-primary data-[state=on]:ring-primary data-[state=on]:scale-105 data-[state=on]:ring-1",
         className,
       )}
     >

@@ -1,19 +1,35 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+  type InputHTMLAttributes,
+} from "react";
 import { cn } from "@/lib/utils";
 
-interface AmountInputProps {
+type AmountInputProps = Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "onChange" | "value" | "defaultValue" | "type"
+> & {
+  value?: number;
   defaultValue?: number;
   onChange?: (value: number) => void;
-  className?: string;
-}
+};
 
 export function AmountInput({
+  value: controlledValue,
   defaultValue = 0,
   onChange,
   className,
+  onBlur,
+  ...props
 }: AmountInputProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [value, setValue] = useState<string>(String(defaultValue));
+  const numericValue = useMemo(
+    () => controlledValue ?? defaultValue,
+    [controlledValue, defaultValue],
+  );
+
+  const [draft, setDraft] = useState<string>(String(numericValue));
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -23,19 +39,20 @@ export function AmountInput({
     }
   }, [isEditing]);
 
-  const handleBlur = () => {
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     setIsEditing(false);
-    const numValue = Number.parseFloat(value);
+    const numValue = Number.parseFloat(draft);
     const finalValue = Number.isFinite(numValue) ? numValue : 0;
-    setValue(String(finalValue));
+    setDraft(String(finalValue));
     onChange?.(finalValue);
+    onBlur?.(e);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      handleBlur();
+      inputRef.current?.blur();
     } else if (e.key === "Escape") {
-      setValue(String(defaultValue));
+      setDraft(String(numericValue));
       setIsEditing(false);
     }
   };
@@ -51,16 +68,20 @@ export function AmountInput({
         sanitized.slice(0, firstDotIndex + 1) +
         sanitized.slice(firstDotIndex + 1).replace(/\./g, "");
     }
-    console.log("sanitized:", sanitized);
     if (sanitized.startsWith("0")) sanitized = `${sanitized.replace("0", "")}`;
     if (sanitized.startsWith(".")) sanitized = `0${sanitized}`;
-    setValue(sanitized);
+    setDraft(sanitized);
   };
+
+  const displayValue = isEditing ? draft : String(numericValue);
 
   return (
     <div
       onClick={() => {
-        if (!isEditing) setIsEditing(true);
+        if (!isEditing) {
+          setDraft(String(numericValue));
+          setIsEditing(true);
+        }
       }}
       className={cn("inline-flex", !isEditing && "cursor-pointer", className)}
     >
@@ -69,7 +90,7 @@ export function AmountInput({
         type="text"
         inputMode="decimal"
         pattern="[0-9]*[.]?[0-9]*"
-        value={value}
+        value={displayValue}
         placeholder="0"
         readOnly={!isEditing}
         onChange={handleChange}
@@ -83,6 +104,7 @@ export function AmountInput({
         style={{
           fieldSizing: "content",
         }}
+        {...props}
       />
     </div>
   );

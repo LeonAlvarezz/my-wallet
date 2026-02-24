@@ -1,4 +1,4 @@
-import { SettingsHeader } from "../components/SettingsHeader";
+import TopNav from "@/components/top-nav/TopNav";
 import { ToggleRow } from "../components/ToggleRow";
 import { useLocalStorageState } from "../hooks/useLocalStorageState";
 
@@ -24,7 +24,14 @@ export default function NotificationsSettingsPage() {
 
   return (
     <div className="flex h-full w-full flex-col gap-6 overflow-y-auto p-4 pb-[calc(var(--bottom-nav-total-h)+1rem)]">
-      <SettingsHeader title="Notifications" backLabel="Profile" />
+      <TopNav
+        title="Notifications"
+        back={{
+          backTo: "/profile",
+          label: "Profile",
+        }}
+        // back={true}
+      />
 
       <section className="flex flex-col gap-3">
         <h2 className="text-muted-foreground text-sm font-semibold uppercase">

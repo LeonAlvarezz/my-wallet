@@ -10,9 +10,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { SettingsHeader } from "../components/SettingsHeader";
 import { ProgressBar } from "../components/ProgressBar";
 import { useLocalStorageState } from "../hooks/useLocalStorageState";
+import TopNav from "@/components/top-nav/TopNav";
 
 type Category = {
   id: string;
@@ -251,7 +251,14 @@ export default function BudgetGoalsSettingsPage() {
 
   return (
     <div className="flex h-full w-full flex-col gap-6 overflow-y-auto p-4 pb-[calc(var(--bottom-nav-total-h)+1rem)]">
-      <SettingsHeader title="Budget Goals" backLabel="Profile" />
+      <TopNav
+        title="Budget Goals"
+        back={{
+          backTo: "/profile",
+          label: "Profile",
+        }}
+        // back={true}
+      />
 
       <section className="flex flex-col gap-2">
         <h2 className="text-muted-foreground text-sm font-semibold uppercase">
