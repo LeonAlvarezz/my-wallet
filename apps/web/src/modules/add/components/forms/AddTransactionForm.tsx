@@ -18,10 +18,13 @@ import { Input } from "@/components/ui/input";
 import { Icon } from "@iconify/react";
 import { useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { parseSmartInput } from "@/modules/add/lib/smart-input";
 
 const formSchema = z.object({
   amount: z.number().min(0.01, "Amount must be greater than 0"),
   category: z.string().min(1, "Select a category"),
+  // Optional from a UX perspective (can be empty), but keep it as a string
+  // so it matches our form defaultValues typing.
   note: z.string(),
 });
 
@@ -78,7 +81,12 @@ const mockCategories: CategoryBlockData[] = [
 ];
 
 export default function AddTransactionForm() {
+  const noteTextareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [isCategoryExpanded, setIsCategoryExpanded] = useState(false);
+  const [smartText, setSmartText] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [smartAppliedOnce, setSmartAppliedOnce] = useState(false);
+  const [submitAttempts, setSubmitAttempts] = useState(0);
 
   const CATEGORY_PREVIEW_COUNT = 6;
   const visibleCategories = isCategoryExpanded
@@ -95,12 +103,87 @@ export default function AddTransactionForm() {
       onSubmit: formSchema,
     },
     onSubmit: async ({ value, formApi }) => {
+      setLoading(true);
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       toast.success("Transaction added", {
         description: `${value.category} • ${value.note} • $${value.amount.toFixed(2)}`,
       });
       formApi.reset();
+      setSmartText("");
+      setSmartAppliedOnce(false);
+      setSubmitAttempts(0);
+      setLoading(false);
     },
   });
+
+  const isFormComplete = () => {
+    const amount = form.getFieldValue("amount");
+    const category = form.getFieldValue("category");
+    return amount > 0 && category.trim().length > 0;
+  };
+
+  const applySmartInput = (options?: {
+    focusNote?: boolean;
+    showToasts?: boolean;
+  }) => {
+    const showToasts = options?.showToasts ?? true;
+    const focusNote = options?.focusNote ?? false;
+
+    const result = parseSmartInput(smartText, mockCategories);
+    const didParseAnything =
+      result.parsed.amount || result.parsed.category || result.parsed.note;
+
+    if (result.amount !== undefined) {
+      form.setFieldValue("amount", result.amount);
+    }
+    if (result.category !== undefined) {
+      form.setFieldValue("category", result.category);
+    }
+    if (result.note !== undefined) {
+      form.setFieldValue(
+        "note",
+        result.note.charAt(0).toUpperCase() + result.note.slice(1),
+      );
+    }
+
+    if (showToasts) {
+      if (!didParseAnything) {
+        toast("Couldn't understand that input", {
+          description: "Try: 5 Starbucks #coffee or 5 Starbucks coffee",
+        });
+      } else if (result.warnings.length > 0) {
+        toast(result.warnings[0]);
+      }
+    }
+
+    if (focusNote && (!result.note || !result.category)) {
+      noteTextareaRef.current?.scrollIntoView({
+        block: "center",
+        behavior: "smooth",
+      });
+      noteTextareaRef.current?.focus();
+    }
+
+    setSmartAppliedOnce(true);
+  };
+
+  const handleSmartSubmit = () => {
+    // 1st tap: apply smart input into the form
+    // 2nd tap: if the form is complete, submit
+    setSubmitAttempts((n) => n + 1);
+
+    if (!smartAppliedOnce) {
+      applySmartInput({ focusNote: true, showToasts: false });
+      return;
+    }
+
+    if (isFormComplete()) {
+      form.handleSubmit();
+      return;
+    }
+
+    applySmartInput({ focusNote: true, showToasts: false });
+  };
 
   return (
     <form
@@ -116,7 +199,8 @@ export default function AddTransactionForm() {
           name="amount"
           children={(field) => {
             const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid;
+              (field.state.meta.isTouched || submitAttempts > 0) &&
+              !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
                 <div className="flex w-full flex-col items-center gap-4">
@@ -143,7 +227,8 @@ export default function AddTransactionForm() {
           name="category"
           children={(field) => {
             const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid;
+              (field.state.meta.isTouched || submitAttempts > 0) &&
+              !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
                 <div className="flex flex-col gap-4">
@@ -198,12 +283,14 @@ export default function AddTransactionForm() {
           name="note"
           children={(field) => {
             const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid;
+              (field.state.meta.isTouched || submitAttempts > 0) &&
+              !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
                 <div className="flex flex-col gap-4">
                   <FieldLabel htmlFor={field.name}>Note</FieldLabel>
                   <Textarea
+                    ref={noteTextareaRef}
                     id={field.name}
                     name={field.name}
                     value={field.state.value}
@@ -223,21 +310,37 @@ export default function AddTransactionForm() {
       <div className="max-w-mobile fixed inset-x-0 bottom-0 m-auto px-4">
         <div className="mb-[calc(var(--bottom-nav-total-h)+10px)] flex gap-2">
           <div className="relative w-full" id="smart-input">
-            <Input placeholder="12 Starbucks" className="w-full" />
+            <Input
+              placeholder="5 Starbucks #coffee"
+              value={smartText}
+              onChange={(e) => {
+                setSmartText(e.target.value);
+                setSmartAppliedOnce(false);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSmartSubmit();
+              }}
+              className="w-full"
+            />
             <Button
               type="button"
               variant="barebone"
               className="absolute inset-y-1/2 right-1 z-20 h-fit w-fit -translate-y-1/2"
+              onClick={handleSmartSubmit}
             >
               <Icon icon="solar:arrow-right-up-bold" className="size-5" />
             </Button>
           </div>
           <Button
             type="button"
-            onClick={() => form.handleSubmit()}
-            disabled={form.state.isSubmitting}
+            onClick={() => {
+              setSubmitAttempts((n) => n + 1);
+              form.handleSubmit();
+            }}
+            disabled={loading}
+            loading={loading}
           >
-            Add
+            Save
           </Button>
         </div>
       </div>
