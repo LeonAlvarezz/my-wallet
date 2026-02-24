@@ -12,9 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TransactionIndexRouteImport } from './routes/transaction/index'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
-import { Route as ProfileIndexRouteImport } from './routes/profile/index'
+import { Route as RegisterIndexRouteImport } from './routes/register/index'
 import { Route as SettingsNotificationsIndexRouteImport } from './routes/settings/notifications/index'
 import { Route as SettingsBudgetGoalsIndexRouteImport } from './routes/settings/budget-goals/index'
+import { Route as AuthProfileIndexRouteImport } from './routes/auth/profile/index'
+import { Route as AuthLoginIndexRouteImport } from './routes/auth/login/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -31,9 +33,9 @@ const SettingsIndexRoute = SettingsIndexRouteImport.update({
   path: '/settings/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProfileIndexRoute = ProfileIndexRouteImport.update({
-  id: '/profile/',
-  path: '/profile/',
+const RegisterIndexRoute = RegisterIndexRouteImport.update({
+  id: '/register/',
+  path: '/register/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsNotificationsIndexRoute =
@@ -48,29 +50,45 @@ const SettingsBudgetGoalsIndexRoute =
     path: '/settings/budget-goals/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AuthProfileIndexRoute = AuthProfileIndexRouteImport.update({
+  id: '/auth/profile/',
+  path: '/auth/profile/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
+  id: '/auth/login/',
+  path: '/auth/login/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/profile/': typeof ProfileIndexRoute
+  '/register/': typeof RegisterIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/transaction/': typeof TransactionIndexRoute
+  '/auth/login/': typeof AuthLoginIndexRoute
+  '/auth/profile/': typeof AuthProfileIndexRoute
   '/settings/budget-goals/': typeof SettingsBudgetGoalsIndexRoute
   '/settings/notifications/': typeof SettingsNotificationsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/profile': typeof ProfileIndexRoute
+  '/register': typeof RegisterIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/transaction': typeof TransactionIndexRoute
+  '/auth/login': typeof AuthLoginIndexRoute
+  '/auth/profile': typeof AuthProfileIndexRoute
   '/settings/budget-goals': typeof SettingsBudgetGoalsIndexRoute
   '/settings/notifications': typeof SettingsNotificationsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/profile/': typeof ProfileIndexRoute
+  '/register/': typeof RegisterIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/transaction/': typeof TransactionIndexRoute
+  '/auth/login/': typeof AuthLoginIndexRoute
+  '/auth/profile/': typeof AuthProfileIndexRoute
   '/settings/budget-goals/': typeof SettingsBudgetGoalsIndexRoute
   '/settings/notifications/': typeof SettingsNotificationsIndexRoute
 }
@@ -78,34 +96,42 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/profile/'
+    | '/register/'
     | '/settings/'
     | '/transaction/'
+    | '/auth/login/'
+    | '/auth/profile/'
     | '/settings/budget-goals/'
     | '/settings/notifications/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/profile'
+    | '/register'
     | '/settings'
     | '/transaction'
+    | '/auth/login'
+    | '/auth/profile'
     | '/settings/budget-goals'
     | '/settings/notifications'
   id:
     | '__root__'
     | '/'
-    | '/profile/'
+    | '/register/'
     | '/settings/'
     | '/transaction/'
+    | '/auth/login/'
+    | '/auth/profile/'
     | '/settings/budget-goals/'
     | '/settings/notifications/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ProfileIndexRoute: typeof ProfileIndexRoute
+  RegisterIndexRoute: typeof RegisterIndexRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
   TransactionIndexRoute: typeof TransactionIndexRoute
+  AuthLoginIndexRoute: typeof AuthLoginIndexRoute
+  AuthProfileIndexRoute: typeof AuthProfileIndexRoute
   SettingsBudgetGoalsIndexRoute: typeof SettingsBudgetGoalsIndexRoute
   SettingsNotificationsIndexRoute: typeof SettingsNotificationsIndexRoute
 }
@@ -133,11 +159,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/profile/': {
-      id: '/profile/'
-      path: '/profile'
-      fullPath: '/profile/'
-      preLoaderRoute: typeof ProfileIndexRouteImport
+    '/register/': {
+      id: '/register/'
+      path: '/register'
+      fullPath: '/register/'
+      preLoaderRoute: typeof RegisterIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings/notifications/': {
@@ -154,14 +180,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsBudgetGoalsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/profile/': {
+      id: '/auth/profile/'
+      path: '/auth/profile'
+      fullPath: '/auth/profile/'
+      preLoaderRoute: typeof AuthProfileIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/login/': {
+      id: '/auth/login/'
+      path: '/auth/login'
+      fullPath: '/auth/login/'
+      preLoaderRoute: typeof AuthLoginIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ProfileIndexRoute: ProfileIndexRoute,
+  RegisterIndexRoute: RegisterIndexRoute,
   SettingsIndexRoute: SettingsIndexRoute,
   TransactionIndexRoute: TransactionIndexRoute,
+  AuthLoginIndexRoute: AuthLoginIndexRoute,
+  AuthProfileIndexRoute: AuthProfileIndexRoute,
   SettingsBudgetGoalsIndexRoute: SettingsBudgetGoalsIndexRoute,
   SettingsNotificationsIndexRoute: SettingsNotificationsIndexRoute,
 }

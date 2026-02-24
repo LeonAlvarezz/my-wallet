@@ -1,4 +1,4 @@
-import { Computer, Moon, Sun } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { type HTMLAttributes } from "react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/modules/theme/use-theme";

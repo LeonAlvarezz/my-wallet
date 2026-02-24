@@ -83,22 +83,33 @@ export function AmountInput({
           setIsEditing(true);
         }
       }}
-      className={cn("inline-flex", !isEditing && "cursor-pointer", className)}
+      className={cn(
+        "relative inline-grid items-center",
+        !isEditing && "cursor-pointer",
+        className,
+      )}
     >
+      {/* 1. Mirror Span: Invisible but defines the width */}
+      <span
+        className="invisible col-start-1 row-start-1 px-0 text-5xl leading-none font-semibold whitespace-pre tabular-nums"
+        aria-hidden="true"
+      >
+        {displayValue || "0"}
+      </span>
+
+      {/* 2. Actual Input: Overlays the span and fills the width */}
       <input
         ref={inputRef}
         type="text"
         inputMode="decimal"
-        pattern="[0-9]*[.]?[0-9]*"
         value={displayValue}
         placeholder="0"
         readOnly={!isEditing}
         onChange={handleChange}
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
-        // style={{ width: `${inputWidthCh + 0.25}ch` }}
         className={cn(
-          "appearance-none bg-transparent p-0 text-5xl leading-none font-semibold tabular-nums outline-none placeholder:opacity-100",
+          "col-start-1 row-start-1 w-full appearance-none bg-transparent p-0 text-5xl leading-none font-semibold tabular-nums outline-none placeholder:opacity-100",
           !isEditing && "pointer-events-none caret-transparent",
         )}
         style={{
