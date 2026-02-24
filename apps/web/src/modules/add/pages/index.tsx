@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { AmountInput } from "@/components/amount-input";
 import { Textarea } from "@/components/ui/textarea";
@@ -6,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import CategoryBlock, {
   type CategoryBlockData,
 } from "@/modules/category/components/category-block/CategoryBlock";
+import { ToggleGroup } from "@/components/ui/toggle-group";
 
 const mockCategories: CategoryBlockData[] = [
   {
@@ -57,6 +59,10 @@ const mockCategories: CategoryBlockData[] = [
 ];
 
 export default function AddPage() {
+  const [selectedCategoryTitle, setSelectedCategoryTitle] = React.useState<
+    string | null
+  >(null);
+
   return (
     <div className="flex h-full w-full flex-col gap-8 overflow-y-auto p-4 pb-[calc(var(--bottom-nav-h))]">
       <section className="flex flex-col items-center gap-4">
@@ -70,11 +76,22 @@ export default function AddPage() {
       </section>
       <section className="flex flex-col gap-4">
         <h1>Category</h1>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        <ToggleGroup
+          type="single"
+          value={selectedCategoryTitle ?? ""}
+          onValueChange={(value) =>
+            setSelectedCategoryTitle(value ? value : null)
+          }
+          className="grid w-full grid-cols-2 gap-2 sm:grid-cols-3"
+        >
           {mockCategories.map((category) => (
-            <CategoryBlock key={category.title} {...category} />
+            <CategoryBlock
+              key={category.title}
+              category={category}
+              value={category.title}
+            />
           ))}
-        </div>
+        </ToggleGroup>
       </section>
       <section className="flex flex-col gap-4">
         <h1>Note</h1>

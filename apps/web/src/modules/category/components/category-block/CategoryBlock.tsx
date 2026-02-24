@@ -1,5 +1,6 @@
-import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { Icon } from "@iconify/react";
+import { ToggleGroupItem } from "@/components/ui/toggle-group";
 
 export type ColorVariant =
   | "default"
@@ -19,6 +20,13 @@ export type CategoryBlockData = {
   color?: ColorVariant;
 };
 
+type CategoryBlockProps = {
+  category: CategoryBlockData;
+  value: string;
+  className?: string;
+  disabled?: boolean;
+};
+
 const variantColorMap: Record<ColorVariant, { bg: string; text: string }> = {
   yellow: { bg: "bg-yellow-300/10", text: "text-yellow-300" },
   green: { bg: "bg-green-300/10", text: "text-green-300" },
@@ -33,19 +41,28 @@ const variantColorMap: Record<ColorVariant, { bg: string; text: string }> = {
 };
 
 export default function CategoryBlock({
-  icon,
-  title,
-  color = "default",
-}: CategoryBlockData) {
-  const colors = variantColorMap[color];
+  category,
+  value,
+  className,
+  disabled,
+}: CategoryBlockProps) {
+  const colors = variantColorMap[category.color ?? "default"];
 
   return (
-    <Button
-      variant="barebone"
-      className={`flex h-full w-full flex-col items-center justify-center rounded-sm ${colors.bg} p-4`}
+    <ToggleGroupItem
+      value={value}
+      disabled={disabled}
+      aria-label={category.title}
+      className={cn(
+        "flex h-full w-full flex-col items-center justify-center rounded-sm! border p-4 transition-all",
+        colors.bg,
+        "border-transparent",
+        "data-[state=on]:border-primary data-[state=on]:ring-primary data-[state=on]:scale-105 data-[state=on]:ring-2",
+        className,
+      )}
     >
-      <Icon icon={icon} className={`size-8 ${colors.text}`} />
-      <p className={`font-bold ${colors.text}`}>{title}</p>
-    </Button>
+      <Icon icon={category.icon} className={`size-8 ${colors.text}`} />
+      <p className={`${colors.text}`}>{category.title}</p>
+    </ToggleGroupItem>
   );
 }

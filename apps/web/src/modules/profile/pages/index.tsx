@@ -1,8 +1,6 @@
-import * as React from "react";
 import { Icon } from "@iconify/react";
 import { useRouter } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import TopNav from "@/components/top-nav/TopNav";
 export function ProfilePage() {
   const router = useRouter();
 

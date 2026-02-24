@@ -231,19 +231,19 @@ export default function TransactionPage() {
           <StatsCard
             title="Total Spent"
             amount={totalSpent.toFixed(2)}
-            icon="solar:wallet-bold"
+            icon="solar:wallet-bold-duotone"
             className="sm:col-span-2"
           />
           <StatsCard
             title="Average"
             amount={avgPerTransaction.toFixed(2)}
-            icon="solar:chart-2-bold"
+            icon="solar:chart-2-bold-duotone"
             description="per transaction"
           />
           <StatsCard
             title="Highest"
             amount={highestTransaction.toFixed(2)}
-            icon="solar:arrow-up-bold"
+            icon="solar:arrow-up-bold-duotone"
             trend="up"
             description="single transaction"
           />
