@@ -1,5 +1,5 @@
-import { BaseModel } from "@/core/model/base.model";
 import z from "zod";
+import { BaseModel } from "./base";
 
 export namespace TransactionModel {
   export const TransactionSchema = BaseModel.BaseRowSchema.extend({

@@ -1,4 +1,4 @@
-import { BaseModel } from "@/core/model/base.model";
+import { BaseModel } from "@my-wallet/types";
 import z from "zod";
 
 export namespace SessionModel {

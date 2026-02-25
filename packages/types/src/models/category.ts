@@ -1,4 +1,3 @@
-import { BaseModel } from "@/core/model/base.model";
 import z from "zod";
 
 export namespace CategoryModel {
@@ -15,7 +14,10 @@ export namespace CategoryModel {
     TEAL = "TEAL",
   }
 
-  export const CategorySchema = BaseModel.SimpleBaseRowSchema.extend({
+  export const CategorySchema = z.object({
+    id: z.number(),
+    created_at: z.iso.datetime(),
+    updated_at: z.iso.datetime().nullable().optional(),
     name: z.string(),
     color: z.enum(CategoryColorEnum),
     icon: z.string(),

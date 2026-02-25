@@ -1,6 +1,6 @@
 import { NotFoundException } from "@/core/error";
-import { CategoryModel } from "./category.model";
 import { CategoryRepository } from "./category.repository";
+import { CategoryModel } from "@my-wallet/types";
 
 export class CategoryService {
   static async findAll() {

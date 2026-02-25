@@ -2,13 +2,12 @@ import { ForbiddenException, UnauthorizedException } from "@/core/error";
 import { db } from "@/lib/db";
 import { hashPassword, verifyPassword } from "@/util/password";
 import { generateSessionToken, hashSessionToken } from "@/util/session-token";
-import type { AuthModel } from "./auth.model";
 import { AuthRepository } from "./auth.repository";
 import { SessionRepository } from "@/modules/session/session.repository";
 import { SimpleSuccess } from "@/core/response";
 import { UserRepository } from "@/modules/user/user.repository";
-import { UserModel } from "@/modules/user/user.model";
 import { RedisService } from "@/lib/redis/redis.service";
+import { AuthModel, UserModel } from "@my-wallet/types";
 
 export class AuthService {
   static async signUp(payload: AuthModel.SignUpDto) {

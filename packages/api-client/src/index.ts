@@ -31,4 +31,5 @@ export type { CustomError, ErrorParams } from "./error";
 export {
   defaultResponseInterceptor,
   authenticateResponseInterceptor,
+  errorMessageResponseInterceptor,
 } from "./preset-interceptor";

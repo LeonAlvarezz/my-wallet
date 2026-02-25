@@ -6,7 +6,7 @@ import type {
 
 import axios from "axios";
 import { DefaultErrorMessage } from "./error";
-import { isFunction } from '@my-wallet/type-check'
+import { isFunction } from "@my-wallet/types/is-function";
 
 export const defaultResponseInterceptor = ({
   codeField = "code",

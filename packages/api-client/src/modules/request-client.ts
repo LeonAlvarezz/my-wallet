@@ -7,7 +7,7 @@ import qs from "qs";
 import { FileDownloader } from "./downloader";
 import { FileUploader } from "./uploader";
 import type { RequestClientConfig, RequestClientOptions } from "./types";
-import { isString } from "@my-wallet/type-check";
+import { isString } from "@my-wallet/types/is-string";
 import { InterceptorManager } from "./interceptor";
 
 function getParamsSerializer(
@@ -125,9 +125,9 @@ class RequestClient {
       };
 
       const response: AxiosResponse<T> = await this.instance(requestConfig);
-      return response as T;
+      return response.data as T;
     } catch (error: any) {
-      throw error.response ? error.response.data : error;
+      throw error.response ? error.response.data.error : error;
     }
   }
 

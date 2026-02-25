@@ -11,27 +11,27 @@ export const errorHandler = new Elysia({ name: "error-handling" })
     logger.error("🔥 Error occurred: ", error);
 
     if (code === "VALIDATION") {
-      return resError({
+      return Fail({
         message: DefaultErrorMessage.VALIDATION,
-        status: (error as any)?.status,
-        metadata: (error as any)?.messageValue,
+        status: error.status,
+        metadata: error.messageValue,
       });
     }
 
     if (error instanceof ErrorException) {
-      return resError({ message: error.message, status: error.status });
+      return Fail({ message: error.message, status: error.status });
     }
 
     if (code === "NOT_FOUND") {
       return Fail({
         message: DefaultErrorMessage.ENDPOINT_NOT_FOUND,
-        status: (error as any)?.status,
+        status: error.status,
       });
     }
 
     return {
       status: set?.status ?? 500,
-      message: (error as any) ?? "Internal Server Error",
+      message: error ?? "Internal Server Error",
       success: false,
     };
   })

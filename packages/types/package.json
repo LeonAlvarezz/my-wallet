@@ -1,0 +1,31 @@
+{
+  "name": "@my-wallet/types",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "zod": "^4.3.6"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./is-function": {
+      "types": "./src/utils/is-function.ts",
+      "default": "./src/utils/is-function.ts"
+    },
+    "./is-string": {
+      "types": "./src/utils/is-string.ts",
+      "default": "./src/utils/is-string.ts"
+    }
+  }
+}

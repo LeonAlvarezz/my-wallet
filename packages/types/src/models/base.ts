@@ -1,12 +1,5 @@
 import { z } from "zod";
 
-/**
- * Common DB timestamp fields.
- *
- * Use `BaseRowSchema` when your DB columns are optional but not nullable.
- * Use `BaseRowNullableSchema` when your DB columns are nullable.
- 
-*/
 export namespace BaseModel {
   export const SimpleBaseRowSchema = z.object({
     id: z.number(),

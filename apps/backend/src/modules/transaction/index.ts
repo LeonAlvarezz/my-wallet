@@ -1,15 +1,14 @@
 import Elysia from "elysia";
 import { authGuard } from "../auth/guard";
 import { TransactionService } from "./transaction.service";
-import {
-  SimpleSuccess,
-  SimpleSuccessSchema,
-  Success,
-  SuccessSchema,
-} from "@/core/response";
-import { TransactionModel } from "./transaction.model";
+import { SimpleSuccess, Success } from "@/core/response";
 import { OpenApiKey } from "../app/openapi";
-import { BaseModel } from "@/core/model/base.model";
+import {
+  BaseModel,
+  SimpleSuccessSchema,
+  SuccessSchema,
+  TransactionModel,
+} from "@my-wallet/types";
 
 export const transaction = new Elysia()
   .use(authGuard)

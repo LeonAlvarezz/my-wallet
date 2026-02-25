@@ -1,4 +1,4 @@
-import { BaseModel } from "@/core/model/base.model";
+import { BaseModel } from "@my-wallet/types";
 import Elysia from "elysia";
 import { AuthService } from "./auth.service";
 import { UnauthorizedException } from "@/core/error";

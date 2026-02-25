@@ -1,10 +1,10 @@
-import { CategoryModel } from "@/modules/category/category.model";
 import { db } from "..";
 import { categoryTable } from "../schema/category.schema";
 import { userTable } from "../schema/user.schema";
 import { authTable } from "../schema/auth.schema";
 import { hashPassword } from "@/util/password";
 import logger from "@/lib/logger";
+import { CategoryModel } from "@my-wallet/types";
 
 async function seedDatabaseDev() {
   const baseCategories = [

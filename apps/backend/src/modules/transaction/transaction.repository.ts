@@ -1,6 +1,6 @@
 import { db, DrizzleTransaction } from "@/lib/db";
 import { transactionTable } from "@/lib/db/schema/transaction.schema";
-import { TransactionModel } from "./transaction.model";
+import { TransactionModel } from "@my-wallet/types";
 import { eq } from "drizzle-orm";
 
 export class TransactionRepository {

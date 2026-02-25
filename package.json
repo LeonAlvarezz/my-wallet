@@ -5,7 +5,7 @@
     "workspaces": [
         "apps/web",
         "apps/backend",
-        "packages/type-check",
+        "packages/types",
         "packages/api-client"
     ],
     "devDependencies": {

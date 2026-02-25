@@ -26,7 +26,7 @@
     "tailwindcss": "^4.2.0",
     "zod": "^4.3.6",
     "@my-wallet/api-client": "workspace:*",
-    "@my-wallet/type-check": "workspace:*"
+    "@my-wallet/types": "workspace:*"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

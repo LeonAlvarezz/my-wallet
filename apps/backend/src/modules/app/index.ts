@@ -1,7 +1,6 @@
-import { BaseModel } from "@/core/model/base.model";
+import { BaseModel, SuccessSchema } from "@my-wallet/types";
 import { Success } from "@/core/response";
 import Elysia from "elysia";
-import { SuccessSchema } from "@/core/response";
 import { OpenApiKey } from "./openapi";
 
 export const appInfo = new Elysia().get(

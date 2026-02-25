@@ -2,7 +2,7 @@ import { pgEnum, text } from "drizzle-orm/pg-core";
 import { varchar } from "drizzle-orm/pg-core";
 import { pgTable, serial } from "drizzle-orm/pg-core";
 import { enumToPgEnum, simpleTimestamps } from "../common";
-import { CategoryModel } from "@/modules/category/category.model";
+import { CategoryModel } from "@my-wallet/types";
 export const categoryColorEnum = pgEnum(
   "CategoryColorEnum",
   enumToPgEnum(CategoryModel.CategoryColorEnum),

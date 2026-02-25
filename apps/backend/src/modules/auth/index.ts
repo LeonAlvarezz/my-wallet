@@ -1,19 +1,18 @@
 import Elysia from "elysia";
-import { AuthModel } from "./auth.model";
-import { BaseModel } from "@/core/model/base.model";
-import { UserModel } from "../user/user.model";
-import { BadRequestException } from "@/core/error";
 import {
+  AuthModel,
+  BaseModel,
   SimpleSuccessSchema,
-  SimpleSuccess,
-  Success,
   SuccessSchema,
-} from "@/core/response";
+  UserModel,
+} from "@my-wallet/types";
+import { BadRequestException } from "@/core/error";
+import { SimpleSuccess, Success } from "@/core/response";
 import { authGuard } from "./guard";
 import { AuthService } from "./auth.service";
 import { OpenApiKey } from "../app/openapi";
 import { RedisService } from "@/lib/redis/redis.service";
-import { rateLimitGuard } from "../../lib/rate-limit/rate-limit.guard";
+import { rateLimitGuard } from "@/lib/rate-limit/rate-limit.guard";
 
 export const auth = new Elysia()
   .use(authGuard)
