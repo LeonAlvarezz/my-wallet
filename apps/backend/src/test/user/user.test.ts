@@ -1,6 +1,6 @@
 import { describe, it, expect } from "bun:test";
 import { authHelpers, userHelpers } from "@/test/test-helpers";
-import { UserModel } from "@/modules/user/user.model";
+import { UserModel } from "@my-wallet/types";
 describe("User Routes", () => {
   describe("GET /users - Error Cases", () => {
     it("Should return unauthorized when no auth token is provided", async () => {

@@ -7,7 +7,6 @@ import { type CategoryData } from "../components/category-breakdown/CategoryBrea
 import DailyGroup, {
   type DailyGroupData,
 } from "../components/daily-group/DailyGroup";
-import { useCategories } from "@/modules/category/hooks/use-categories";
 
 // Mock data
 const mockCategories: CategoryData[] = [

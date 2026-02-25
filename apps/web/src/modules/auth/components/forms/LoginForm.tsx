@@ -10,16 +10,26 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Icon } from "@iconify/react";
-import { useState } from "react";
-
+import { useSignIn } from "../../hooks/use-sign-in";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { queryKey } from "@/api/keys";
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
 export default function LoginForm() {
-  const [loading, setLoading] = useState(false);
+  const signInMutation = useSignIn();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const {
+    location: { searchStr },
+  } = useRouterState();
+
+  const redirectToRaw = new URLSearchParams(searchStr).get("redirect");
+  const redirectTo = redirectToRaw?.startsWith("/") ? redirectToRaw : null;
 
   const form = useForm({
     defaultValues: {
@@ -30,14 +40,16 @@ export default function LoginForm() {
       onSubmit: formSchema,
     },
     onSubmit: async ({ value, formApi }) => {
-      setLoading(true);
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const data = await signInMutation.mutateAsync(value);
       toast.success("Login successful", {
-        description: `Welcome back, ${value.email}`,
+        description: `Welcome back, ${data.user.username}`,
       });
+
+      await queryClient.invalidateQueries({ queryKey: queryKey.auth.me });
       formApi.reset();
-      setLoading(false);
+      navigate({
+        to: redirectTo || "/",
+      });
     },
   });
 
@@ -71,7 +83,7 @@ export default function LoginForm() {
                     />
                     <Icon
                       icon="solar:letter-bold-duotone"
-                      className="absolute left-3 top-1/2 size-5 -translate-y-1/2 text-muted-foreground"
+                      className="text-muted-foreground absolute top-1/2 left-3 size-5 -translate-y-1/2"
                     />
                   </div>
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
@@ -102,7 +114,7 @@ export default function LoginForm() {
                     />
                     <Icon
                       icon="solar:lock-password-bold-duotone"
-                      className="absolute left-3 top-1/2 size-5 -translate-y-1/2 text-muted-foreground"
+                      className="text-muted-foreground absolute top-1/2 left-3 size-5 -translate-y-1/2"
                     />
                   </div>
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
@@ -114,12 +126,12 @@ export default function LoginForm() {
       </FieldGroup>
       <div className="mt-6 flex items-center justify-between">
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" className="rounded border-border" />
+          <input type="checkbox" className="border-border rounded" />
           <span className="text-muted-foreground">Remember me</span>
         </label>
         <a
           href="#"
-          className="text-sm font-medium text-primary hover:underline"
+          className="text-primary text-sm font-medium hover:underline"
         >
           Forgot password?
         </a>
@@ -127,8 +139,8 @@ export default function LoginForm() {
       <Button
         type="submit"
         className="mt-6 w-full"
-        loading={loading}
-        disabled={loading}
+        loading={signInMutation.isPending}
+        disabled={signInMutation.isPending}
       >
         <Icon icon="solar:login-3-bold" className="mr-2 size-5" />
         Sign In
@@ -136,10 +148,10 @@ export default function LoginForm() {
       <div className="mt-6">
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-border"></div>
+            <div className="border-border w-full border-t"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="bg-background px-2 text-muted-foreground">
+            <span className="bg-background text-muted-foreground px-2">
               Or continue with
             </span>
           </div>

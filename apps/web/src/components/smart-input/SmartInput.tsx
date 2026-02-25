@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Icon } from "@iconify/react";
@@ -8,8 +7,6 @@ type Props = {
   onChange: (value: string) => void;
 };
 export default function SmartInput({ onSubmit, value, onChange }: Props) {
-  //   const [submitCount, setSubmitCount] = useState(0);
-
   return (
     <div className="relative w-full" id="smart-input">
       <Input

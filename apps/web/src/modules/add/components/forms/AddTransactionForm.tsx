@@ -16,7 +16,7 @@ import { Icon } from "@iconify/react";
 import { useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { parseSmartInput } from "@/modules/add/lib/smart-input";
-import { useCategories } from "@/modules/category/hooks/use-categories";
+import { useCategories } from "@/modules/category/hooks/query/use-categories";
 import SmartInput from "@/components/smart-input/SmartInput";
 import CategoryBlockSkeleton from "../skeletons/CategoryBlockSkeleton";
 

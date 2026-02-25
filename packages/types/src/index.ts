@@ -6,6 +6,7 @@ export { AuthModel } from "./models/auth.model";
 export {
   type ApiFail,
   type ApiResult,
+  type SimpleSuccess,
   type ApiSuccess,
   FailSchema,
   SimpleSuccessSchema,

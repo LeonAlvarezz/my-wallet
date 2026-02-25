@@ -12,6 +12,18 @@ export class SessionRepository {
     const [result] = await db.insert(sessionTable).values(payload).returning();
     return result;
   }
+
+  static async checkIfSessionExist(sessionToken: string) {
+    const session = await db.query.sessionTable.findFirst({
+      where: eq(sessionTable.session_token_hash, sessionToken),
+      columns: {
+        user_id: true,
+        expires_at: true,
+      },
+    });
+    if (!session || new Date(session.expires_at) < new Date()) return null;
+    return session;
+  }
   static async findByToken(sessionToken: string) {
     return await db.query.sessionTable.findFirst({
       where: eq(sessionTable.session_token_hash, sessionToken),

@@ -4,7 +4,6 @@ import { CategoryModel } from "@my-wallet/types";
 
 export class CategoryService {
   static async findAll() {
-    console.log("Hello");
     return await CategoryRepository.findAll();
   }
 

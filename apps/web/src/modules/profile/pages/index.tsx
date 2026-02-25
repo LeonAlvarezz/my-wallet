@@ -1,8 +1,10 @@
 import { Icon } from "@iconify/react";
 import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import { useSignOut } from "@/modules/auth/hooks/use-sign-out";
 export function ProfilePage() {
   const navigate = useNavigate();
+  const signOutMutation = useSignOut();
 
   const user = {
     name: "Leon",
@@ -218,6 +220,22 @@ export function ProfilePage() {
             </div>
           </Button>
         </div>
+      </section>
+
+      <section className="flex flex-col gap-2">
+        <Button
+          type="button"
+          variant="destructive"
+          className="w-full"
+          loading={signOutMutation.isPending}
+          disabled={signOutMutation.isPending}
+          onClick={async () => {
+            await signOutMutation.mutateAsync();
+          }}
+        >
+          <Icon icon="solar:logout-2-bold" className="size-5" />
+          Sign out
+        </Button>
       </section>
     </div>
   );

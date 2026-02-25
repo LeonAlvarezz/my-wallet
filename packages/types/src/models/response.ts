@@ -17,7 +17,6 @@ export const SimpleSuccessSchema = () =>
     success: z.boolean().default(true),
     message: z.string().default("Success"),
   });
-
 export type ApiResult<T> = ApiSuccess<T> | ApiFail;
 
 export type ApiSuccess<T> = {
@@ -32,3 +31,5 @@ export type ApiFail = {
     status: number;
   };
 };
+
+export type SimpleSuccess = z.infer<typeof SimpleSuccessSchema>;

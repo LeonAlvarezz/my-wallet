@@ -70,7 +70,7 @@ async function seedDatabaseDev() {
   const testUser = {
     username: "Test",
     email: "test@example.com",
-    password: "Password@123",
+    password: "12345678",
   };
 
   await db.transaction(async (tx) => {

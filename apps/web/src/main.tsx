@@ -3,11 +3,14 @@ import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 import "./styles/global.css";
 import { StrictMode } from "react";
-import TanstackQueryProvider from "./lib/tanstack-query";
+import TanstackQueryProvider, { queryClient } from "./lib/tanstack-query";
 
 // Set up a Router instance
 const router = createRouter({
   routeTree,
+  context: {
+    queryClient,
+  },
   defaultPreload: "intent",
   scrollRestoration: true,
 });

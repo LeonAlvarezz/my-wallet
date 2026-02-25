@@ -17,7 +17,7 @@ import { rateLimitGuard } from "@/lib/rate-limit/rate-limit.guard";
 export const auth = new Elysia()
   .use(authGuard)
   .use(rateLimitGuard)
-  .group("/auths", (app) => {
+  .group("/auth", (app) => {
     app.get(
       "/me",
       async ({ user }) => {

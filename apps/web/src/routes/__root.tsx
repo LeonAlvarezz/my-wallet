@@ -1,10 +1,11 @@
 import * as React from "react";
-import { Outlet, createRootRoute } from "@tanstack/react-router";
+import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 import { ThemeProvider } from "@/modules/theme/theme-provider";
 import BottomNav from "@/components/bottom-nav/BottomNav";
 import { Toaster } from "sonner";
+import type { RouterContext } from "@/router-context";
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootComponent,
 });
 

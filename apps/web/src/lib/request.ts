@@ -14,6 +14,30 @@ import { errorMessageResponseInterceptor } from "@my-wallet/api-client";
 import type { ApiFail } from "@my-wallet/types";
 import { toast } from "sonner";
 
+let isRedirectingToLogin = false;
+
+function isAuthPage(pathname: string) {
+  return (
+    pathname.startsWith("/auth/login") || pathname.startsWith("/auth/register")
+  );
+}
+
+function redirectToLogin() {
+  if (isRedirectingToLogin) return;
+  if (typeof window === "undefined") return;
+
+  const currentPath = `${window.location.pathname}${window.location.search}`;
+
+  // Avoid redirect loops on auth pages
+  if (isAuthPage(window.location.pathname)) {
+    return;
+  }
+
+  isRedirectingToLogin = true;
+  const redirect = encodeURIComponent(currentPath);
+  window.location.assign(`/auth/login?redirect=${redirect}`);
+}
+
 // const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
 
 function createRequestClient(baseURL: string, options?: RequestClientOptions) {
@@ -56,13 +80,13 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
   //   }
 
   // 请求头处理
-  //   client.addRequestInterceptor({
-  //     fulfilled: async () => {
-  //       //   const accessStore = useAccessStore();
-  //       //   config.headers.Authorization = formatToken(accessStore.accessToken);
-  //       //   return config;
-  //     },
-  //   });
+  // client.addRequestInterceptor({
+  //   fulfilled: async () => {
+  //       const accessStore = useAccessStore();
+  //       config.headers.Authorization = formatToken(accessStore.accessToken);
+  //       return config;
+  //   },
+  // });
 
   // 处理返回的响应数据格式
   client.addResponseInterceptor(
@@ -72,6 +96,24 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
       successCode: 0,
     }),
   );
+
+  // If backend says unauthorized, force navigation to login.
+  client.addResponseInterceptor({
+    rejected: async (error) => {
+      const status = error?.response?.status;
+      const url: string | undefined = error?.config?.url;
+
+      // Let route-level guards decide how to handle the auth bootstrap check.
+      if (status === 401 && url?.includes("/auth/me")) {
+        throw error;
+      }
+
+      if (status === 401) {
+        redirectToLogin();
+      }
+      throw error;
+    },
+  });
 
   //   // token过期的处理
   //   client.addResponseInterceptor(
@@ -87,7 +129,20 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
   client.addResponseInterceptor(
     errorMessageResponseInterceptor((msg: string, error) => {
       const responseData: ApiFail = error?.response?.data ?? {};
-      console.log("responseData:", responseData.error.message);
+      const url: string | undefined = error?.config?.url;
+
+      // /auth/me is used as a bootstrap/auth-check endpoint by route guards.
+      // A 401 here is expected when logged out; don't show a toast.
+      if (error?.response?.status === 401 && url?.includes("/auth/me")) {
+        return;
+      }
+      if (
+        error?.response?.status === 401 &&
+        typeof window !== "undefined" &&
+        !isAuthPage(window.location.pathname)
+      ) {
+        return;
+      }
       toast.error(responseData.error.message || msg);
     }),
   );
@@ -97,6 +152,7 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
 
 export const requestClient = createRequestClient(import.meta.env.VITE_API_URL, {
   responseReturn: "raw",
+  withCredentials: true,
 });
 
 export const baseRequestClient = new RequestClient({

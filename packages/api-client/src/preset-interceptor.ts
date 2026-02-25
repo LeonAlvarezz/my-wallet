@@ -78,7 +78,7 @@ export const authenticateResponseInterceptor = ({
           });
         });
       }
-
+ 
       client.isRefreshing = true;
       config.__isRetryRequest = true;
 
