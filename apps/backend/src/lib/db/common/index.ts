@@ -7,6 +7,11 @@ export const timestamps = {
   deleted_at: timestamp({ mode: "string" }),
 };
 
+export const simpleTimestamps = {
+  created_at: timestamp({ mode: "string" }).defaultNow().notNull(),
+  updated_at: timestamp({ mode: "string" }).defaultNow(),
+};
+
 export const bytea = customType<{
   data: Uint8Array;
   notNull: false;

@@ -8,12 +8,14 @@ import { z } from "zod";
  
 */
 export namespace BaseModel {
+  export const SimpleBaseRowSchema = z.object({
+    id: z.number(),
+    created_at: z.iso.datetime(),
+    updated_at: z.iso.datetime().nullable().optional(),
+  });
   export const BaseRowSchema = z.object({
     id: z.number(),
     created_at: z.iso.datetime(),
-    // updated_at: z.iso.datetime().optional().nullable(),
-    // deleted_at: z.iso.datetime().optional().nullable(),
-
     updated_at: z.iso.datetime().nullable().optional(),
     deleted_at: z.iso.datetime().nullable().optional(),
   });

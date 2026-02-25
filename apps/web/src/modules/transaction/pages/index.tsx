@@ -3,9 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 import StatsCard from "../components/stats-card/StatsCard";
-import CategoryBreakdown, {
-  type CategoryData,
-} from "../components/category-breakdown/CategoryBreakdown";
+import { type CategoryData } from "../components/category-breakdown/CategoryBreakdown";
 import DailyGroup, {
   type DailyGroupData,
 } from "../components/daily-group/DailyGroup";
@@ -251,7 +249,7 @@ export default function TransactionPage() {
       </section>
 
       {/* Category Breakdown */}
-      <section>
+      {/* <section>
         <CategoryBreakdown
           categories={mockCategories}
           selectedCategory={selectedCategory}
@@ -261,7 +259,7 @@ export default function TransactionPage() {
             )
           }
         />
-      </section>
+      </section> */}
 
       {/* Transactions by Date */}
       <section className="flex flex-col gap-6">

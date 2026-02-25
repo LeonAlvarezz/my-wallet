@@ -5,7 +5,8 @@
     "workspaces": [
         "apps/web",
         "apps/backend",
-        "packages/type-check"
+        "packages/type-check",
+        "packages/api-client"
     ],
     "devDependencies": {
         "turbo": "^2.8.10"

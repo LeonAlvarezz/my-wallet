@@ -1,8 +1,8 @@
 import { Icon } from "@iconify/react";
-import { useRouter } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 export function ProfilePage() {
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const user = {
     name: "Leon",
@@ -177,62 +177,46 @@ export function ProfilePage() {
           Dashboard
         </h2>
 
-        <div className="grid grid-cols-2 gap-2">
-          <button
+        <div className="grid grid-cols-1 gap-2">
+          <Button
+            variant="outline"
             type="button"
-            onClick={() => router.history.push("/transaction")}
-            className="w-full"
+            onClick={() =>
+              navigate({
+                to: "/transaction",
+              })
+            }
+            className="h-fit w-full justify-start p-3 text-left"
+            size="lg"
           >
-            <div className="bg-card hover:bg-accent/40 flex items-center gap-3 rounded-lg border p-3 text-left transition-colors">
-              <div className="bg-secondary flex size-10 items-center justify-center rounded-lg">
-                <Icon
-                  icon="solar:chart-square-bold-duotone"
-                  className="size-6"
-                />
-              </div>
-              <div className="flex flex-col">
-                <p className="text-sm font-medium">Statistics</p>
-                <p className="text-muted-foreground text-xs">Transactions</p>
-              </div>
+            <div className="bg-secondary flex size-10 items-center justify-center rounded-lg">
+              <Icon icon="solar:chart-square-bold-duotone" className="size-6" />
             </div>
-          </button>
+            <div className="flex flex-col">
+              <p className="text-sm font-medium">Statistics</p>
+              <p className="text-muted-foreground text-xs">Transactions</p>
+            </div>
+          </Button>
 
-          <button
+          <Button
+            variant="outline"
             type="button"
-            onClick={() => router.history.push("/settings/budget-goals")}
-            className="w-full"
+            onClick={() =>
+              navigate({
+                to: "/settings",
+              })
+            }
+            className="h-fit w-full justify-start p-3 text-left"
+            size="lg"
           >
-            <div className="bg-card hover:bg-accent/40 flex items-center gap-3 rounded-lg border p-3 text-left transition-colors">
-              <div className="bg-secondary flex size-10 items-center justify-center rounded-lg">
-                <Icon
-                  icon="solar:wallet-money-bold-duotone"
-                  className="size-6"
-                />
-              </div>
-              <div className="flex flex-col">
-                <p className="text-sm font-medium">Budget Goals</p>
-                <p className="text-muted-foreground text-xs">Limits</p>
-              </div>
+            <div className="bg-secondary flex size-10 items-center justify-center rounded-lg">
+              <Icon icon="solar:chart-square-bold-duotone" className="size-6" />
             </div>
-          </button>
-          <button
-            type="button"
-            onClick={() => router.history.push("/settings")}
-            className="col-span-2 w-full"
-          >
-            <div className="bg-card hover:bg-accent/40 flex items-center gap-3 rounded-lg border p-3 text-left transition-colors">
-              <div className="bg-secondary flex size-10 items-center justify-center rounded-lg">
-                <Icon
-                  icon="solar:chart-square-bold-duotone"
-                  className="size-6"
-                />
-              </div>
-              <div className="flex flex-col">
-                <p className="text-sm font-medium">Setting</p>
-                <p className="text-muted-foreground text-xs">Transactions</p>
-              </div>
+            <div className="flex flex-col">
+              <p className="text-sm font-medium">Setting</p>
+              <p className="text-muted-foreground text-xs">Transactions</p>
             </div>
-          </button>
+          </Button>
         </div>
       </section>
     </div>

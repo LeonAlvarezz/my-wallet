@@ -1,0 +1,29 @@
+{
+  "name": "@my-wallet/api-client",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@my-wallet/type-check": "workspace:*",
+    "@types/qs": "^6.14.0",
+    "axios": "^1.13.5",
+    "qs": "^6.15.0"
+  }
+}
