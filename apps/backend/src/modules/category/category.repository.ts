@@ -5,7 +5,9 @@ import { eq } from "drizzle-orm";
 
 export class CategoryRepository {
   static async findAll() {
-    return await db.query.categoryTable.findMany();
+    return await db.query.categoryTable.findMany({
+      orderBy: categoryTable.order,
+    });
   }
 
   static async findById(id: number) {

@@ -20,6 +20,7 @@ export namespace CategoryModel {
     updated_at: z.iso.datetime().nullable().optional(),
     name: z.string(),
     color: z.enum(CategoryColorEnum),
+    order: z.number(),
     icon: z.string(),
   });
 
@@ -27,6 +28,7 @@ export namespace CategoryModel {
     name: true,
     color: true,
     icon: true,
+    order: true,
   });
 
   export const UpdateCategorySchema = CreateCategorySchema.partial();

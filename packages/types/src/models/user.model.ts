@@ -1,5 +1,5 @@
 import z from "zod";
-import { BaseModel } from "./base";
+import { BaseModel } from "./base.model";
 
 export namespace UserModel {
   export const UserSchema = BaseModel.BaseRowSchema.extend({

@@ -1,5 +1,5 @@
 export type SmartInputCategory = {
-  title: string;
+  name: string;
 };
 
 export type SmartInputParseResult = {
@@ -41,23 +41,23 @@ function bestCategoryMatch(
   if (!candidateNormalized) return undefined;
 
   const normalizedCategories = categories.map((c) => ({
-    title: c.title,
-    normalized: normalizeForMatch(c.title),
+    name: c.name,
+    normalized: normalizeForMatch(c.name),
   }));
 
   // Exact match first
   const exact = normalizedCategories.find(
     (c) => c.normalized === candidateNormalized,
   );
-  if (exact) return exact.title;
+  if (exact) return exact.name;
 
   // Then prefix match (e.g., #trans -> Transportation)
   const prefixMatches = normalizedCategories
     .filter((c) => c.normalized.startsWith(candidateNormalized))
-    // shorter titles first (usually more specific when using prefix)
+    // shorter names first (usually more specific when using prefix)
     .sort((a, b) => a.normalized.length - b.normalized.length);
 
-  return prefixMatches[0]?.title;
+  return prefixMatches[0]?.name;
 }
 
 /**

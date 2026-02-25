@@ -9,6 +9,7 @@ import { FileUploader } from "./uploader";
 import type { RequestClientConfig, RequestClientOptions } from "./types";
 import { isString } from "@my-wallet/types/is-string";
 import { InterceptorManager } from "./interceptor";
+import type { ApiSuccess } from "@my-wallet/types";
 
 function getParamsSerializer(
   paramsSerializer: RequestClientOptions["paramsSerializer"],
@@ -124,8 +125,9 @@ class RequestClient {
           : {}),
       };
 
-      const response: AxiosResponse<T> = await this.instance(requestConfig);
-      return response.data as T;
+      const response: AxiosResponse<ApiSuccess<T>> =
+        await this.instance(requestConfig);
+      return response.data.data as T;
     } catch (error: any) {
       throw error.response ? error.response.data.error : error;
     }

@@ -3,6 +3,7 @@ import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 import "./styles/global.css";
 import { StrictMode } from "react";
+import TanstackQueryProvider from "./lib/tanstack-query";
 
 // Set up a Router instance
 const router = createRouter({
@@ -21,7 +22,7 @@ declare module "@tanstack/react-router" {
 // eslint-disable-next-line react-refresh/only-export-components
 function App() {
   return (
-    <>
+    <TanstackQueryProvider>
       <RouterProvider
         router={router}
         defaultPreload="intent"
@@ -31,7 +32,7 @@ function App() {
         //   auth,
         // }}
       />
-    </>
+    </TanstackQueryProvider>
   );
 }
 
