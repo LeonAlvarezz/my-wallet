@@ -6,7 +6,8 @@
         "apps/web",
         "apps/backend",
         "packages/types",
-        "packages/api-client"
+        "packages/api-client",
+        "packages/exception"
     ],
     "devDependencies": {
         "turbo": "^2.8.10"

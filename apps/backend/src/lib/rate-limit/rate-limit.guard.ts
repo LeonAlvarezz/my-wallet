@@ -1,6 +1,6 @@
 import Elysia from "elysia";
 import { RateLimitService } from "@/lib/rate-limit";
-import { RateLimitException } from "@/core/error";
+import { RateLimitException } from "@my-wallet/exception";
 import { RATE_LIMIT_CONFIG } from "./rate-limit.constant";
 import { RateLimitModel } from "./rate-limit.model";
 import { ip } from "@/core/request/ip";
@@ -29,6 +29,9 @@ export const rateLimitGuard = new Elysia({ name: "rate-limit-guard" })
         if (!allowed) {
           throw new RateLimitException();
         }
+      },
+      afterHandle() {
+        console.log("Run after request");
       },
     }),
   });

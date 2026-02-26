@@ -1,4 +1,4 @@
-import { NotFoundException } from "@/core/error";
+import { NotFoundException } from "@my-wallet/exception";
 import { CategoryRepository } from "./category.repository";
 import { CategoryModel } from "@my-wallet/types";
 

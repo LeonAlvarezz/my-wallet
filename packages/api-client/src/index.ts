@@ -15,18 +15,6 @@ export type {
   RequestContentType,
 } from "./modules/types";
 
-// Errors
-export {
-  CriticalError,
-  BadRequestException,
-  NotFoundException,
-  UnauthorizedException,
-  ForbiddenException,
-  ErrorCode,
-  DefaultErrorMessage,
-} from "./error";
-export type { CustomError, ErrorParams } from "./error";
-
 // Interceptors
 export {
   defaultResponseInterceptor,

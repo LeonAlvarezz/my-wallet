@@ -101,14 +101,16 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
   client.addResponseInterceptor({
     rejected: async (error) => {
       const status = error?.response?.status;
+      const responseData: ApiFail = error?.response?.data ?? {};
       const url: string | undefined = error?.config?.url;
-
       // Let route-level guards decide how to handle the auth bootstrap check.
-      if (status === 401 && url?.includes("/auth/me")) {
+      if (
+        responseData.error.code === "UNAUTHORIZED" &&
+        url?.includes("/auth/me")
+      ) {
         throw error;
       }
-
-      if (status === 401) {
+      if (status === "UNAUTHORIZED") {
         redirectToLogin();
       }
       throw error;
@@ -133,11 +135,16 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
 
       // /auth/me is used as a bootstrap/auth-check endpoint by route guards.
       // A 401 here is expected when logged out; don't show a toast.
-      if (error?.response?.status === 401 && url?.includes("/auth/me")) {
+      console.log("error:", error);
+      console.log("error.response:", error.response);
+      if (
+        responseData.error.code === "UNAUTHORIZED" &&
+        url?.includes("/auth/me")
+      ) {
         return;
       }
       if (
-        error?.response?.status === 401 &&
+        responseData.error.code === "UNAUTHORIZED" &&
         typeof window !== "undefined" &&
         !isAuthPage(window.location.pathname)
       ) {

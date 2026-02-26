@@ -11,4 +11,11 @@ export {
   FailSchema,
   SimpleSuccessSchema,
   SuccessSchema,
-} from "./models/response";
+} from "./types/response";
+export {
+  type CustomError,
+  type DefaultErrorMessageKey,
+  type ErrorParams,
+  DefaultErrorMessage,
+  ErrorCode,
+} from "./types/error";

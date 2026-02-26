@@ -19,7 +19,8 @@
         "pg": "^8.18.0",
         "winston": "^3.19.0",
         "zod": "^4.3.6",
-        "@my-wallet/types": "workspace:*"
+        "@my-wallet/types": "workspace:*",
+        "@my-wallet/exception": "workspace:*"
     },
     "devDependencies": {
         "@biomejs/biome": "2.3.15",

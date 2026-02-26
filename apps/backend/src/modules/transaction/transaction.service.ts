@@ -1,4 +1,4 @@
-import { ForbiddenException, NotFoundException } from "@/core/error";
+import { ForbiddenException, NotFoundException } from "@my-wallet/exception";
 import { TransactionModel } from "./transaction.model";
 import { TransactionRepository } from "./transaction.repository";
 

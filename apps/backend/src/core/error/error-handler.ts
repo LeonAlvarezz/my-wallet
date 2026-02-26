@@ -1,31 +1,59 @@
 import { Elysia } from "elysia";
 
-import { ErrorException } from "@/core/error";
-import { resError } from "@/core/error/error-wrapper";
+import {
+  ErrorException,
+  InvalidCredentialException,
+  UnauthorizedException,
+} from "@my-wallet/exception";
 import logger from "@/lib/logger";
 import { DefaultErrorMessage } from "./type";
 import { Fail } from "../response";
+import { RateLimitService } from "@/lib/rate-limit";
+import { ip } from "../request/ip";
+import { getKey } from "@my-wallet/types/enum";
 
 export const errorHandler = new Elysia({ name: "error-handling" })
-  .onError(({ error, code, set }) => {
+  .use(ip)
+  .onError(async ({ error, code, set, ip, request }) => {
     logger.error("🔥 Error occurred: ", error);
 
     if (code === "VALIDATION") {
       return Fail({
         message: DefaultErrorMessage.VALIDATION,
+        code: getKey(DefaultErrorMessage, DefaultErrorMessage.VALIDATION),
         status: error.status,
         metadata: error.messageValue,
       });
     }
 
     if (error instanceof ErrorException) {
-      return Fail({ message: error.message, status: error.status });
+      if (error instanceof InvalidCredentialException) {
+        const ipAddress = (ip?.address ?? "unknown").replace(/:/g, "-");
+        const path = new URL(request.url).pathname;
+        const key = `rate-limit:${ipAddress}:${path}`;
+        const allowed = await RateLimitService.checkRateLimit({ key });
+
+        if (!allowed) {
+          return Fail({
+            message: DefaultErrorMessage.RATE_LIMIT,
+            status: 429,
+            code: getKey(DefaultErrorMessage, DefaultErrorMessage.RATE_LIMIT),
+          });
+        }
+      }
+
+      return Fail({
+        message: error.message,
+        status: error.status,
+        code: error.code,
+      });
     }
 
     if (code === "NOT_FOUND") {
       return Fail({
         message: DefaultErrorMessage.ENDPOINT_NOT_FOUND,
         status: error.status,
+        code: getKey(DefaultErrorMessage, DefaultErrorMessage.NOT_FOUND),
       });
     }
 

@@ -5,8 +5,8 @@ import type {
 } from "./modules/types";
 
 import axios from "axios";
-import { DefaultErrorMessage } from "./error";
 import { isFunction } from "@my-wallet/types/is-function";
+import { DefaultErrorMessage } from "@my-wallet/types";
 
 export const defaultResponseInterceptor = ({
   codeField = "code",
@@ -78,7 +78,7 @@ export const authenticateResponseInterceptor = ({
           });
         });
       }
- 
+
       client.isRefreshing = true;
       config.__isRetryRequest = true;
 

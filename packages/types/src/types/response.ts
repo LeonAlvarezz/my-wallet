@@ -1,4 +1,5 @@
 import z from "zod";
+import type { DefaultErrorMessageKey } from "./error";
 
 export const FailSchema = (errorSchema: any = z.any()) =>
   z.object({
@@ -29,6 +30,7 @@ export type ApiFail = {
   error: {
     message: string;
     status: number;
+    code: DefaultErrorMessageKey;
   };
 };
 

@@ -26,6 +26,10 @@
     "./is-string": {
       "types": "./src/utils/is-string.ts",
       "default": "./src/utils/is-string.ts"
+    },
+    "./enum": {
+      "types": "./src/utils/enum.ts",
+      "default": "./src/utils/enum.ts"
     }
   }
 }

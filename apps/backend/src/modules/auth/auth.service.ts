@@ -1,4 +1,8 @@
-import { ForbiddenException, UnauthorizedException } from "@/core/error";
+import {
+  ForbiddenException,
+  InvalidCredentialException,
+  UnauthorizedException,
+} from "@my-wallet/exception";
 import { db } from "@/lib/db";
 import { hashPassword, verifyPassword } from "@/util/password";
 import { generateSessionToken, hashSessionToken } from "@/util/session-token";
@@ -41,14 +45,14 @@ export class AuthService {
     payload: AuthModel.SignInDto,
   ): Promise<UserModel.UserSessionDto> {
     const user = await UserRepository.findByEmail(payload.email);
-    if (!user) throw new UnauthorizedException();
+    if (!user) throw new InvalidCredentialException();
     const auth = await AuthRepository.findByUserId(user.id);
-    if (!auth) throw new UnauthorizedException();
+    if (!auth) throw new InvalidCredentialException();
     const isValidPassword = await verifyPassword(
       payload.password,
       auth.password_hash,
     );
-    if (!isValidPassword) throw new UnauthorizedException();
+    if (!isValidPassword) throw new InvalidCredentialException();
 
     const sessionToken = generateSessionToken();
     const sessionTokenHash = hashSessionToken(sessionToken);

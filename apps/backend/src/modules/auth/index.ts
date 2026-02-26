@@ -6,7 +6,7 @@ import {
   SuccessSchema,
   UserModel,
 } from "@my-wallet/types";
-import { BadRequestException } from "@/core/error";
+import { BadRequestException } from "@my-wallet/exception";
 import { SimpleSuccess, Success } from "@/core/response";
 import { authGuard } from "./guard";
 import { AuthService } from "./auth.service";
@@ -64,7 +64,8 @@ export const auth = new Elysia()
         parse: "application/json",
         body: AuthModel.SignInSchema,
         cookie: BaseModel.CookieSchema,
-        rateLimit: true,
+        // No need for rate limit on this one since we already do that on error handler
+        // rateLimit: true,
         detail: {
           summary: "Sign in",
           tags: [OpenApiKey.Auth],
