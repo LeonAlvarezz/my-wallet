@@ -1,11 +1,11 @@
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { sessionTable } from "@/lib/db/schema";
-import type { SessionModel } from "./session.model";
 import {
   SESSION_EXPIRES_DATE_MS,
   SESSION_EXTENDS_EXPIRES_DATE_MS,
 } from "@/constant/app";
+import { SessionModel } from "@my-wallet/types";
 
 export class SessionRepository {
   static async create(payload: SessionModel.CreateSessionDto) {

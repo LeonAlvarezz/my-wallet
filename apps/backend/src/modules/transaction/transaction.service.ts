@@ -1,6 +1,6 @@
 import { ForbiddenException, NotFoundException } from "@my-wallet/exception";
-import { TransactionModel } from "./transaction.model";
 import { TransactionRepository } from "./transaction.repository";
+import { TransactionModel } from "@my-wallet/types";
 
 export class TransactionService {
   static async findAll() {
