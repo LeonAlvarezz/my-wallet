@@ -5,16 +5,11 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { useForm } from "@tanstack/react-form";
-import z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Icon } from "@iconify/react";
 import { useSignIn } from "../../hooks/use-sign-in";
-
-const formSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-});
+import { AuthModel } from "@my-wallet/types/auth";
 
 export default function LoginForm() {
   const signInMutation = useSignIn();
@@ -24,7 +19,7 @@ export default function LoginForm() {
       password: "",
     },
     validators: {
-      onSubmit: formSchema,
+      onSubmit: AuthModel.SignInSchema,
     },
     onSubmit: async ({ value, formApi }) => {
       await signInMutation.mutateAsync(value);

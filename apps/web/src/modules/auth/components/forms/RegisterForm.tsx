@@ -8,9 +8,8 @@ import { useForm } from "@tanstack/react-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Icon } from "@iconify/react";
-import { useState } from "react";
-import { useSignUp } from "../../hooks/use-sign-up";
-import { AuthModel } from "@my-wallet/types";
+import { useSignUp } from "@/modules/auth/hooks/use-sign-up";
+import { AuthModel } from "@my-wallet/types/auth";
 import z from "zod";
 
 const formSchema = AuthModel.SignUpSchema.extend({

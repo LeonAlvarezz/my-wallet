@@ -27,8 +27,6 @@
     "noUncheckedSideEffectImports": true,
     "paths": {
       "@/*": ["./src/*"]
-      // "@my-wallet/type-check": ["../../packages/type-check/src/index.ts"],
-      // "@my-wallet/api-client": ["../../packages/api-client/src/index.ts"]
     }
   },
   "include": ["src", "vite-env.d.ts"]

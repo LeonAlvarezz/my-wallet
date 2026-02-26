@@ -1,7 +1,7 @@
 {
   "name": "web",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,8 +11,6 @@
   },
   "dependencies": {
     "@iconify/react": "^6.0.2",
-    "@my-wallet/api-client": "workspace:*",
-    "@my-wallet/types": "workspace:*",
     "@tailwindcss/vite": "^4.2.0",
     "@tanstack/react-form": "^1.28.3",
     "@tanstack/react-query": "^5.90.21",
@@ -27,7 +25,9 @@
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.2.0",
-    "zod": "^4.3.6"
+    "zod": "^4.3.6",
+    "@my-wallet/api-client": "workspace:*",
+    "@my-wallet/types": "workspace:*"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

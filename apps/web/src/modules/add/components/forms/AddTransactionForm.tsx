@@ -5,7 +5,6 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { useForm } from "@tanstack/react-form";
-import z from "zod";
 import { toast } from "sonner";
 import { AmountInput } from "@/components/amount-input";
 import { ToggleGroup } from "@/components/ui/toggle-group";
@@ -19,14 +18,8 @@ import { parseSmartInput } from "@/modules/add/lib/smart-input";
 import { useCategories } from "@/modules/category/hooks/query/use-categories";
 import SmartInput from "@/components/smart-input/SmartInput";
 import CategoryBlockSkeleton from "../skeletons/CategoryBlockSkeleton";
-
-const formSchema = z.object({
-  amount: z.number().min(0.01, "Amount must be greater than 0"),
-  category: z.string().min(1, "Select a category"),
-  // Optional from a UX perspective (can be empty), but keep it as a string
-  // so it matches our form defaultValues typing.
-  note: z.string(),
-});
+import { useCreateTransaction } from "../../hooks/use-create-transaction";
+import { TransactionModel } from "@my-wallet/types/transaction";
 
 export default function AddTransactionForm() {
   const noteTextareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -36,6 +29,7 @@ export default function AddTransactionForm() {
   const [smartAppliedOnce, setSmartAppliedOnce] = useState(false);
   const [submitAttempts, setSubmitAttempts] = useState(0);
   const { data, isLoading: isCategoryLoading } = useCategories();
+  const addMutation = useCreateTransaction();
   const categories = data || [];
 
   const CATEGORY_PREVIEW_COUNT = 6;
@@ -46,15 +40,15 @@ export default function AddTransactionForm() {
   const form = useForm({
     defaultValues: {
       amount: 0,
-      category: "",
-      note: "",
+      category_id: 1,
+      description: "",
     },
     validators: {
-      onSubmit: formSchema,
+      onSubmit: TransactionModel.CreateTransactionSchema,
     },
     onSubmit: async ({ value, formApi }) => {
       setLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await addMutation.mutateAsync(value);
       toast.success("Transaction added", {
         description: `${value.category} • ${value.note} • $${value.amount.toFixed(2)}`,
       });

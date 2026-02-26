@@ -1,10 +1,9 @@
 import { getKey } from "@my-wallet/types/enum";
-import {
-  type ErrorParams,
-  ErrorCode,
-  DefaultErrorMessage,
-  type DefaultErrorMessageKey,
-} from "@my-wallet/types";
+type ErrorParams = {
+  error?: unknown;
+  message?: string;
+  options?: Record<string, any>;
+};
 
 export class ErrorException extends Error {
   constructor(

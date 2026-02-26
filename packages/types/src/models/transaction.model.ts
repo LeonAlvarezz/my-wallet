@@ -6,11 +6,13 @@ export namespace TransactionModel {
     user_id: z.coerce.number(),
     amount: z.coerce.number(),
     description: z.string().optional().nullable(),
+    category_id: z.coerce.number(),
   });
 
   export const CreateTransactionSchema = TransactionSchema.pick({
     amount: true,
     description: true,
+    category_id: true,
   });
 
   export const UpdateTransactionSchema = CreateTransactionSchema.partial();

@@ -17,11 +17,12 @@
   "exports": {
     ".": {
       "types": "./src/index.ts",
-      "default": "./src/index.ts"
+      "default": "./dist/index.js"
     },
+    "./*": "./src/models/*.model.ts",
     "./is-function": {
       "types": "./src/utils/is-function.ts",
-      "default": "./src/utils/is-function.ts"
+      "default": "./dist/utils/is-function.ts"
     },
     "./is-string": {
       "types": "./src/utils/is-string.ts",

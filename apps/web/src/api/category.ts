@@ -1,5 +1,6 @@
 import { requestClient } from "@/lib/request";
-import { CategoryModel, type ApiResult } from "@my-wallet/types";
+import { type ApiResult } from "@my-wallet/types";
+import type { CategoryModel } from "@my-wallet/types/category";
 const key = "/categories";
 const category = {
   getAll: () => {
