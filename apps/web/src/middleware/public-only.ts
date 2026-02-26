@@ -20,7 +20,7 @@ export async function publicOnly({
   location: { searchStr?: string };
 }) {
   try {
-    await context.queryClient.fetchQuery({
+    await context.queryClient.ensureQueryData({
       queryKey: queryKey.auth.me,
       queryFn: () => api.auth.getMe(),
       retry: false,
@@ -35,12 +35,10 @@ export async function publicOnly({
       to: safeRedirectTarget(redirectParam) || "/",
     });
   } catch (error: unknown) {
-    // Not authenticated (or request failed) => allow visiting auth pages.
     const maybeApiError = error as { status?: number };
     if (maybeApiError?.status === 401) {
       return;
     }
-    // Preserve router redirects and other errors
     throw error;
   }
 }

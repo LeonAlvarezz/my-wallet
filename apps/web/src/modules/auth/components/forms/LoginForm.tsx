@@ -6,14 +6,10 @@ import {
 } from "@/components/ui/field";
 import { useForm } from "@tanstack/react-form";
 import z from "zod";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Icon } from "@iconify/react";
 import { useSignIn } from "../../hooks/use-sign-in";
-import { useNavigate, useRouterState } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
-import { queryKey } from "@/api/keys";
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -22,15 +18,6 @@ const formSchema = z.object({
 
 export default function LoginForm() {
   const signInMutation = useSignIn();
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const {
-    location: { searchStr },
-  } = useRouterState();
-
-  const redirectToRaw = new URLSearchParams(searchStr).get("redirect");
-  const redirectTo = redirectToRaw?.startsWith("/") ? redirectToRaw : null;
-
   const form = useForm({
     defaultValues: {
       email: "",
@@ -40,16 +27,8 @@ export default function LoginForm() {
       onSubmit: formSchema,
     },
     onSubmit: async ({ value, formApi }) => {
-      const data = await signInMutation.mutateAsync(value);
-      toast.success("Login successful", {
-        description: `Welcome back, ${data.user.username}`,
-      });
-
-      await queryClient.invalidateQueries({ queryKey: queryKey.auth.me });
+      await signInMutation.mutateAsync(value);
       formApi.reset();
-      navigate({
-        to: redirectTo || "/",
-      });
     },
   });
 

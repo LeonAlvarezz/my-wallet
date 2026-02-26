@@ -2,13 +2,14 @@ import { Icon } from "@iconify/react";
 import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { useSignOut } from "@/modules/auth/hooks/use-sign-out";
+import { useGetMe } from "@/modules/auth/hooks/use-get-me";
 export function ProfilePage() {
   const navigate = useNavigate();
   const signOutMutation = useSignOut();
+  const { data } = useGetMe();
 
   const user = {
     name: "Leon",
-    handle: "@leon",
     email: "leon@example.com",
   };
 
@@ -75,7 +76,7 @@ export function ProfilePage() {
       <section className="flex flex-col gap-3">
         <div className="flex items-center gap-4">
           <div className="bg-secondary flex size-16 items-center justify-center rounded-full border">
-            <span className="text-lg font-semibold">{user.name[0]}</span>
+            <span className="text-lg font-semibold">{data?.username}</span>
           </div>
 
           <div className="flex flex-1 flex-col">
@@ -90,7 +91,6 @@ export function ProfilePage() {
                 <Icon icon="solar:pen-new-square-linear" className="size-5" />
               </Button>
             </div>
-            <p className="text-muted-foreground text-sm">{user.handle}</p>
             <p className="text-muted-foreground text-xs">{user.email}</p>
           </div>
         </div>

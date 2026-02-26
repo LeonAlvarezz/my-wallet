@@ -64,7 +64,7 @@ export const auth = new Elysia()
         parse: "application/json",
         body: AuthModel.SignInSchema,
         cookie: BaseModel.CookieSchema,
-        // No need for rate limit on this one since we already do that on error handler
+        // jNo need for rate limit on this one since we already do that on error handler
         // rateLimit: true,
         detail: {
           summary: "Sign in",

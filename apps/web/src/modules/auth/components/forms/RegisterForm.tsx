@@ -5,47 +5,37 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { useForm } from "@tanstack/react-form";
-import z from "zod";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Icon } from "@iconify/react";
 import { useState } from "react";
+import { useSignUp } from "../../hooks/use-sign-up";
+import { AuthModel } from "@my-wallet/types";
+import z from "zod";
 
-const formSchema = z
-  .object({
-    name: z.string().min(2, "Name must be at least 2 characters"),
-    email: z.string().email("Please enter a valid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
+const formSchema = AuthModel.SignUpSchema.extend({
+  confirm_password: z.string(),
+}).refine((data) => data.password === data.confirm_password, {
+  message: "Passwords don't match",
+  path: ["confirm_password"],
+});
 
 export default function RegisterForm() {
-  const [loading, setLoading] = useState(false);
+  const signUpMutation = useSignUp();
 
   const form = useForm({
     defaultValues: {
-      name: "",
+      username: "",
       email: "",
       password: "",
-      confirmPassword: "",
+      confirm_password: "",
     },
     validators: {
       onSubmit: formSchema,
     },
     onSubmit: async ({ value, formApi }) => {
-      setLoading(true);
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      toast.success("Account created", {
-        description: `Welcome to the app, ${value.name}!`,
-      });
+      await signUpMutation.mutateAsync(value);
       formApi.reset();
-      setLoading(false);
     },
   });
 
@@ -58,7 +48,7 @@ export default function RegisterForm() {
     >
       <FieldGroup>
         <form.Field
-          name="name"
+          name="username"
           children={(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid;
@@ -192,7 +182,7 @@ export default function RegisterForm() {
           }}
         />
         <form.Field
-          name="confirmPassword"
+          name="confirm_password"
           children={(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid;
@@ -227,8 +217,8 @@ export default function RegisterForm() {
       <Button
         type="submit"
         className="mt-6 w-full"
-        loading={loading}
-        disabled={loading}
+        loading={signUpMutation.isPending}
+        disabled={signUpMutation.isPending}
       >
         <Icon icon="solar:user-plus-bold" className="mr-2 size-5" />
         Create Account

@@ -24,6 +24,7 @@ export default function RegisterPage() {
             <Link
               to="/auth/login"
               className="text-primary font-semibold transition-all hover:tracking-wide hover:underline"
+              preload={false}
             >
               Sign in
             </Link>

@@ -9,88 +9,103 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as TransactionIndexRouteImport } from './routes/transaction/index'
-import { Route as SettingsIndexRouteImport } from './routes/settings/index'
-import { Route as ProfileIndexRouteImport } from './routes/profile/index'
-import { Route as SettingsNotificationsIndexRouteImport } from './routes/settings/notifications/index'
-import { Route as SettingsBudgetGoalsIndexRouteImport } from './routes/settings/budget-goals/index'
-import { Route as AuthRegisterIndexRouteImport } from './routes/auth/register/index'
-import { Route as AuthLoginIndexRouteImport } from './routes/auth/login/index'
+import { Route as PublicLayoutRouteRouteImport } from './routes/_publicLayout/route'
+import { Route as HomeLayoutRouteRouteImport } from './routes/_homeLayout/route'
+import { Route as HomeLayoutIndexRouteImport } from './routes/_homeLayout/index'
+import { Route as HomeLayoutTransactionIndexRouteImport } from './routes/_homeLayout/transaction/index'
+import { Route as HomeLayoutSettingsIndexRouteImport } from './routes/_homeLayout/settings/index'
+import { Route as HomeLayoutProfileIndexRouteImport } from './routes/_homeLayout/profile/index'
+import { Route as PublicLayoutAuthRegisterIndexRouteImport } from './routes/_publicLayout/auth/register/index'
+import { Route as PublicLayoutAuthLoginIndexRouteImport } from './routes/_publicLayout/auth/login/index'
+import { Route as HomeLayoutSettingsNotificationsIndexRouteImport } from './routes/_homeLayout/settings/notifications/index'
+import { Route as HomeLayoutSettingsBudgetGoalsIndexRouteImport } from './routes/_homeLayout/settings/budget-goals/index'
 
-const IndexRoute = IndexRouteImport.update({
+const PublicLayoutRouteRoute = PublicLayoutRouteRouteImport.update({
+  id: '/_publicLayout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeLayoutRouteRoute = HomeLayoutRouteRouteImport.update({
+  id: '/_homeLayout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeLayoutIndexRoute = HomeLayoutIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => HomeLayoutRouteRoute,
 } as any)
-const TransactionIndexRoute = TransactionIndexRouteImport.update({
-  id: '/transaction/',
-  path: '/transaction/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SettingsIndexRoute = SettingsIndexRouteImport.update({
+const HomeLayoutTransactionIndexRoute =
+  HomeLayoutTransactionIndexRouteImport.update({
+    id: '/transaction/',
+    path: '/transaction/',
+    getParentRoute: () => HomeLayoutRouteRoute,
+  } as any)
+const HomeLayoutSettingsIndexRoute = HomeLayoutSettingsIndexRouteImport.update({
   id: '/settings/',
   path: '/settings/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => HomeLayoutRouteRoute,
 } as any)
-const ProfileIndexRoute = ProfileIndexRouteImport.update({
+const HomeLayoutProfileIndexRoute = HomeLayoutProfileIndexRouteImport.update({
   id: '/profile/',
   path: '/profile/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => HomeLayoutRouteRoute,
 } as any)
-const SettingsNotificationsIndexRoute =
-  SettingsNotificationsIndexRouteImport.update({
+const PublicLayoutAuthRegisterIndexRoute =
+  PublicLayoutAuthRegisterIndexRouteImport.update({
+    id: '/auth/register/',
+    path: '/auth/register/',
+    getParentRoute: () => PublicLayoutRouteRoute,
+  } as any)
+const PublicLayoutAuthLoginIndexRoute =
+  PublicLayoutAuthLoginIndexRouteImport.update({
+    id: '/auth/login/',
+    path: '/auth/login/',
+    getParentRoute: () => PublicLayoutRouteRoute,
+  } as any)
+const HomeLayoutSettingsNotificationsIndexRoute =
+  HomeLayoutSettingsNotificationsIndexRouteImport.update({
     id: '/settings/notifications/',
     path: '/settings/notifications/',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => HomeLayoutRouteRoute,
   } as any)
-const SettingsBudgetGoalsIndexRoute =
-  SettingsBudgetGoalsIndexRouteImport.update({
+const HomeLayoutSettingsBudgetGoalsIndexRoute =
+  HomeLayoutSettingsBudgetGoalsIndexRouteImport.update({
     id: '/settings/budget-goals/',
     path: '/settings/budget-goals/',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => HomeLayoutRouteRoute,
   } as any)
-const AuthRegisterIndexRoute = AuthRegisterIndexRouteImport.update({
-  id: '/auth/register/',
-  path: '/auth/register/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
-  id: '/auth/login/',
-  path: '/auth/login/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/profile/': typeof ProfileIndexRoute
-  '/settings/': typeof SettingsIndexRoute
-  '/transaction/': typeof TransactionIndexRoute
-  '/auth/login/': typeof AuthLoginIndexRoute
-  '/auth/register/': typeof AuthRegisterIndexRoute
-  '/settings/budget-goals/': typeof SettingsBudgetGoalsIndexRoute
-  '/settings/notifications/': typeof SettingsNotificationsIndexRoute
+  '/': typeof HomeLayoutIndexRoute
+  '/profile/': typeof HomeLayoutProfileIndexRoute
+  '/settings/': typeof HomeLayoutSettingsIndexRoute
+  '/transaction/': typeof HomeLayoutTransactionIndexRoute
+  '/settings/budget-goals/': typeof HomeLayoutSettingsBudgetGoalsIndexRoute
+  '/settings/notifications/': typeof HomeLayoutSettingsNotificationsIndexRoute
+  '/auth/login/': typeof PublicLayoutAuthLoginIndexRoute
+  '/auth/register/': typeof PublicLayoutAuthRegisterIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/profile': typeof ProfileIndexRoute
-  '/settings': typeof SettingsIndexRoute
-  '/transaction': typeof TransactionIndexRoute
-  '/auth/login': typeof AuthLoginIndexRoute
-  '/auth/register': typeof AuthRegisterIndexRoute
-  '/settings/budget-goals': typeof SettingsBudgetGoalsIndexRoute
-  '/settings/notifications': typeof SettingsNotificationsIndexRoute
+  '/': typeof HomeLayoutIndexRoute
+  '/profile': typeof HomeLayoutProfileIndexRoute
+  '/settings': typeof HomeLayoutSettingsIndexRoute
+  '/transaction': typeof HomeLayoutTransactionIndexRoute
+  '/settings/budget-goals': typeof HomeLayoutSettingsBudgetGoalsIndexRoute
+  '/settings/notifications': typeof HomeLayoutSettingsNotificationsIndexRoute
+  '/auth/login': typeof PublicLayoutAuthLoginIndexRoute
+  '/auth/register': typeof PublicLayoutAuthRegisterIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/profile/': typeof ProfileIndexRoute
-  '/settings/': typeof SettingsIndexRoute
-  '/transaction/': typeof TransactionIndexRoute
-  '/auth/login/': typeof AuthLoginIndexRoute
-  '/auth/register/': typeof AuthRegisterIndexRoute
-  '/settings/budget-goals/': typeof SettingsBudgetGoalsIndexRoute
-  '/settings/notifications/': typeof SettingsNotificationsIndexRoute
+  '/_homeLayout': typeof HomeLayoutRouteRouteWithChildren
+  '/_publicLayout': typeof PublicLayoutRouteRouteWithChildren
+  '/_homeLayout/': typeof HomeLayoutIndexRoute
+  '/_homeLayout/profile/': typeof HomeLayoutProfileIndexRoute
+  '/_homeLayout/settings/': typeof HomeLayoutSettingsIndexRoute
+  '/_homeLayout/transaction/': typeof HomeLayoutTransactionIndexRoute
+  '/_homeLayout/settings/budget-goals/': typeof HomeLayoutSettingsBudgetGoalsIndexRoute
+  '/_homeLayout/settings/notifications/': typeof HomeLayoutSettingsNotificationsIndexRoute
+  '/_publicLayout/auth/login/': typeof PublicLayoutAuthLoginIndexRoute
+  '/_publicLayout/auth/register/': typeof PublicLayoutAuthRegisterIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -99,113 +114,154 @@ export interface FileRouteTypes {
     | '/profile/'
     | '/settings/'
     | '/transaction/'
-    | '/auth/login/'
-    | '/auth/register/'
     | '/settings/budget-goals/'
     | '/settings/notifications/'
+    | '/auth/login/'
+    | '/auth/register/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/profile'
     | '/settings'
     | '/transaction'
-    | '/auth/login'
-    | '/auth/register'
     | '/settings/budget-goals'
     | '/settings/notifications'
+    | '/auth/login'
+    | '/auth/register'
   id:
     | '__root__'
-    | '/'
-    | '/profile/'
-    | '/settings/'
-    | '/transaction/'
-    | '/auth/login/'
-    | '/auth/register/'
-    | '/settings/budget-goals/'
-    | '/settings/notifications/'
+    | '/_homeLayout'
+    | '/_publicLayout'
+    | '/_homeLayout/'
+    | '/_homeLayout/profile/'
+    | '/_homeLayout/settings/'
+    | '/_homeLayout/transaction/'
+    | '/_homeLayout/settings/budget-goals/'
+    | '/_homeLayout/settings/notifications/'
+    | '/_publicLayout/auth/login/'
+    | '/_publicLayout/auth/register/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  ProfileIndexRoute: typeof ProfileIndexRoute
-  SettingsIndexRoute: typeof SettingsIndexRoute
-  TransactionIndexRoute: typeof TransactionIndexRoute
-  AuthLoginIndexRoute: typeof AuthLoginIndexRoute
-  AuthRegisterIndexRoute: typeof AuthRegisterIndexRoute
-  SettingsBudgetGoalsIndexRoute: typeof SettingsBudgetGoalsIndexRoute
-  SettingsNotificationsIndexRoute: typeof SettingsNotificationsIndexRoute
+  HomeLayoutRouteRoute: typeof HomeLayoutRouteRouteWithChildren
+  PublicLayoutRouteRoute: typeof PublicLayoutRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_publicLayout': {
+      id: '/_publicLayout'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof PublicLayoutRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_homeLayout': {
+      id: '/_homeLayout'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof HomeLayoutRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_homeLayout/': {
+      id: '/_homeLayout/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof HomeLayoutIndexRouteImport
+      parentRoute: typeof HomeLayoutRouteRoute
     }
-    '/transaction/': {
-      id: '/transaction/'
+    '/_homeLayout/transaction/': {
+      id: '/_homeLayout/transaction/'
       path: '/transaction'
       fullPath: '/transaction/'
-      preLoaderRoute: typeof TransactionIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof HomeLayoutTransactionIndexRouteImport
+      parentRoute: typeof HomeLayoutRouteRoute
     }
-    '/settings/': {
-      id: '/settings/'
+    '/_homeLayout/settings/': {
+      id: '/_homeLayout/settings/'
       path: '/settings'
       fullPath: '/settings/'
-      preLoaderRoute: typeof SettingsIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof HomeLayoutSettingsIndexRouteImport
+      parentRoute: typeof HomeLayoutRouteRoute
     }
-    '/profile/': {
-      id: '/profile/'
+    '/_homeLayout/profile/': {
+      id: '/_homeLayout/profile/'
       path: '/profile'
       fullPath: '/profile/'
-      preLoaderRoute: typeof ProfileIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof HomeLayoutProfileIndexRouteImport
+      parentRoute: typeof HomeLayoutRouteRoute
     }
-    '/settings/notifications/': {
-      id: '/settings/notifications/'
-      path: '/settings/notifications'
-      fullPath: '/settings/notifications/'
-      preLoaderRoute: typeof SettingsNotificationsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/settings/budget-goals/': {
-      id: '/settings/budget-goals/'
-      path: '/settings/budget-goals'
-      fullPath: '/settings/budget-goals/'
-      preLoaderRoute: typeof SettingsBudgetGoalsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth/register/': {
-      id: '/auth/register/'
+    '/_publicLayout/auth/register/': {
+      id: '/_publicLayout/auth/register/'
       path: '/auth/register'
       fullPath: '/auth/register/'
-      preLoaderRoute: typeof AuthRegisterIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof PublicLayoutAuthRegisterIndexRouteImport
+      parentRoute: typeof PublicLayoutRouteRoute
     }
-    '/auth/login/': {
-      id: '/auth/login/'
+    '/_publicLayout/auth/login/': {
+      id: '/_publicLayout/auth/login/'
       path: '/auth/login'
       fullPath: '/auth/login/'
-      preLoaderRoute: typeof AuthLoginIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof PublicLayoutAuthLoginIndexRouteImport
+      parentRoute: typeof PublicLayoutRouteRoute
+    }
+    '/_homeLayout/settings/notifications/': {
+      id: '/_homeLayout/settings/notifications/'
+      path: '/settings/notifications'
+      fullPath: '/settings/notifications/'
+      preLoaderRoute: typeof HomeLayoutSettingsNotificationsIndexRouteImport
+      parentRoute: typeof HomeLayoutRouteRoute
+    }
+    '/_homeLayout/settings/budget-goals/': {
+      id: '/_homeLayout/settings/budget-goals/'
+      path: '/settings/budget-goals'
+      fullPath: '/settings/budget-goals/'
+      preLoaderRoute: typeof HomeLayoutSettingsBudgetGoalsIndexRouteImport
+      parentRoute: typeof HomeLayoutRouteRoute
     }
   }
 }
 
+interface HomeLayoutRouteRouteChildren {
+  HomeLayoutIndexRoute: typeof HomeLayoutIndexRoute
+  HomeLayoutProfileIndexRoute: typeof HomeLayoutProfileIndexRoute
+  HomeLayoutSettingsIndexRoute: typeof HomeLayoutSettingsIndexRoute
+  HomeLayoutTransactionIndexRoute: typeof HomeLayoutTransactionIndexRoute
+  HomeLayoutSettingsBudgetGoalsIndexRoute: typeof HomeLayoutSettingsBudgetGoalsIndexRoute
+  HomeLayoutSettingsNotificationsIndexRoute: typeof HomeLayoutSettingsNotificationsIndexRoute
+}
+
+const HomeLayoutRouteRouteChildren: HomeLayoutRouteRouteChildren = {
+  HomeLayoutIndexRoute: HomeLayoutIndexRoute,
+  HomeLayoutProfileIndexRoute: HomeLayoutProfileIndexRoute,
+  HomeLayoutSettingsIndexRoute: HomeLayoutSettingsIndexRoute,
+  HomeLayoutTransactionIndexRoute: HomeLayoutTransactionIndexRoute,
+  HomeLayoutSettingsBudgetGoalsIndexRoute:
+    HomeLayoutSettingsBudgetGoalsIndexRoute,
+  HomeLayoutSettingsNotificationsIndexRoute:
+    HomeLayoutSettingsNotificationsIndexRoute,
+}
+
+const HomeLayoutRouteRouteWithChildren = HomeLayoutRouteRoute._addFileChildren(
+  HomeLayoutRouteRouteChildren,
+)
+
+interface PublicLayoutRouteRouteChildren {
+  PublicLayoutAuthLoginIndexRoute: typeof PublicLayoutAuthLoginIndexRoute
+  PublicLayoutAuthRegisterIndexRoute: typeof PublicLayoutAuthRegisterIndexRoute
+}
+
+const PublicLayoutRouteRouteChildren: PublicLayoutRouteRouteChildren = {
+  PublicLayoutAuthLoginIndexRoute: PublicLayoutAuthLoginIndexRoute,
+  PublicLayoutAuthRegisterIndexRoute: PublicLayoutAuthRegisterIndexRoute,
+}
+
+const PublicLayoutRouteRouteWithChildren =
+  PublicLayoutRouteRoute._addFileChildren(PublicLayoutRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  ProfileIndexRoute: ProfileIndexRoute,
-  SettingsIndexRoute: SettingsIndexRoute,
-  TransactionIndexRoute: TransactionIndexRoute,
-  AuthLoginIndexRoute: AuthLoginIndexRoute,
-  AuthRegisterIndexRoute: AuthRegisterIndexRoute,
-  SettingsBudgetGoalsIndexRoute: SettingsBudgetGoalsIndexRoute,
-  SettingsNotificationsIndexRoute: SettingsNotificationsIndexRoute,
+  HomeLayoutRouteRoute: HomeLayoutRouteRouteWithChildren,
+  PublicLayoutRouteRoute: PublicLayoutRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

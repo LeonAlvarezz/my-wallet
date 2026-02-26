@@ -10,6 +10,8 @@ const auth = {
       payload,
     ),
   signOut: () => requestClient.post<SimpleSuccess>(`${key}/sign-out`),
+  signUp: (payload: AuthModel.SignUpDto) =>
+    requestClient.post<SimpleSuccess>(`${key}/sign-up`, payload),
   getMe: () => requestClient.get<UserModel.UserPublicDto>(`${key}/me`),
 };
 
