@@ -1,4 +1,6 @@
+import { formatTime } from "@/utils/date";
 import { Icon } from "@iconify/react";
+import type { TransactionModel } from "@my-wallet/types";
 
 export interface TransactionCardData {
   id: string;
@@ -10,7 +12,7 @@ export interface TransactionCardData {
   categoryColor: string;
 }
 
-type TransactionCardProps = TransactionCardData & {};
+type TransactionCardProps = TransactionModel.TransactionWithCategoryDto & {};
 
 const colorMap: Record<string, string> = {
   green: "bg-green-500",
@@ -24,29 +26,30 @@ const colorMap: Record<string, string> = {
 };
 
 export default function TransactionCard({
-  icon,
-  time,
-  name,
+  created_at,
+  description,
   category,
   amount,
-  categoryColor,
 }: TransactionCardProps) {
+  console.log("category:", category);
   return (
     <div className="border-border bg-card flex items-center justify-between gap-3 rounded-lg border p-3 transition-all hover:shadow-md">
       {/* Icon & Details */}
       <div className="flex items-center gap-3">
         <div
-          className={`flex items-center justify-center rounded-lg p-2 ${colorMap[categoryColor] || colorMap.gray}`}
+          className={`flex items-center justify-center rounded-lg p-2 ${colorMap[category.color] || colorMap.gray}`}
         >
-          <Icon icon={icon} className="size-5 text-white" />
+          <Icon icon={category.icon} className="size-5 text-white" />
         </div>
 
         <div className="flex flex-col">
-          <p className="text-sm font-medium">{name}</p>
+          <p className="text-sm font-medium">{description}</p>
           <div className="flex items-center gap-1">
-            <p className="text-muted-foreground text-xs">{time}</p>
+            <p className="text-muted-foreground text-xs">
+              {formatTime(created_at)}
+            </p>
             <span className="text-muted-foreground text-xs">•</span>
-            <p className="text-muted-foreground text-xs">{category}</p>
+            <p className="text-muted-foreground text-xs">{category.name}</p>
           </div>
         </div>
       </div>

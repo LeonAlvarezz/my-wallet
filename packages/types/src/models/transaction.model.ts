@@ -1,12 +1,13 @@
 import z from "zod";
 import { BaseModel } from "./base.model";
+import { CategoryModel } from "./category.model";
 
 export namespace TransactionModel {
   export const TransactionSchema = BaseModel.BaseRowSchema.extend({
     user_id: z.coerce.number(),
-    amount: z.coerce.number(),
+    amount: z.number(),
     description: z.string().optional().nullable(),
-    category_id: z.coerce.number(),
+    category_id: z.number(),
   });
 
   export const CreateTransactionSchema = TransactionSchema.pick({
@@ -14,10 +15,18 @@ export namespace TransactionModel {
     description: true,
     category_id: true,
   });
+  export const TransactionWithCategorySchema = TransactionSchema.omit({
+    category_id: true,
+  }).extend({
+    category: z.lazy(() => CategoryModel.CategorySchema),
+  });
 
   export const UpdateTransactionSchema = CreateTransactionSchema.partial();
 
   export type TransactionDto = z.infer<typeof TransactionSchema>;
+  export type TransactionWithCategoryDto = z.infer<
+    typeof TransactionWithCategorySchema
+  >;
   export type CreateTransactionDto = z.infer<typeof CreateTransactionSchema>;
   export type UpdateTransactionDto = z.infer<typeof UpdateTransactionSchema>;
 }

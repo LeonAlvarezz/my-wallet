@@ -18,8 +18,9 @@ import { parseSmartInput } from "@/modules/add/lib/smart-input";
 import { useCategories } from "@/modules/category/hooks/query/use-categories";
 import SmartInput from "@/components/smart-input/SmartInput";
 import CategoryBlockSkeleton from "../skeletons/CategoryBlockSkeleton";
-import { useCreateTransaction } from "../../hooks/use-create-transaction";
 import { TransactionModel } from "@my-wallet/types/transaction";
+import { useCreateTransaction } from "../../hooks/use-create-transaction";
+import z from "zod";
 
 export default function AddTransactionForm() {
   const noteTextareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -40,17 +41,19 @@ export default function AddTransactionForm() {
   const form = useForm({
     defaultValues: {
       amount: 0,
-      category_id: 1,
+      category_id: 0,
       description: "",
     },
     validators: {
-      onSubmit: TransactionModel.CreateTransactionSchema,
+      onSubmit: TransactionModel.CreateTransactionSchema.extend({
+        description: z.string(), // override to make it required
+      }),
     },
     onSubmit: async ({ value, formApi }) => {
       setLoading(true);
       await addMutation.mutateAsync(value);
       toast.success("Transaction added", {
-        description: `${value.category} • ${value.note} • $${value.amount.toFixed(2)}`,
+        // description: `${value.category} • ${value.note} • $${value.amount.toFixed(2)}`,
       });
       formApi.reset();
       setSmartText("");
@@ -62,8 +65,8 @@ export default function AddTransactionForm() {
 
   const isFormComplete = () => {
     const amount = form.getFieldValue("amount");
-    const category = form.getFieldValue("category");
-    return amount > 0 && category.trim().length > 0;
+    const category = form.getFieldValue("category_id");
+    return amount > 0 && category > 0;
   };
 
   const applySmartInput = (options?: {
@@ -81,20 +84,20 @@ export default function AddTransactionForm() {
       form.setFieldValue("amount", result.amount);
     }
     if (result.category !== undefined) {
-      form.setFieldValue("category", result.category);
+      form.setFieldValue("category_id", result.category.id);
 
       // If smart input selects a category that's currently hidden,
       // expand so the user can see the selected state.
       const isInPreview = categories
         .slice(0, CATEGORY_PREVIEW_COUNT)
-        .some((c) => c.name === result.category);
+        .some((c) => c.name === result.category?.name);
       if (!isCategoryExpanded && !isInPreview) {
         setIsCategoryExpanded(true);
       }
     }
     if (result.note !== undefined) {
       form.setFieldValue(
-        "note",
+        "description",
         result.note.charAt(0).toUpperCase() + result.note.slice(1),
       );
     }
@@ -177,7 +180,7 @@ export default function AddTransactionForm() {
           }}
         />
         <form.Field
-          name="category"
+          name="category_id"
           children={(field) => {
             const isInvalid =
               (field.state.meta.isTouched || submitAttempts > 0) &&
@@ -193,18 +196,19 @@ export default function AddTransactionForm() {
                       <div className="flex h-fit gap-4">
                         <ToggleGroup
                           type="single"
-                          value={field.state.value}
+                          value={field.state.value.toString()}
                           onValueChange={(value) => {
-                            field.handleChange(value);
+                            console.log("value:", value);
+                            field.handleChange(Number(value));
                             field.handleBlur();
                           }}
                           className="grid w-full grid-cols-2 gap-2 sm:grid-cols-3"
                         >
                           {visibleCategories.map((category) => (
                             <CategoryBlock
-                              key={category.name}
+                              key={category.id}
                               category={category}
-                              value={category.name}
+                              value={category.id.toString()}
                               className={cn(
                                 isInvalid && "border border-red-500",
                               )}
@@ -243,7 +247,7 @@ export default function AddTransactionForm() {
         />
 
         <form.Field
-          name="note"
+          name="description"
           children={(field) => {
             const isInvalid =
               (field.state.meta.isTouched || submitAttempts > 0) &&

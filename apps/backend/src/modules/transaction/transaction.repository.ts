@@ -12,8 +12,16 @@ export class TransactionRepository {
       where: eq(transactionTable.id, id),
     });
   }
+  static async findByUserId(user_id: number) {
+    return await db.query.transactionTable.findMany({
+      where: eq(transactionTable.user_id, user_id),
+      with: {
+        category: true,
+      },
+    });
+  }
   static async create(
-    payload: TransactionModel.UpsertTransactionDto,
+    payload: TransactionModel.CreateTransactionDto,
     user_id: number,
     tx?: DrizzleTransaction,
   ) {
@@ -30,7 +38,7 @@ export class TransactionRepository {
 
   static async update(
     id: number,
-    payload: TransactionModel.UpsertTransactionDto,
+    payload: TransactionModel.UpdateTransactionDto,
     tx?: DrizzleTransaction,
   ) {
     const client = tx ? tx : db;

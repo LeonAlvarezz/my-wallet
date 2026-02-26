@@ -1,3 +1,8 @@
+import {
+  DefaultErrorMessage,
+  type DefaultErrorMessageKey,
+  ErrorCode,
+} from "@my-wallet/types";
 import { getKey } from "@my-wallet/types/enum";
 type ErrorParams = {
   error?: unknown;

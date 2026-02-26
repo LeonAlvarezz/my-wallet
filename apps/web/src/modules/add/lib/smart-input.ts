@@ -1,10 +1,8 @@
-export type SmartInputCategory = {
-  name: string;
-};
+import type { CategoryModel } from "@my-wallet/types";
 
 export type SmartInputParseResult = {
   amount?: number;
-  category?: string;
+  category?: CategoryModel.CategoryDto;
   note?: string;
   categorySource: "tag" | "tail" | "none";
   parsed: {
@@ -36,12 +34,12 @@ function parseAmountToken(token: string): number | undefined {
 
 function bestCategoryMatch(
   candidateNormalized: string,
-  categories: SmartInputCategory[],
-): string | undefined {
+  categories: CategoryModel.CategoryDto[],
+): CategoryModel.CategoryDto | undefined {
   if (!candidateNormalized) return undefined;
 
   const normalizedCategories = categories.map((c) => ({
-    name: c.name,
+    category: c,
     normalized: normalizeForMatch(c.name),
   }));
 
@@ -49,15 +47,13 @@ function bestCategoryMatch(
   const exact = normalizedCategories.find(
     (c) => c.normalized === candidateNormalized,
   );
-  if (exact) return exact.name;
+  if (exact) return exact.category;
 
   // Then prefix match (e.g., #trans -> Transportation)
   const prefixMatches = normalizedCategories
     .filter((c) => c.normalized.startsWith(candidateNormalized))
-    // shorter names first (usually more specific when using prefix)
     .sort((a, b) => a.normalized.length - b.normalized.length);
-
-  return prefixMatches[0]?.name;
+  return prefixMatches.length > 0 ? prefixMatches[0].category : undefined;
 }
 
 /**
@@ -69,7 +65,7 @@ function bestCategoryMatch(
  */
 export function parseSmartInput(
   text: string,
-  categories: SmartInputCategory[],
+  categories: CategoryModel.CategoryDto[],
 ): SmartInputParseResult {
   const warnings: string[] = [];
   const raw = text.trim();
@@ -95,7 +91,7 @@ export function parseSmartInput(
   }
 
   // 2) Category: explicit tag (#coffee/@coffee) preferred
-  let category: string | undefined;
+  let category: CategoryModel.CategoryDto | undefined;
   let categorySource: SmartInputParseResult["categorySource"] = "none";
 
   const tagIndex = tokens.findIndex(

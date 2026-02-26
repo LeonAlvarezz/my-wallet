@@ -4,6 +4,7 @@ export { TransactionModel } from "./models/transaction.model";
 export { UserModel } from "./models/user.model";
 export { AuthModel } from "./models/auth.model";
 export { SessionModel } from "./models/session.model";
+
 export {
   FailSchema,
   SimpleSuccessSchema,
@@ -16,3 +17,11 @@ export type {
   SimpleSuccess,
   ApiSuccess,
 } from "./types/response";
+
+export {
+  type CustomError,
+  type ErrorParams,
+  type DefaultErrorMessageKey,
+  DefaultErrorMessage,
+  ErrorCode,
+} from "./types/error";

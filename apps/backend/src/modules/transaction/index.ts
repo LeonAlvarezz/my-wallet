@@ -15,16 +15,19 @@ export const transaction = new Elysia()
   .group("/transactions", (app) => {
     app.get(
       "/",
-      async () => {
-        const data = await TransactionService.findAll();
+      async ({ user }) => {
+        const data = await TransactionService.findByUserId(user.id);
         return Success(data);
       },
       {
+        authenticated: true,
         detail: {
           summary: "Get all transaction",
           tags: [OpenApiKey.Transaction],
         },
-        response: SuccessSchema(TransactionModel.TransactionSchema.array()),
+        response: SuccessSchema(
+          TransactionModel.TransactionWithCategorySchema.array(),
+        ),
       },
     );
     app.get(

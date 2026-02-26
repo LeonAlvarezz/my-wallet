@@ -11,6 +11,10 @@ export class TransactionService {
     if (!data) throw new NotFoundException();
     return data;
   }
+
+  static async findByUserId(user_id: number) {
+    return await TransactionRepository.findByUserId(user_id);
+  }
   static create(
     payload: TransactionModel.CreateTransactionDto,
     user_id: number,

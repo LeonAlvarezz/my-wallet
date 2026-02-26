@@ -1,12 +1,14 @@
-import TransactionCard, {
-  type TransactionCardData,
-} from "../transaction-card/TransactionCard";
+import type { TransactionModel } from "@my-wallet/types";
+import { TransactionCard } from "../transaction-card";
+// import TransactionCard, {
+//   type TransactionCardData,
+// } from "../transaction-card/TransactionCard";
 
 export interface DailyGroupData {
   date: string;
   label: string; // "Today", "Yesterday", "Mon, Jan 12"
   total: number;
-  transactions: TransactionCardData[];
+  transactions: TransactionModel.TransactionWithCategoryDto[];
 }
 
 interface DailyGroupProps extends DailyGroupData {
@@ -20,6 +22,7 @@ export default function DailyGroup({
   transactions,
   onTransactionClick,
 }: DailyGroupProps) {
+  console.log("transactions:", transactions);
   return (
     <div className="flex flex-col gap-3">
       {/* Date Header */}
@@ -36,7 +39,7 @@ export default function DailyGroup({
         {transactions.map((transaction) => (
           <button
             key={transaction.id}
-            onClick={() => onTransactionClick?.(transaction.id)}
+            onClick={() => onTransactionClick?.(transaction.id.toString())}
             className="w-full text-left"
           >
             <TransactionCard {...transaction} />
