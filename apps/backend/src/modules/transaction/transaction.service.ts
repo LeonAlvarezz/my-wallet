@@ -1,8 +1,43 @@
 import { ForbiddenException, NotFoundException } from "@my-wallet/exception";
 import { TransactionRepository } from "./transaction.repository";
-import { TransactionModel } from "@my-wallet/types";
+import {
+  CursorModel,
+  CursorPagination,
+  TransactionModel,
+} from "@my-wallet/types";
+import { processCursorResult } from "@/util/cursor-pagination";
 
 export class TransactionService {
+  /**
+   * Cursor based
+   * - First Page
+   * {
+   * data: (length {page_size})
+   * meta: {
+   *    last_id,
+   *    total,
+   *    page,
+   *    page_size
+   * }
+   * }
+   * - Second Page
+   * offset: last_id
+   * {
+   * data: (length {page_size})
+   * meta: {
+   *    last_id,
+   *    total,
+   *    page,
+   *    page_size
+   * }
+   * }
+   */
+  static async cPaginate(query: CursorModel.CursorQuery) {
+    const data = await TransactionRepository.cPaginate(query);
+    console.log("data:", data);
+    return processCursorResult(data, query.page_size);
+  }
+
   static async findAll() {
     return await TransactionRepository.findMany();
   }

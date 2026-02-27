@@ -5,6 +5,8 @@ import { SimpleSuccess, Success } from "@/core/response";
 import { OpenApiKey } from "../app/openapi";
 import {
   BaseModel,
+  CursorModel,
+  CursorPaginationSchema,
   SimpleSuccessSchema,
   SuccessSchema,
   TransactionModel,
@@ -27,6 +29,26 @@ export const transaction = new Elysia()
         },
         response: SuccessSchema(
           TransactionModel.TransactionWithCategorySchema.array(),
+        ),
+      },
+    );
+    app.get(
+      "/paginate",
+      async ({ query }) => {
+        const data = await TransactionService.cPaginate(query);
+        return Success(data);
+      },
+      {
+        // authenticated: true,
+        query: TransactionModel.TransactionFilterSchema,
+        detail: {
+          summary: "Paginate transaction by user",
+          tags: [OpenApiKey.Transaction],
+        },
+        response: SuccessSchema(
+          CursorPaginationSchema(
+            TransactionModel.TransactionWithCategorySchema.array(),
+          ),
         ),
       },
     );

@@ -45,4 +45,5 @@ package-lock.json
 **/*.bun
 **/node_modules
 
-documents
+server
+play.ts

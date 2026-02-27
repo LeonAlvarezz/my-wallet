@@ -1,5 +1,6 @@
 import z from "zod";
 import type { DefaultErrorMessageKey } from "./error";
+import { CursorModel } from "../models/cursor.model";
 
 export const FailSchema = (errorSchema: any = z.any()) =>
   z.object({
@@ -11,6 +12,12 @@ export const SuccessSchema = <T>(data: T) =>
   z.object({
     success: z.literal(true),
     data,
+  });
+
+export const CursorPaginationSchema = <T>(data: T) =>
+  z.object({
+    data,
+    meta: z.lazy(() => CursorModel.CursorMetaSchema),
   });
 
 export const SimpleSuccessSchema = () =>
@@ -35,3 +42,9 @@ export type ApiFail = {
 };
 
 export type SimpleSuccess = z.infer<typeof SimpleSuccessSchema>;
+
+// Cursor-pagination result shape (use this in services/controllers).
+export type CursorPagination<T> = {
+  data: T[];
+  meta: CursorModel.CursorMeta;
+};
