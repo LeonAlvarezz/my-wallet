@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { Slot } from "radix-ui";
+import { Slot, Slottable } from "@radix-ui/react-slot";
 
 import { cn } from "@/lib/utils";
 
@@ -21,7 +21,8 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent",
         link: "text-primary underline-offset-4 hover:underline",
-        barebone: "w-fit h-fit hover:scale-105 transition-transform",
+        barebone: "w-fit h-fit",
+        simple: "w-fit h-fit hover:scale-105 transition-transform",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
@@ -56,7 +57,7 @@ function Button({
     asChild?: boolean;
     loading?: boolean;
   }) {
-  const Comp = asChild ? Slot.Root : "button";
+  const Comp = asChild ? Slot : "button";
   const isDisabled = Boolean(disabled || loading);
 
   return (
@@ -79,7 +80,7 @@ function Button({
       {...props}
     >
       {loading && <Spinner />}
-      {children}
+      <Slottable>{children}</Slottable>
     </Comp>
   );
 }

@@ -1,9 +1,14 @@
+import { Button } from "@/components/ui/button";
 import { formatTime } from "@/utils/date";
 import { Icon } from "@iconify/react";
 import type { CategoryModel, TransactionModel } from "@my-wallet/types";
+import UpdateTransactionDialog from "../update-transaction-dialog/UpdateTransactionDialog";
+import { useDeleteTransaction } from "../../hooks/use-delete-transaction";
+import DeleteButton from "@/components/delete-button/DeleteButton";
 
-type TransactionCardProps = TransactionModel.TransactionWithCategoryDto & {};
-
+type TransactionCardProps = {
+  transaction: TransactionModel.TransactionWithCategoryDto;
+};
 const colorMap: Record<CategoryModel.CategoryColorEnum, string> = {
   GREEN: "bg-green-500",
   BLUE: "bg-blue-500",
@@ -17,43 +22,56 @@ const colorMap: Record<CategoryModel.CategoryColorEnum, string> = {
   TEAL: "bg-teal-500",
 };
 
-export default function TransactionCard({
-  created_at,
-  description,
-  category,
-  amount,
-}: TransactionCardProps) {
+export default function TransactionCard({ transaction }: TransactionCardProps) {
+  const deleteMutation = useDeleteTransaction();
   return (
-    <div className="border-border bg-card flex items-center justify-between gap-3 rounded-lg border p-3 transition-all hover:shadow-md">
-      {/* Icon & Details */}
-      <div className="flex items-center gap-3">
-        <div
-          className={`flex items-center justify-center rounded-lg p-2 ${category ? colorMap[category.color] : colorMap.DEFAULT}`}
+    <div className="group relative w-full">
+      <UpdateTransactionDialog transaction={transaction}>
+        <Button
+          variant="outline"
+          className="flex h-fit w-full items-center justify-between gap-3 rounded-lg border bg-blue-500 p-4 transition-all hover:scale-101 hover:shadow-md"
         >
-          <Icon
-            icon={
-              category ? category.icon : "solar:question-circle-bold-duotone"
-            }
-            className="size-5 text-white"
-          />
-        </div>
-
-        <div className="flex flex-col">
-          <p className="text-sm font-medium">{description || "Unknown"}</p>
-          <div className="flex items-center gap-1">
-            <p className="text-muted-foreground text-xs">
-              {formatTime(created_at)}
-            </p>
-            <span className="text-muted-foreground text-xs">•</span>
-            <p className="text-muted-foreground text-xs">
-              {category ? category.name : "Unknown"}
-            </p>
+          {/* Icon & Details */}
+          <div className="flex w-full items-center gap-3">
+            <div
+              className={`flex items-center justify-center rounded-lg p-2 ${transaction.category ? colorMap[transaction.category.color] : colorMap.DEFAULT}`}
+            >
+              <Icon
+                icon={
+                  transaction.category
+                    ? transaction.category.icon
+                    : "solar:question-circle-bold-duotone"
+                }
+                className="size-5 text-white"
+              />
+            </div>
+            <div className="flex flex-col items-start">
+              <p className="text-sm font-medium">
+                {transaction.description || "Unknown"}
+              </p>
+              <div className="flex items-center gap-1">
+                <p className="text-muted-foreground text-xs">
+                  {formatTime(transaction.created_at)}
+                </p>
+                <span className="text-muted-foreground text-xs">•</span>
+                <p className="text-muted-foreground text-xs">
+                  {transaction.category ? transaction.category.name : "Unknown"}
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-
-      {/* Amount */}
-      <p className="font-semibold text-red-500">-${amount.toFixed(2)}</p>
+          {/* Amount */}
+          <p className="font-semibold text-red-500">
+            -${transaction.amount.toFixed(2)}
+          </p>
+        </Button>
+      </UpdateTransactionDialog>
+      <DeleteButton
+        variant="icon"
+        onConfirm={async () => {
+          await deleteMutation.mutateAsync(transaction.id);
+        }}
+      />
     </div>
   );
 }

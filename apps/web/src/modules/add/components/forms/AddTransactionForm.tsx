@@ -220,7 +220,7 @@ export default function AddTransactionForm() {
                         <Button
                           type="button"
                           variant="ghost"
-                          className="w-full"
+                          className=""
                           aria-expanded={isCategoryExpanded}
                           onClick={() => setIsCategoryExpanded((prev) => !prev)}
                         >
@@ -284,30 +284,6 @@ export default function AddTransactionForm() {
             }}
             onSubmit={handleSmartSubmit}
           />
-          {/* <div className="relative w-full" id="smart-input">
-            <Input
-              placeholder="5 Starbucks #coffee"
-              value={smartText}
-              onChange={(e) => {
-                setSmartText(e.target.value);
-                setSmartAppliedOnce(false);
-              }}
-              onKeyDown={(e) => {
-                if (e.key !== "Enter") return;
-                e.preventDefault();
-                handleSmartSubmit();
-              }}
-              className="w-full"
-            />
-            <Button
-              type="button"
-              variant="barebone"
-              className="absolute inset-y-1/2 right-1 z-20 h-fit w-fit -translate-y-1/2"
-              onClick={handleSmartSubmit}
-            >
-              <Icon icon="solar:arrow-right-up-bold" className="size-5" />
-            </Button>
-          </div> */}
           <Button
             type="button"
             onClick={() => {

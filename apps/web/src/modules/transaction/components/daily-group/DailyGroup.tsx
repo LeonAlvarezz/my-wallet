@@ -22,7 +22,6 @@ export default function DailyGroup({
   transactions,
   onTransactionClick,
 }: DailyGroupProps) {
-  console.log("transactions:", transactions);
   return (
     <div className="flex flex-col gap-3">
       {/* Date Header */}
@@ -37,13 +36,9 @@ export default function DailyGroup({
       {/* Transactions */}
       <div className="flex flex-col gap-2">
         {transactions.map((transaction) => (
-          <button
-            key={transaction.id}
-            onClick={() => onTransactionClick?.(transaction.id.toString())}
-            className="w-full text-left"
-          >
-            <TransactionCard {...transaction} />
-          </button>
+          <div key={transaction.id} onClick={() => onTransactionClick?.(transaction.id.toString())}>
+            <TransactionCard transaction={transaction} />
+          </div>
         ))}
       </div>
     </div>

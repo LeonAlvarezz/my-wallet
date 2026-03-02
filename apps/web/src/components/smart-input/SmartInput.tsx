@@ -22,8 +22,8 @@ export default function SmartInput({ onSubmit, value, onChange }: Props) {
       />
       <Button
         type="button"
-        variant="barebone"
-        className="absolute inset-y-1/2 right-1 z-20 h-fit w-fit -translate-y-1/2"
+        variant="simple"
+        className="absolute inset-y-1/2 right-1 z-20 h-fit w-fit -translate-y-1/2 p-2"
         onClick={onSubmit}
       >
         <Icon icon="solar:arrow-right-up-bold" className="size-5" />
