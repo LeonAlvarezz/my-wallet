@@ -1,10 +1,6 @@
 import { ForbiddenException, NotFoundException } from "@my-wallet/exception";
 import { TransactionRepository } from "./transaction.repository";
-import {
-  CursorModel,
-  CursorPagination,
-  TransactionModel,
-} from "@my-wallet/types";
+import { TransactionModel } from "@my-wallet/types";
 import { processCursorResult } from "@/util/cursor-pagination";
 
 export class TransactionService {
@@ -32,15 +28,36 @@ export class TransactionService {
    * }
    * }
    */
-  static async cPaginate(query: CursorModel.CursorQuery) {
-    const data = await TransactionRepository.cPaginate(query);
-    console.log("data:", data);
-    return processCursorResult(data, query.page_size);
+  static async cPaginate(
+    query: TransactionModel.TransactionFilterDto,
+    user_id: number,
+  ) {
+    const data = await TransactionRepository.cPaginate(query, user_id);
+
+    const dates = Array.from(
+      new Set(data.map((row) => row.created_at.split("T")[0])),
+    );
+
+    const extra =
+      dates.length > 0
+        ? await TransactionRepository.findTotalAmountByDays(
+            dates,
+            user_id,
+            query.query,
+          )
+        : [];
+
+    return processCursorResult(data, query.page_size, extra);
+  }
+
+  static findUserOverview(user_id: number) {
+    return TransactionRepository.findUserOverview(user_id);
   }
 
   static async findAll() {
     return await TransactionRepository.findMany();
   }
+
   static async findById(id: number) {
     const data = await TransactionRepository.findById(id);
     if (!data) throw new NotFoundException();

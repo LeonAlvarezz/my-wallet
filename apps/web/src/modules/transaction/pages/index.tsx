@@ -1,14 +1,18 @@
-import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 import StatsCard from "../components/stats-card/StatsCard";
 import DailyGroup from "../components/daily-group/DailyGroup";
-import { useGetTransactions } from "@/modules/add/hooks/use-get-transactions";
 import type { TransactionModel } from "@my-wallet/types";
 import { formatDate, getDateLabel } from "@/utils/date";
+import InfiniteScroll from "@/components/infinite-scroll/InfiniteScroll";
+import { Spinner } from "@/components/ui/spinner";
+import { useInfiniteTransactions } from "../hooks/use-infinite-transactions";
+import { useSearchDebounce } from "@/hooks/use-search-debounce";
+import { useGetSpendingOverview } from "@/modules/add/hooks/use-get-spending-overview";
 
 interface DailyGroupData {
+  day: string; // YYYY-MM-DD (matches backend `extra[].day`)
   date: string;
   label: string;
   total: number;
@@ -17,56 +21,83 @@ interface DailyGroupData {
 
 const groupTransactionsByDate = (
   transactions: TransactionModel.TransactionWithCategoryDto[],
+  totalsByDay: Map<string, number>,
 ): DailyGroupData[] => {
   const grouped: Record<string, TransactionModel.TransactionWithCategoryDto[]> =
     {};
 
-  transactions.forEach((transaction) => {
-    const dateKey = new Date(transaction.created_at).toDateString();
-    if (!grouped[dateKey]) {
-      grouped[dateKey] = [];
+  for (const transaction of transactions) {
+    const day = transaction.created_at.split("T")[0];
+    if (!grouped[day]) {
+      grouped[day] = [];
     }
+    grouped[day].push(transaction);
+  }
 
-    grouped[dateKey].push(transaction);
-  });
-
-  // Convert grouped object to array and sort by date (newest first)
   return Object.entries(grouped)
-    .map(([dateKey, txns]) => {
-      const isoDate = new Date(dateKey).toISOString();
+    .map(([day, txns]) => {
+      // Parse as local date to keep Today/Yesterday labels intuitive.
+      // `day` is still the canonical key from backend.
+      const localIsoDate = `${day}T00:00:00`;
       return {
-        date: formatDate(isoDate),
-        label: getDateLabel(isoDate),
-        total: txns.reduce((sum, t) => sum + t.amount, 0),
-        transactions: txns.sort((a, b) => {
-          // Sort by time descending (newest first)
-          return (
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-          );
-        }),
+        day,
+        date: formatDate(localIsoDate),
+        label: getDateLabel(localIsoDate),
+        total:
+          totalsByDay.get(day) ?? txns.reduce((sum, t) => sum + t.amount, 0),
+        transactions: txns.sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+        ),
       };
     })
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    .sort((a, b) => b.day.localeCompare(a.day));
 };
 
 export default function TransactionPage() {
-  const { data: transactions = [] } = useGetTransactions();
-  const [searchQuery, setSearchQuery] = useState("");
+  const { debouncedValue, setSearchQuery, searchQuery } =
+    useSearchDebounce(200);
+
+  const infinite = useInfiniteTransactions({
+    page_size: 10,
+    query: debouncedValue.trim() || undefined,
+  });
+  const overview = useGetSpendingOverview();
+
+  const transactions = infinite.data?.pages.flatMap((p) => p.data) || [];
+
+  const totalsByDay = () => {
+    const map = new Map<string, number>();
+    const pages = infinite.data?.pages ?? [];
+    for (const page of pages) {
+      const extra = page.extra ?? [];
+      for (const item of extra) {
+        map.set(item.day, item.total);
+      }
+    }
+    return map;
+  };
+
+  const hasMore = !!infinite.hasNextPage;
+
+  const next = () => {
+    if (infinite.isFetchingNextPage) return;
+    if (!infinite.hasNextPage) return;
+    void infinite.fetchNextPage();
+  };
 
   // Group transactions by date
-  const groupedTransactions = groupTransactionsByDate(transactions);
+  const groupedTransactions = groupTransactionsByDate(
+    transactions,
+    totalsByDay(),
+  );
 
-  // Calculate stats
-  const totalSpent = transactions.reduce((sum, t) => sum + t.amount, 0);
-  const avgPerTransaction =
-    transactions.length > 0 ? totalSpent / transactions.length : 0;
-  const highestTransaction =
-    transactions.length > 0
-      ? Math.max(...transactions.map((t) => t.amount))
-      : 0;
+  const totalSpent = overview.data?.total ?? 0;
+  const avgPerTransaction = overview.data?.average ?? 0;
+  const highestTransaction = overview.data?.highest ?? 0;
 
   return (
-    <div className="flex h-full w-full flex-col gap-6 overflow-y-auto p-4 pb-[calc(var(--bottom-nav-total-h)+1rem)]">
+    <div className="flex h-full w-full flex-col gap-6 overflow-y-auto p-4 pb-[calc(var(--bottom-nav-total-h))]">
       {/* Search Bar */}
       <div className="relative">
         <Input
@@ -113,31 +144,47 @@ export default function TransactionPage() {
         </div>
       </section>
 
-      <section className="flex flex-col gap-6">
-        {groupedTransactions.length > 0 ? (
-          <div className="flex flex-col gap-6">
-            {groupedTransactions.map((dailyGroup) => (
-              <DailyGroup
-                key={dailyGroup.date}
-                date={dailyGroup.date}
-                label={dailyGroup.label}
-                total={dailyGroup.total}
-                transactions={dailyGroup.transactions}
+      <InfiniteScroll
+        isLoading={infinite.isFetchingNextPage}
+        hasMore={hasMore}
+        next={next}
+        rootMargin="200px"
+      >
+        <section className="flex flex-col gap-6">
+          {infinite.isLoading ? (
+            <div className="flex w-full justify-center py-6">
+              <Spinner />
+            </div>
+          ) : groupedTransactions.length > 0 ? (
+            <div className="flex flex-col gap-6">
+              {groupedTransactions.map((dailyGroup) => (
+                <DailyGroup
+                  key={dailyGroup.day}
+                  date={dailyGroup.date}
+                  label={dailyGroup.label}
+                  total={dailyGroup.total}
+                  transactions={dailyGroup.transactions}
+                />
+              ))}
+              {infinite.isFetchingNextPage && (
+                <div className="flex w-full justify-center">
+                  <Spinner />
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="bg-card/50 flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-12">
+              <Icon
+                icon="solar:inbox-bold"
+                className="text-muted-foreground size-8"
               />
-            ))}
-          </div>
-        ) : (
-          <div className="bg-card/50 flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-12">
-            <Icon
-              icon="solar:inbox-bold"
-              className="text-muted-foreground size-8"
-            />
-            <p className="text-muted-foreground text-sm">
-              No transactions found
-            </p>
-          </div>
-        )}
-      </section>
+              <p className="text-muted-foreground text-sm">
+                No transactions found
+              </p>
+            </div>
+          )}
+        </section>
+      </InfiniteScroll>
     </div>
   );
 }

@@ -14,11 +14,20 @@ export const SuccessSchema = <T>(data: T) =>
     data,
   });
 
-export const CursorPaginationSchema = <T>(data: T) =>
-  z.object({
-    data,
-    meta: z.lazy(() => CursorModel.CursorMetaSchema),
-  });
+export const CursorPaginationSchema = <T, U>(data: T, extra?: U) => {
+  if (extra) {
+    return z.object({
+      data,
+      meta: z.lazy(() => CursorModel.CursorMetaSchema),
+      extra,
+    });
+  } else {
+    return z.object({
+      data,
+      meta: z.lazy(() => CursorModel.CursorMetaSchema),
+    });
+  }
+};
 
 export const SimpleSuccessSchema = () =>
   z.object({
@@ -44,7 +53,8 @@ export type ApiFail = {
 export type SimpleSuccess = z.infer<typeof SimpleSuccessSchema>;
 
 // Cursor-pagination result shape (use this in services/controllers).
-export type CursorPagination<T> = {
+export type CursorPagination<T, U = undefined> = {
   data: T[];
+  extra?: U;
   meta: CursorModel.CursorMeta;
 };

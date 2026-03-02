@@ -26,7 +26,7 @@ export const transactionRelation = relations(transactionTable, ({ one }) => ({
   }),
 
   category: one(categoryTable, {
-    fields: [transactionTable.id],
+    fields: [transactionTable.category_id],
     references: [categoryTable.id],
   }),
 }));

@@ -32,13 +32,12 @@ export function getCursorMeta({
   };
 }
 
-export function processCursorResult<T extends CursorModel.CursorProps>(
+export function processCursorResult<T extends CursorModel.CursorProps, U>(
   data: T[],
   page_size: number,
-): { data: T[]; meta: CursorModel.CursorMeta } {
+  extra?: U[],
+): { data: T[]; meta: CursorModel.CursorMeta; extra?: U[] } {
   const has_more = data.length >= page_size;
-  console.log("page_size:", page_size);
-  console.log("data.length:", data.length);
   const last = data.at(-1);
   return {
     data,
@@ -50,5 +49,6 @@ export function processCursorResult<T extends CursorModel.CursorProps>(
           ? encodeCursor({ id: last.id, created_at: last.created_at })
           : null,
     },
+    extra: extra,
   };
 }

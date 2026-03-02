@@ -41,7 +41,7 @@ export const errorHandler = new Elysia({ name: "error-handling" })
           });
         }
       }
-
+      console.log("Hello");
       return Fail({
         message: error.message,
         status: error.status,
@@ -58,8 +58,11 @@ export const errorHandler = new Elysia({ name: "error-handling" })
     }
 
     return {
-      status: set?.status ?? 500,
-      message: error ?? "Internal Server Error",
+      error: {
+        status: set?.status ?? 500,
+        message: error ?? DefaultErrorMessage.INTERNAL_SERVER,
+        code: getKey(DefaultErrorMessage, DefaultErrorMessage.INTERNAL_SERVER),
+      },
       success: false,
     };
   })

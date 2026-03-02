@@ -2,14 +2,26 @@ import { db, DrizzleTransaction } from "@/lib/db";
 import { transactionTable } from "@/lib/db/schema/transaction.schema";
 import { decodeCursor } from "@/util/cursor-pagination";
 import { CursorModel, TransactionModel } from "@my-wallet/types";
-import { and, desc, eq, ilike, lt, or, SQL } from "drizzle-orm";
+import {
+  and,
+  avg,
+  desc,
+  eq,
+  ilike,
+  inArray,
+  lt,
+  max,
+  or,
+  sql,
+  SQL,
+  sum,
+} from "drizzle-orm";
 
 export class TransactionRepository {
   static buildFilter(filter: TransactionModel.TransactionFilterDto) {
     const where: SQL[] = [];
     if (filter.cursor) {
       const { created_at, id } = decodeCursor(filter.cursor);
-
       // Match orderBy: created_at desc, id desc
       // Next page: (created_at < cursor.created_at) OR (created_at = cursor.created_at AND id < cursor.id)
       const condition = or(
@@ -44,20 +56,59 @@ export class TransactionRepository {
       },
     });
   }
-  static async cPaginate(query: CursorModel.CursorQuery) {
+
+  static async findTotalAmountByDays(
+    dates: string[],
+    user_id: number,
+    query?: string,
+  ) {
+    const where: SQL[] = [
+      eq(transactionTable.user_id, user_id),
+      inArray(sql`DATE(${transactionTable.created_at})`, dates),
+    ];
+    if (query) {
+      where.push(ilike(transactionTable.description, `%${query}%`));
+    }
+    return await db
+      .select({
+        day: sql<string>`DATE(${transactionTable.created_at})`,
+        // Postgres returns SUM(numeric) as string; cast to float to ensure JSON number.
+        total: sql<number>`COALESCE(SUM(${transactionTable.amount}), 0)::float8`,
+      })
+      .from(transactionTable)
+      .where(and(...where))
+      .groupBy(sql`DATE(${transactionTable.created_at})`)
+      .orderBy(sql`DATE(${transactionTable.created_at})`);
+  }
+
+  static async findUserOverview(user_id: number) {
+    const [result] = await db
+      .select({
+        total: sum(transactionTable.amount).mapWith(Number),
+        average: avg(transactionTable.amount).mapWith(Number),
+        highest: max(transactionTable.amount).mapWith(Number),
+      })
+      .from(transactionTable)
+      .where(eq(transactionTable.user_id, user_id));
+    return result;
+  }
+
+  static async cPaginate(
+    query: TransactionModel.TransactionFilterDto,
+    user_id: number,
+  ) {
     const where = this.buildFilter(query);
     const run = db.query.transactionTable.findMany({
-      where: and(...where),
+      where: and(...where, eq(transactionTable.user_id, user_id)),
       orderBy: [desc(transactionTable.created_at), desc(transactionTable.id)],
       limit: query.page_size,
       with: {
         category: true,
       },
     });
-
-    console.log("run.toSQL():", run.toSQL());
     return await run;
   }
+
   static async create(
     payload: TransactionModel.CreateTransactionDto,
     user_id: number,

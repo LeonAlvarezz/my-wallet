@@ -16,15 +16,23 @@ export namespace TransactionModel {
   export const TransactionWithCategorySchema = TransactionSchema.omit({
     category_id: true,
   }).extend({
-    category: z.lazy(() => CategoryModel.CategorySchema),
+    category: z.lazy(() => CategoryModel.CategorySchema).nullable(),
   });
-
   export const CreateTransactionSchema = TransactionSchema.pick({
     amount: true,
     description: true,
     category_id: true,
   });
   export const UpdateTransactionSchema = CreateTransactionSchema.partial();
+  export const ExtraDailyTotalSchema = z.object({
+    day: z.string(),
+    total: z.number(),
+  });
+  export const UserOverviewSchema = z.object({
+    total: z.number(),
+    average: z.number(),
+    highest: z.number(),
+  });
 
   export type TransactionDto = z.infer<typeof TransactionSchema>;
   export type TransactionWithCategoryDto = z.infer<
@@ -33,4 +41,6 @@ export namespace TransactionModel {
   export type TransactionFilterDto = z.infer<typeof TransactionFilterSchema>;
   export type CreateTransactionDto = z.infer<typeof CreateTransactionSchema>;
   export type UpdateTransactionDto = z.infer<typeof UpdateTransactionSchema>;
+  export type ExtraDailyTotalDto = z.infer<typeof ExtraDailyTotalSchema>;
+  export type UserOverviewDto = z.infer<typeof UserOverviewSchema>;
 }

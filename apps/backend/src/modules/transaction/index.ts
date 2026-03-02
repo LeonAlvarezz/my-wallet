@@ -5,7 +5,6 @@ import { SimpleSuccess, Success } from "@/core/response";
 import { OpenApiKey } from "../app/openapi";
 import {
   BaseModel,
-  CursorModel,
   CursorPaginationSchema,
   SimpleSuccessSchema,
   SuccessSchema,
@@ -15,31 +14,31 @@ import {
 export const transaction = new Elysia()
   .use(authGuard)
   .group("/transactions", (app) => {
+    // app.get(
+    //   "/",
+    //   async ({ user }) => {
+    //     const data = await TransactionService.findByUserId(user.id);
+    //     return Success(data);
+    //   },
+    //   {
+    //     authenticated: true,
+    //     detail: {
+    //       summary: "Get all transaction",
+    //       tags: [OpenApiKey.Transaction],
+    //     },
+    //     response: SuccessSchema(
+    //       TransactionModel.TransactionWithCategorySchema.array(),
+    //     ),
+    //   },
+    // );
     app.get(
       "/",
-      async ({ user }) => {
-        const data = await TransactionService.findByUserId(user.id);
+      async ({ query, user }) => {
+        const data = await TransactionService.cPaginate(query, user.id);
         return Success(data);
       },
       {
         authenticated: true,
-        detail: {
-          summary: "Get all transaction",
-          tags: [OpenApiKey.Transaction],
-        },
-        response: SuccessSchema(
-          TransactionModel.TransactionWithCategorySchema.array(),
-        ),
-      },
-    );
-    app.get(
-      "/paginate",
-      async ({ query }) => {
-        const data = await TransactionService.cPaginate(query);
-        return Success(data);
-      },
-      {
-        // authenticated: true,
         query: TransactionModel.TransactionFilterSchema,
         detail: {
           summary: "Paginate transaction by user",
@@ -48,6 +47,7 @@ export const transaction = new Elysia()
         response: SuccessSchema(
           CursorPaginationSchema(
             TransactionModel.TransactionWithCategorySchema.array(),
+            TransactionModel.ExtraDailyTotalSchema.array(),
           ),
         ),
       },
@@ -65,6 +65,22 @@ export const transaction = new Elysia()
           tags: [OpenApiKey.Transaction],
         },
         response: SuccessSchema(TransactionModel.TransactionSchema),
+      },
+    );
+
+    app.get(
+      "/overview",
+      async ({ user }) => {
+        const data = await TransactionService.findUserOverview(user.id);
+        return Success(data);
+      },
+      {
+        authenticated: true,
+        detail: {
+          summary: "Get user spending overview",
+          tags: [OpenApiKey.Transaction],
+        },
+        response: SuccessSchema(TransactionModel.UserOverviewSchema),
       },
     );
 
