@@ -24,13 +24,14 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 export function useInfiniteTransactions(
   options: TransactionModel.TransactionFilterDto,
 ) {
-  const { page_size, query } = options;
+  const { page_size, query, time_frame } = options;
   const me = useGetMe();
 
   return useInfiniteQuery({
     queryKey: queryKey.transaction.paginate(me.data?.public_id, {
       page_size,
       query,
+      time_frame,
     }),
     initialPageParam: null as string | null,
     enabled: !!me.data?.public_id,
@@ -40,6 +41,7 @@ export function useInfiniteTransactions(
         page_size,
         cursor: pageParam,
         query,
+        time_frame,
       });
     },
     getNextPageParam: (lastPage) => lastPage.meta.next_cursor ?? undefined,

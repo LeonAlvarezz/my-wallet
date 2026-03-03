@@ -60,16 +60,7 @@ export default function UpdateTransactionDialog({
           </AddTransactionContext.Provider>
         </div>
         <DialogFooter>
-          <div className="flex flex-col gap-2">
-            <Button
-              type="button"
-              onClick={form.handleSubmit}
-              disabled={loading}
-              loading={loading}
-            >
-              <Icon icon="solar:diskette-bold-duotone" />
-              Save
-            </Button>
+          <div className="grid grid-cols-2 gap-2">
             <DeleteButton
               title="Delete transaction?"
               description="This action cannot be undone. This will permanently delete this transaction."
@@ -81,6 +72,15 @@ export default function UpdateTransactionDialog({
               }}
               className="text-red-500"
             />
+            <Button
+              type="button"
+              onClick={form.handleSubmit}
+              disabled={loading}
+              loading={loading}
+            >
+              <Icon icon="solar:diskette-bold-duotone" />
+              Save
+            </Button>
           </div>
         </DialogFooter>
       </DialogContent>

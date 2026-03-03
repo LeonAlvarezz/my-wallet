@@ -10,10 +10,13 @@ export namespace TransactionModel {
     description: z.string().optional().nullable(),
     category_id: z.number(),
   });
-  export const TransactionFilterSchema = CursorModel.CursorQuerySchema.extend({
+  export const TransactionBaseQuerySchema = z.object({
     query: z.string().optional(),
     time_frame: z.enum(BaseModel.TimeFrameEnum).optional(),
   });
+  export const TransactionFilterSchema = CursorModel.CursorQuerySchema.extend(
+    TransactionBaseQuerySchema.shape,
+  );
   export const TransactionWithCategorySchema = TransactionSchema.omit({
     category_id: true,
   }).extend({
@@ -44,4 +47,5 @@ export namespace TransactionModel {
   export type UpdateTransactionDto = z.infer<typeof UpdateTransactionSchema>;
   export type ExtraDailyTotalDto = z.infer<typeof ExtraDailyTotalSchema>;
   export type UserOverviewDto = z.infer<typeof UserOverviewSchema>;
+  export type TransactionBaseQuery = z.infer<typeof TransactionBaseQuerySchema>;
 }

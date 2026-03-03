@@ -116,13 +116,13 @@ export class TransactionRepository {
     user_id: number,
     query?: string,
   ) {
-    const where: SQL[] = [
-      eq(transactionTable.user_id, user_id),
-      inArray(sql`DATE(${transactionTable.created_at})`, dates),
-    ];
-    if (query) {
-      where.push(ilike(transactionTable.description, `%${query}%`));
-    }
+    const where = this.buildFilter({
+      query,
+      page_size: 10,
+    });
+
+    const conditions: SQL[] = [...where, eq(transactionTable.user_id, user_id)];
+
     return await db
       .select({
         day: sql<string>`DATE(${transactionTable.created_at})`,
@@ -130,12 +130,22 @@ export class TransactionRepository {
         total: sql<number>`COALESCE(SUM(${transactionTable.amount}), 0)::float8`,
       })
       .from(transactionTable)
-      .where(and(...where))
+      .where(and(...conditions))
       .groupBy(sql`DATE(${transactionTable.created_at})`)
       .orderBy(sql`DATE(${transactionTable.created_at})`);
   }
 
-  static async findUserOverview(user_id: number) {
+  static async findUserOverview(
+    query: TransactionModel.TransactionBaseQuery,
+    user_id: number,
+  ) {
+    const where = this.buildFilter({
+      ...query,
+      page_size: 10,
+    });
+
+    const conditions: SQL[] = [...where, eq(transactionTable.user_id, user_id)];
+
     const [result] = await db
       .select({
         total: sum(transactionTable.amount).mapWith(Number),
@@ -143,10 +153,10 @@ export class TransactionRepository {
         highest: max(transactionTable.amount).mapWith(Number),
       })
       .from(transactionTable)
-      .where(eq(transactionTable.user_id, user_id));
+      .where(and(...conditions));
+
     return result;
   }
-
   static async cPaginate(
     query: TransactionModel.TransactionFilterDto,
     user_id: number,

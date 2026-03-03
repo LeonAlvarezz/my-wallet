@@ -1,9 +1,8 @@
 import { Input } from "@/components/ui/input";
 import { Icon } from "@iconify/react";
-import { Button } from "@/components/ui/button";
 import StatsCard from "../components/stats-card/StatsCard";
 import DailyGroup from "../components/daily-group/DailyGroup";
-import type { TransactionModel } from "@my-wallet/types";
+import { BaseModel, type TransactionModel } from "@my-wallet/types";
 import { formatDate, getDateLabel } from "@/utils/date";
 import InfiniteScroll from "@/components/infinite-scroll/InfiniteScroll";
 import { Spinner } from "@/components/ui/spinner";
@@ -18,6 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 interface DailyGroupData {
   day: string; // YYYY-MM-DD (matches backend `extra[].day`)
@@ -63,14 +64,19 @@ const groupTransactionsByDate = (
 };
 
 export default function TransactionPage() {
+  const navigate = useNavigate();
+  const search = useSearch({ from: "/_homeLayout/transaction/" });
   const { debouncedValue, setSearchQuery, searchQuery } =
-    useSearchDebounce(200);
+    useSearchDebounce(500);
+
+  const timeFrame = search.time_frame ?? BaseModel.TimeFrameEnum.ALL_TIME;
 
   const infinite = useInfiniteTransactions({
     page_size: 10,
     query: debouncedValue.trim() || undefined,
+    time_frame: timeFrame,
   });
-  const overview = useGetSpendingOverview();
+  const overview = useGetSpendingOverview({ time_frame: timeFrame });
 
   const transactions = infinite.data?.pages.flatMap((p) => p.data) || [];
 
@@ -104,6 +110,20 @@ export default function TransactionPage() {
   const avgPerTransaction = overview.data?.average ?? 0;
   const highestTransaction = overview.data?.highest ?? 0;
 
+  useEffect(() => {
+    const nextQuery = debouncedValue.trim();
+    if ((search.query ?? "") === nextQuery) return;
+
+    void navigate({
+      to: "/transaction",
+      search: (prev) => ({
+        ...prev,
+        query: nextQuery.length ? nextQuery : undefined,
+      }),
+      replace: true,
+    });
+  }, [debouncedValue, navigate, search.query]);
+
   return (
     <div className="flex h-full w-full flex-col gap-6 overflow-y-auto p-4 pb-[calc(var(--bottom-nav-total-h))]">
       {/* Search Bar */}
@@ -121,51 +141,65 @@ export default function TransactionPage() {
       </div>
 
       {/* At a Glance Stats */}
-      <section className="flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Overview</h2>
-          <Select defaultValue="today">
-            <SelectTrigger className="w-32">
-              <SelectValue placeholder="Date" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="today">Today</SelectItem>
-                <SelectItem value="yesterday">Yesterday</SelectItem>
-                <SelectItem value="week">This week</SelectItem>
-                <SelectItem value="month">This month</SelectItem>
-                <SelectItem value="year">This year</SelectItem>
-                <SelectItem value="all">All time</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          {/* <Button variant="ghost" size="sm">
+      {!debouncedValue && (
+        <section className="flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Overview</h2>
+            <Select
+              value={timeFrame}
+              onValueChange={(value) => {
+                void navigate({
+                  to: "/transaction",
+                  search: (prev) => ({
+                    ...prev,
+                    time_frame: value as BaseModel.TimeFrameEnum,
+                  }),
+                  replace: true,
+                });
+              }}
+            >
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder="Date" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="today">Today</SelectItem>
+                  <SelectItem value="yesterday">Yesterday</SelectItem>
+                  <SelectItem value="week">This week</SelectItem>
+                  <SelectItem value="month">This month</SelectItem>
+                  <SelectItem value="year">This year</SelectItem>
+                  <SelectItem value="all">All time</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            {/* <Button variant="ghost" size="sm">
             This Month
           </Button> */}
-        </div>
+          </div>
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <StatsCard
-            title="Total Spent"
-            amount={totalSpent.toFixed(2)}
-            icon="solar:wallet-bold-duotone"
-            className="sm:col-span-2"
-          />
-          <StatsCard
-            title="Average"
-            amount={avgPerTransaction.toFixed(2)}
-            icon="solar:chart-2-bold-duotone"
-            description="per transaction"
-          />
-          <StatsCard
-            title="Highest"
-            amount={highestTransaction.toFixed(2)}
-            icon="solar:arrow-up-bold-duotone"
-            trend="up"
-            description="single transaction"
-          />
-        </div>
-      </section>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <StatsCard
+              title="Total Spent"
+              amount={totalSpent.toFixed(2)}
+              icon="solar:wallet-bold-duotone"
+              className="sm:col-span-2"
+            />
+            <StatsCard
+              title="Average"
+              amount={avgPerTransaction.toFixed(2)}
+              icon="solar:chart-2-bold-duotone"
+              description="per transaction"
+            />
+            <StatsCard
+              title="Highest"
+              amount={highestTransaction.toFixed(2)}
+              icon="solar:arrow-up-bold-duotone"
+              trend="up"
+              description="single transaction"
+            />
+          </div>
+        </section>
+      )}
 
       <InfiniteScroll
         isLoading={infinite.isFetchingNextPage}

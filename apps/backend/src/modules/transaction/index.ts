@@ -70,12 +70,13 @@ export const transaction = new Elysia()
 
     app.get(
       "/overview",
-      async ({ user }) => {
-        const data = await TransactionService.findUserOverview(user.id);
+      async ({ user, query }) => {
+        const data = await TransactionService.findUserOverview(query, user.id);
         return Success(data);
       },
       {
         authenticated: true,
+        query: TransactionModel.TransactionBaseQuerySchema,
         detail: {
           summary: "Get user spending overview",
           tags: [OpenApiKey.Transaction],

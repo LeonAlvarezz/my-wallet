@@ -55,8 +55,11 @@ export class TransactionService {
     return processCursorResult(data, query.page_size, extra);
   }
 
-  static findUserOverview(user_id: number) {
-    return TransactionRepository.findUserOverview(user_id);
+  static findUserOverview(
+    query: TransactionModel.TransactionBaseQuery,
+    user_id: number,
+  ) {
+    return TransactionRepository.findUserOverview(query, user_id);
   }
 
   static async findAll() {

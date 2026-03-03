@@ -16,8 +16,10 @@ const transaction = {
     >(`${key}`, {
       params: filter,
     }),
-  getOverview: () =>
-    requestClient.get<TransactionModel.UserOverviewDto>(`${key}/overview`),
+  getOverview: (filter?: Pick<TransactionModel.TransactionFilterDto, "time_frame">) =>
+    requestClient.get<TransactionModel.UserOverviewDto>(`${key}/overview`, {
+      params: filter,
+    }),
   // getAll: () =>
   //   requestClient.get<TransactionModel.TransactionWithCategoryDto[]>(`${key}`),
   getById: (id: number) =>
