@@ -25,11 +25,11 @@ const colorMap: Record<CategoryModel.CategoryColorEnum, string> = {
 export default function TransactionCard({ transaction }: TransactionCardProps) {
   const deleteMutation = useDeleteTransaction();
   return (
-    <div className="group relative w-full">
+    <div className="group relative">
       <UpdateTransactionDialog transaction={transaction}>
         <Button
           variant="outline"
-          className="flex h-fit w-full items-center justify-between gap-3 rounded-lg border bg-blue-500 p-4 transition-all hover:scale-101 hover:shadow-md"
+          className="h-fit w-full gap-3 rounded-lg border bg-blue-500 p-3 transition-all hover:shadow-md"
         >
           {/* Icon & Details */}
           <div className="flex w-full items-center gap-3">
@@ -46,7 +46,7 @@ export default function TransactionCard({ transaction }: TransactionCardProps) {
               />
             </div>
             <div className="flex flex-col items-start">
-              <p className="text-sm font-medium">
+              <p className="max-w-50 overflow-hidden text-sm font-medium text-ellipsis">
                 {transaction.description || "Unknown"}
               </p>
               <div className="flex items-center gap-1">

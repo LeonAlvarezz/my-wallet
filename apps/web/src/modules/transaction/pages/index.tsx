@@ -10,6 +10,14 @@ import { Spinner } from "@/components/ui/spinner";
 import { useInfiniteTransactions } from "../hooks/use-infinite-transactions";
 import { useSearchDebounce } from "@/hooks/use-search-debounce";
 import { useGetSpendingOverview } from "@/modules/add/hooks/use-get-spending-overview";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface DailyGroupData {
   day: string; // YYYY-MM-DD (matches backend `extra[].day`)
@@ -115,10 +123,25 @@ export default function TransactionPage() {
       {/* At a Glance Stats */}
       <section className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">At a Glance</h2>
-          <Button variant="ghost" size="sm">
+          <h2 className="text-lg font-semibold">Overview</h2>
+          <Select defaultValue="today">
+            <SelectTrigger className="w-32">
+              <SelectValue placeholder="Date" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="today">Today</SelectItem>
+                <SelectItem value="yesterday">Yesterday</SelectItem>
+                <SelectItem value="week">This week</SelectItem>
+                <SelectItem value="month">This month</SelectItem>
+                <SelectItem value="year">This year</SelectItem>
+                <SelectItem value="all">All time</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          {/* <Button variant="ghost" size="sm">
             This Month
-          </Button>
+          </Button> */}
         </div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">

@@ -1,7 +1,12 @@
-import { ForbiddenException, NotFoundException } from "@my-wallet/exception";
+import {
+  BadRequestException,
+  ForbiddenException,
+  NotFoundException,
+} from "@my-wallet/exception";
 import { TransactionRepository } from "./transaction.repository";
 import { TransactionModel } from "@my-wallet/types";
 import { processCursorResult } from "@/util/cursor-pagination";
+import { CategoryRepository } from "../category/category.repository";
 
 export class TransactionService {
   /**
@@ -67,10 +72,16 @@ export class TransactionService {
   static async findByUserId(user_id: number) {
     return await TransactionRepository.findByUserId(user_id);
   }
-  static create(
+  static async create(
     payload: TransactionModel.CreateTransactionDto,
     user_id: number,
   ) {
+    const category = await CategoryRepository.findById(payload.category_id);
+
+    if (!category) {
+      throw new BadRequestException({ message: "Invalid category_id" });
+    }
+
     return TransactionRepository.create(payload, user_id);
   }
   static async update(

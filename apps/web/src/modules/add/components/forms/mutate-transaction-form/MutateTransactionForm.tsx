@@ -4,152 +4,46 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
-import { useForm } from "@tanstack/react-form";
-import { toast } from "sonner";
 import { AmountInput } from "@/components/amount-input";
 import { ToggleGroup } from "@/components/ui/toggle-group";
 import CategoryBlock from "@/modules/category/components/category-block/CategoryBlock";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
-import { useRef, useState } from "react";
+import { type ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { parseSmartInput } from "@/modules/add/lib/smart-input";
-import { useCategories } from "@/modules/category/hooks/query/use-categories";
-import SmartInput from "@/components/smart-input/SmartInput";
-import CategoryBlockSkeleton from "../skeletons/CategoryBlockSkeleton";
-import { TransactionModel } from "@my-wallet/types/transaction";
-import { useCreateTransaction } from "../../hooks/use-create-transaction";
-import z from "zod";
+import CategoryBlockSkeleton from "../../skeletons/CategoryBlockSkeleton";
+import AddTransactionFormFooter from "./MutateTransactionFormFooter";
+import React from "react";
+import { useMutateTransactionContext } from "./use-mutate-transaction-context";
+import type { TransactionModel } from "@my-wallet/types";
 
-export default function AddTransactionForm() {
-  const noteTextareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const [isCategoryExpanded, setIsCategoryExpanded] = useState(false);
-  const [smartText, setSmartText] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [smartAppliedOnce, setSmartAppliedOnce] = useState(false);
-  const [submitAttempts, setSubmitAttempts] = useState(0);
-  const { data, isLoading: isCategoryLoading } = useCategories();
-  const addMutation = useCreateTransaction();
-  const categories = data || [];
-
-  const CATEGORY_PREVIEW_COUNT = 6;
+type Props = {
+  className?: string;
+  children?: ReactNode;
+  value?: TransactionModel.CreateTransactionDto;
+};
+function AddTransactionForm({ className, children }: Props) {
+  const {
+    form,
+    categories,
+    isCategoryLoading,
+    CATEGORY_PREVIEW_COUNT,
+    submitAttempts,
+    noteTextareaRef,
+    isCategoryExpanded,
+    setIsCategoryExpanded,
+  } = useMutateTransactionContext();
   const visibleCategories = isCategoryExpanded
     ? categories
     : categories?.slice(0, CATEGORY_PREVIEW_COUNT);
 
-  const form = useForm({
-    defaultValues: {
-      amount: 0,
-      category_id: 0,
-      description: "",
-    },
-    validators: {
-      onSubmit: TransactionModel.CreateTransactionSchema.extend({
-        description: z.string(), // override to make it required
-      }),
-    },
-    onSubmit: async ({ value, formApi }) => {
-      setLoading(true);
-      await addMutation.mutateAsync(value);
-      toast.success("Transaction added", {
-        // description: `${value.category} • ${value.note} • $${value.amount.toFixed(2)}`,
-      });
-      formApi.reset();
-      setSmartText("");
-      setSmartAppliedOnce(false);
-      setSubmitAttempts(0);
-      setLoading(false);
-    },
-  });
-
-  const isFormComplete = () => {
-    const amount = form.getFieldValue("amount");
-    const category = form.getFieldValue("category_id");
-    return amount > 0 && category > 0;
-  };
-
-  const applySmartInput = (options?: {
-    focusNote?: boolean;
-    showToasts?: boolean;
-  }) => {
-    const showToasts = options?.showToasts ?? true;
-    const focusNote = options?.focusNote ?? false;
-
-    const result = parseSmartInput(smartText, categories);
-    const didParseAnything =
-      result.parsed.amount || result.parsed.category || result.parsed.note;
-
-    if (result.amount !== undefined) {
-      form.setFieldValue("amount", result.amount);
-    }
-    if (result.category !== undefined) {
-      form.setFieldValue("category_id", result.category.id);
-
-      // If smart input selects a category that's currently hidden,
-      // expand so the user can see the selected state.
-      const isInPreview = categories
-        .slice(0, CATEGORY_PREVIEW_COUNT)
-        .some((c) => c.name === result.category?.name);
-      if (!isCategoryExpanded && !isInPreview) {
-        setIsCategoryExpanded(true);
-      }
-    }
-    if (result.note !== undefined) {
-      form.setFieldValue(
-        "description",
-        result.note.charAt(0).toUpperCase() + result.note.slice(1),
-      );
-    }
-
-    if (showToasts) {
-      if (!didParseAnything) {
-        toast("Couldn't understand that input", {
-          description: "Try: 5 Starbucks #coffee or 5 Starbucks coffee",
-        });
-      } else if (result.warnings.length > 0) {
-        toast(result.warnings[0]);
-      }
-    }
-
-    if (focusNote && (!result.note || !result.category)) {
-      noteTextareaRef.current?.scrollIntoView({
-        block: "center",
-        behavior: "smooth",
-      });
-      noteTextareaRef.current?.focus();
-    }
-
-    setSmartAppliedOnce(true);
-  };
-
-  const handleSmartSubmit = () => {
-    // 1st tap: apply smart input into the form
-    // 2nd tap: if the form is complete, submit
-    setSubmitAttempts((n) => n + 1);
-
-    if (!smartAppliedOnce) {
-      applySmartInput({ focusNote: true, showToasts: false });
-      return;
-    }
-
-    if (isFormComplete()) {
-      form.handleSubmit();
-      return;
-    }
-
-    applySmartInput({ focusNote: true, showToasts: false });
-  };
-
+  const footer = React.Children.toArray(children).find(
+    (child) =>
+      React.isValidElement(child) && child.type === AddTransactionForm.Footer,
+  );
   return (
-    <form
-      id="add-transaction-form"
-      className="pb-[calc(var(--bottom-nav-total-h)+5rem)]"
-      onSubmit={(e) => {
-        e.preventDefault();
-        form.handleSubmit();
-      }}
-    >
+    <form id="add-transaction-form" className={className}>
       <FieldGroup>
         <form.Field
           name="amount"
@@ -260,7 +154,7 @@ export default function AddTransactionForm() {
                     ref={noteTextareaRef}
                     id={field.name}
                     name={field.name}
-                    value={field.state.value}
+                    value={field.state.value ?? ""}
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
                     placeholder="Tube Coffee, Aeon Shopping..."
@@ -273,30 +167,9 @@ export default function AddTransactionForm() {
           }}
         />
       </FieldGroup>
-
-      <div className="max-w-mobile fixed inset-x-0 bottom-0 m-auto px-4">
-        <div className="mb-[calc(var(--bottom-nav-total-h)+10px)] flex gap-2">
-          <SmartInput
-            value={smartText}
-            onChange={(value) => {
-              setSmartText(value);
-              setSmartAppliedOnce(false);
-            }}
-            onSubmit={handleSmartSubmit}
-          />
-          <Button
-            type="button"
-            onClick={() => {
-              setSubmitAttempts((n) => n + 1);
-              form.handleSubmit();
-            }}
-            disabled={loading}
-            loading={loading}
-          >
-            Save
-          </Button>
-        </div>
-      </div>
+      {footer}
     </form>
   );
 }
+AddTransactionForm.Footer = AddTransactionFormFooter;
+export default AddTransactionForm;

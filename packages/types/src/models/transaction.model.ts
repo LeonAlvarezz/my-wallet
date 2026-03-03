@@ -12,6 +12,7 @@ export namespace TransactionModel {
   });
   export const TransactionFilterSchema = CursorModel.CursorQuerySchema.extend({
     query: z.string().optional(),
+    time_frame: z.enum(BaseModel.TimeFrameEnum).optional(),
   });
   export const TransactionWithCategorySchema = TransactionSchema.omit({
     category_id: true,

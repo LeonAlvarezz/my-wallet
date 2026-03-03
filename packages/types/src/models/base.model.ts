@@ -33,4 +33,13 @@ export namespace BaseModel {
 
   export type CookieDto = z.infer<typeof CookieSchema>;
   export type NumberIdDto = z.infer<typeof NumberIdSchema>;
+
+  export enum TimeFrameEnum {
+    TODAY = "today",
+    YESTERDAY = "yesterday",
+    WEEK = "week",
+    MONTH = "month",
+    YEAR = "year",
+    ALL_TIME = "all",
+  }
 }

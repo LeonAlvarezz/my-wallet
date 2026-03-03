@@ -1,12 +1,13 @@
 import { db, DrizzleTransaction } from "@/lib/db";
 import { transactionTable } from "@/lib/db/schema/transaction.schema";
 import { decodeCursor } from "@/util/cursor-pagination";
-import { CursorModel, TransactionModel } from "@my-wallet/types";
+import { BaseModel, CursorModel, TransactionModel } from "@my-wallet/types";
 import {
   and,
   avg,
   desc,
   eq,
+  gte,
   ilike,
   inArray,
   lt,
@@ -36,6 +37,59 @@ export class TransactionRepository {
 
     if (filter.query) {
       where.push(ilike(transactionTable.description, `%${filter.query}%`));
+    }
+
+    if (filter.time_frame) {
+      const now = new Date();
+      const startOfDayUtc = (d: Date) =>
+        new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+
+      let start: Date | undefined;
+      let endExclusive: Date | undefined;
+
+      switch (filter.time_frame) {
+        case BaseModel.TimeFrameEnum.TODAY: {
+          start = startOfDayUtc(now);
+          endExclusive = new Date(start);
+          endExclusive.setUTCDate(endExclusive.getUTCDate() + 1);
+          break;
+        }
+        case BaseModel.TimeFrameEnum.YESTERDAY: {
+          endExclusive = startOfDayUtc(now);
+          start = new Date(endExclusive);
+          start.setUTCDate(start.getUTCDate() - 1);
+          break;
+        }
+        case BaseModel.TimeFrameEnum.WEEK: {
+          // "This week" = from Monday 00:00 (UTC) to now
+          const day = now.getUTCDay(); // 0=Sun..6=Sat
+          const diffFromMonday = (day + 6) % 7;
+          start = startOfDayUtc(now);
+          start.setUTCDate(start.getUTCDate() - diffFromMonday);
+          break;
+        }
+        case BaseModel.TimeFrameEnum.MONTH: {
+          start = new Date(
+            Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
+          );
+          break;
+        }
+        case BaseModel.TimeFrameEnum.YEAR: {
+          start = new Date(Date.UTC(now.getUTCFullYear(), 0, 1));
+          break;
+        }
+        case BaseModel.TimeFrameEnum.ALL_TIME:
+        default: {
+          break;
+        }
+      }
+
+      if (start) {
+        where.push(gte(transactionTable.created_at, start.toISOString()));
+      }
+      if (endExclusive) {
+        where.push(lt(transactionTable.created_at, endExclusive.toISOString()));
+      }
     }
 
     return where;

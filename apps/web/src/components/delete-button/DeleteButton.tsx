@@ -37,7 +37,7 @@ export default function DeleteButton({
 
   const triggerClassName =
     variant === "icon"
-      ? "absolute inset-y-1/2 -right-7.5 -translate-y-1/2 opacity-0 transition-all group-hover:opacity-100"
+      ? "absolute inset-y-1/2 h-2 w-2 -right-5 -translate-y-1/2 opacity-0 transition-all group-hover:opacity-100"
       : undefined;
 
   return (
@@ -46,7 +46,7 @@ export default function DeleteButton({
         {variant === "default" ? (
           <Button
             type="button"
-            variant="destructive"
+            variant="ghost"
             loading={loading}
             className={className}
             {...props}
@@ -57,7 +57,7 @@ export default function DeleteButton({
         ) : (
           <Button
             type="button"
-            variant="barebone"
+            variant="simple"
             loading={loading}
             className={[triggerClassName, className].filter(Boolean).join(" ")}
             {...props}
