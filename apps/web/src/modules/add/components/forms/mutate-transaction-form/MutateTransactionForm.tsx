@@ -5,7 +5,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { AmountInput } from "@/components/amount-input";
-import { ToggleGroup } from "@/components/ui/toggle-group";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import CategoryBlock from "@/modules/category/components/category-block/CategoryBlock";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ import CategoryBlockSkeleton from "../../skeletons/CategoryBlockSkeleton";
 import AddTransactionFormFooter from "./MutateTransactionFormFooter";
 import React from "react";
 import { useMutateTransactionContext } from "./use-mutate-transaction-context";
-import type { TransactionModel } from "@my-wallet/types";
+import { TransactionModel } from "@my-wallet/types";
 
 type Props = {
   className?: string;
@@ -134,6 +134,49 @@ function AddTransactionForm({ className, children }: Props) {
                       )}
                     </>
                   )}
+                </div>
+              </Field>
+            );
+          }}
+        />
+        <form.Field
+          name="type"
+          children={(field) => {
+            const isInvalid =
+              (field.state.meta.isTouched || submitAttempts > 0) &&
+              !field.state.meta.isValid;
+            return (
+              <Field data-invalid={isInvalid}>
+                <div className="flex flex-col gap-4">
+                  <FieldLabel htmlFor={field.name}>Transaction Type</FieldLabel>
+                  <ToggleGroup
+                    type="single"
+                    value={field.state.value}
+                    onValueChange={(value) => {
+                      if (!value) return;
+                      field.handleChange(
+                        value as TransactionModel.TransactionTypeEnum,
+                      );
+                      field.handleBlur();
+                    }}
+                    className="grid w-full grid-cols-2"
+                  >
+                    <ToggleGroupItem
+                      value={TransactionModel.TransactionTypeEnum.EXPENSE}
+                      aria-label="Expense"
+                      className="w-full text-red-500"
+                    >
+                      Expense
+                    </ToggleGroupItem>
+                    <ToggleGroupItem
+                      value={TransactionModel.TransactionTypeEnum.INCOME}
+                      aria-label="Income"
+                      className="w-full text-green-500"
+                    >
+                      Income
+                    </ToggleGroupItem>
+                  </ToggleGroup>
+                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
                 </div>
               </Field>
             );

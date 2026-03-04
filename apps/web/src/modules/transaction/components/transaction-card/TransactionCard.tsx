@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { formatTime } from "@/utils/date";
 import { Icon } from "@iconify/react";
-import type { CategoryModel, TransactionModel } from "@my-wallet/types";
+import { TransactionModel, type CategoryModel } from "@my-wallet/types";
 import UpdateTransactionDialog from "../update-transaction-dialog/UpdateTransactionDialog";
 import { useDeleteTransaction } from "../../hooks/use-delete-transaction";
 import DeleteButton from "@/components/delete-button/DeleteButton";
@@ -61,9 +61,15 @@ export default function TransactionCard({ transaction }: TransactionCardProps) {
             </div>
           </div>
           {/* Amount */}
-          <p className="font-semibold text-red-500">
-            -${transaction.amount.toFixed(2)}
-          </p>
+          {transaction.type === TransactionModel.TransactionTypeEnum.EXPENSE ? (
+            <p className="font-semibold text-red-500">
+              -${transaction.amount.toFixed(2)}
+            </p>
+          ) : (
+            <p className="font-semibold text-green-500">
+              +${transaction.amount.toFixed(2)}
+            </p>
+          )}
         </Button>
       </UpdateTransactionDialog>
       <DeleteButton

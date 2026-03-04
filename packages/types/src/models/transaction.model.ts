@@ -4,10 +4,16 @@ import { CategoryModel } from "./category.model";
 import { CursorModel } from "./cursor.model";
 
 export namespace TransactionModel {
+  export enum TransactionTypeEnum {
+    INCOME = "INCOME",
+    EXPENSE = "EXPENSE",
+  }
+
   export const TransactionSchema = BaseModel.BaseRowSchema.extend({
     wallet_id: z.coerce.number(),
     amount: z.number(),
     description: z.string().optional().nullable(),
+    type: z.enum(TransactionTypeEnum),
     category_id: z.number(),
   });
   export const TransactionBaseQuerySchema = z.object({
@@ -26,6 +32,7 @@ export namespace TransactionModel {
     amount: true,
     description: true,
     category_id: true,
+    type: true,
   });
   export const UpdateTransactionSchema = CreateTransactionSchema.partial();
   export const ExtraDailyTotalSchema = z.object({

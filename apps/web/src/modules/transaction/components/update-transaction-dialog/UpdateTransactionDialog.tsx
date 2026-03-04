@@ -33,6 +33,7 @@ export default function UpdateTransactionDialog({
     amount: transaction.amount,
     category_id: transaction.category?.id ?? 0,
     description: transaction.description ?? "",
+    type: transaction.type,
   };
   const handleOpenChange = () => setOpen((prev) => !prev);
   const formHook = useMutateTransactionForm({

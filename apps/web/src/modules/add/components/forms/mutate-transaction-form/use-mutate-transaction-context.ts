@@ -49,6 +49,7 @@ export const useMutateTransactionForm = (props: Props) => {
           amount: 0,
           category_id: 0,
           description: "",
+          type: TransactionModel.TransactionTypeEnum.EXPENSE,
         },
 
     validators: {
