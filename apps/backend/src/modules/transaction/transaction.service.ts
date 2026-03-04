@@ -7,51 +7,24 @@ import { TransactionRepository } from "./transaction.repository";
 import { TransactionModel } from "@my-wallet/types";
 import { processCursorResult } from "@/util/cursor-pagination";
 import { CategoryRepository } from "../category/category.repository";
+import { WalletRepository } from "../wallet/wallet.repository";
 
 export class TransactionService {
-  /**
-   * Cursor based
-   * - First Page
-   * {
-   * data: (length {page_size})
-   * meta: {
-   *    last_id,
-   *    total,
-   *    page,
-   *    page_size
-   * }
-   * }
-   * - Second Page
-   * offset: last_id
-   * {
-   * data: (length {page_size})
-   * meta: {
-   *    last_id,
-   *    total,
-   *    page,
-   *    page_size
-   * }
-   * }
-   */
   static async cPaginate(
     query: TransactionModel.TransactionFilterDto,
     user_id: number,
   ) {
     const data = await TransactionRepository.cPaginate(query, user_id);
-
     const dates = Array.from(
       new Set(data.map((row) => row.created_at.split("T")[0])),
     );
-
     const extra =
       dates.length > 0
         ? await TransactionRepository.findTotalAmountByDays(
-            dates,
             user_id,
             query.query,
           )
         : [];
-
     return processCursorResult(data, query.page_size, extra);
   }
 
@@ -73,7 +46,7 @@ export class TransactionService {
   }
 
   static async findByUserId(user_id: number) {
-    return await TransactionRepository.findByUserId(user_id);
+    return await TransactionRepository.getTransactionsByUserId(user_id);
   }
   static async create(
     payload: TransactionModel.CreateTransactionDto,
@@ -85,8 +58,15 @@ export class TransactionService {
       throw new BadRequestException({ message: "Invalid category_id" });
     }
 
-    return TransactionRepository.create(payload, user_id);
+    const wallet = await WalletRepository.findByUserId(user_id);
+
+    if (!wallet) {
+      throw new NotFoundException({ message: "Wallet not found" });
+    }
+
+    return TransactionRepository.create(payload, wallet.id);
   }
+
   static async update(
     id: number,
     user_id: number,
@@ -94,9 +74,9 @@ export class TransactionService {
   ) {
     const transaction = await TransactionRepository.findById(id);
     if (!transaction) throw new NotFoundException();
-
-    // Check if user owns this transaction
-    if (transaction.user_id !== user_id) {
+    const wallet = await WalletRepository.findByUserId(user_id);
+    if (!wallet) throw new NotFoundException({ message: "Wallet not found" });
+    if (transaction.wallet_id !== wallet.id) {
       throw new ForbiddenException({
         message: "You can no permission to edit this transaction",
       });
@@ -108,14 +88,13 @@ export class TransactionService {
   static async delete(id: number, user_id: number) {
     const transaction = await TransactionRepository.findById(id);
     if (!transaction) throw new NotFoundException();
-
-    // Check if user owns this transaction
-    if (transaction.user_id !== user_id) {
+    const wallet = await WalletRepository.findByUserId(user_id);
+    if (!wallet) throw new NotFoundException({ message: "Wallet not found" });
+    if (transaction.wallet_id !== wallet.id) {
       throw new ForbiddenException({
-        message: "You can no permission to edit this transaction",
+        message: "You can no permission to delete this transaction",
       });
     }
-
     return TransactionRepository.delete(id);
   }
 }

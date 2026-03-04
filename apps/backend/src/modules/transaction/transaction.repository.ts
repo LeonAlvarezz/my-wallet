@@ -1,4 +1,5 @@
 import { db, DrizzleTransaction } from "@/lib/db";
+import { categoryTable, userTable, walletTable } from "@/lib/db/schema";
 import { transactionTable } from "@/lib/db/schema/transaction.schema";
 import { decodeCursor } from "@/util/cursor-pagination";
 import { BaseModel, CursorModel, TransactionModel } from "@my-wallet/types";
@@ -102,26 +103,26 @@ export class TransactionRepository {
       where: eq(transactionTable.id, id),
     });
   }
-  static async findByUserId(user_id: number) {
-    return await db.query.transactionTable.findMany({
-      where: eq(transactionTable.user_id, user_id),
-      with: {
-        category: true,
-      },
-    });
+
+  static async getTransactionsByUserId(userId: number) {
+    const result = await db
+      .select()
+      .from(transactionTable)
+      .innerJoin(walletTable, eq(transactionTable.wallet_id, walletTable.id))
+      .where(eq(walletTable.user_id, userId));
+    return result.map((row) => row.transactions);
   }
 
-  static async findTotalAmountByDays(
-    dates: string[],
-    user_id: number,
-    query?: string,
-  ) {
+  static async findTotalAmountByDays(walletId: number, query?: string) {
     const where = this.buildFilter({
       query,
       page_size: 10,
     });
 
-    const conditions: SQL[] = [...where, eq(transactionTable.user_id, user_id)];
+    const conditions: SQL[] = [
+      ...where,
+      eq(transactionTable.wallet_id, walletId),
+    ];
 
     return await db
       .select({
@@ -130,6 +131,7 @@ export class TransactionRepository {
         total: sql<number>`COALESCE(SUM(${transactionTable.amount}), 0)::float8`,
       })
       .from(transactionTable)
+      .leftJoin(walletTable, eq(transactionTable.wallet_id, walletTable.id))
       .where(and(...conditions))
       .groupBy(sql`DATE(${transactionTable.created_at})`)
       .orderBy(sql`DATE(${transactionTable.created_at})`);
@@ -139,43 +141,61 @@ export class TransactionRepository {
     query: TransactionModel.TransactionBaseQuery,
     user_id: number,
   ) {
-    const where = this.buildFilter({
+    const conditions = this.buildFilter({
       ...query,
       page_size: 10,
     });
 
-    const conditions: SQL[] = [...where, eq(transactionTable.user_id, user_id)];
-
     const [result] = await db
       .select({
-        total: sum(transactionTable.amount).mapWith(Number),
-        average: avg(transactionTable.amount).mapWith(Number),
-        highest: max(transactionTable.amount).mapWith(Number),
+        total:
+          sql<number>`COALESCE(SUM(${transactionTable.amount}), 0)`.mapWith(
+            Number,
+          ),
+        average:
+          sql<number>`COALESCE(AVG(${transactionTable.amount}), 0)`.mapWith(
+            Number,
+          ),
+        highest:
+          sql<number>`COALESCE(MAX(${transactionTable.amount}), 0)`.mapWith(
+            Number,
+          ),
       })
       .from(transactionTable)
-      .where(and(...conditions));
+      .leftJoin(walletTable, eq(transactionTable.wallet_id, walletTable.id))
+      .where(and(...conditions, eq(walletTable.user_id, user_id)));
 
     return result;
   }
+
   static async cPaginate(
     query: TransactionModel.TransactionFilterDto,
     user_id: number,
   ) {
-    const where = this.buildFilter(query);
-    const run = db.query.transactionTable.findMany({
-      where: and(...where, eq(transactionTable.user_id, user_id)),
-      orderBy: [desc(transactionTable.created_at), desc(transactionTable.id)],
-      limit: query.page_size,
-      with: {
-        category: true,
-      },
-    });
-    return await run;
+    const conditions = this.buildFilter(query);
+    const result = await db
+      .select()
+      .from(transactionTable)
+      .leftJoin(walletTable, eq(transactionTable.wallet_id, walletTable.id))
+      .leftJoin(
+        categoryTable,
+        eq(transactionTable.category_id, categoryTable.id),
+      )
+      .where(and(...conditions, eq(walletTable.user_id, user_id)))
+      .limit(query.page_size)
+      .orderBy(desc(transactionTable.created_at), desc(transactionTable.id));
+
+    const transaction = result.map((row) => ({
+      ...row.transactions,
+      category: row.categories,
+    }));
+
+    return transaction;
   }
 
   static async create(
     payload: TransactionModel.CreateTransactionDto,
-    user_id: number,
+    wallet_id: number,
     tx?: DrizzleTransaction,
   ) {
     const client = tx ? tx : db;
@@ -183,7 +203,7 @@ export class TransactionRepository {
       .insert(transactionTable)
       .values({
         ...payload,
-        user_id,
+        wallet_id,
       })
       .returning();
     return result;

@@ -2,9 +2,12 @@ import { db } from "..";
 import { categoryTable } from "../schema/category.schema";
 import { userTable } from "../schema/user.schema";
 import { authTable } from "../schema/auth.schema";
+import { walletTable } from "../schema/wallet.schema";
+import { transactionTable } from "../schema/transaction.schema";
 import { hashPassword } from "@/util/password";
 import logger from "@/lib/logger";
 import { CategoryModel } from "@my-wallet/types";
+import { eq } from "drizzle-orm";
 
 async function seedDatabaseDev() {
   const baseCategories = [
@@ -73,38 +76,129 @@ async function seedDatabaseDev() {
     password: "12345678",
   };
 
+  const transactionCount = 60;
+
+  const randomInt = (min: number, max: number) =>
+    Math.floor(Math.random() * (max - min + 1)) + min;
+
+  const randomChoice = <T>(arr: T[]) => arr[randomInt(0, arr.length - 1)];
+
+  const isoDaysAgo = (daysAgo: number) => {
+    const d = new Date();
+    d.setDate(d.getDate() - daysAgo);
+    // add a little time variance
+    d.setHours(randomInt(0, 23), randomInt(0, 59), randomInt(0, 59), 0);
+    return d.toISOString();
+  };
+
   await db.transaction(async (tx) => {
     const categoryInsert = baseCategories.map(async (category) => {
-      await db.insert(categoryTable).values({
-        color: category.color,
-        icon: category.icon,
-        name: category.name,
-        order: category.order,
-      });
+      await tx
+        .insert(categoryTable)
+        .values({
+          color: category.color,
+          icon: category.icon,
+          name: category.name,
+          order: category.order,
+        })
+        .onConflictDoNothing({ target: categoryTable.order });
     });
     await Promise.all(categoryInsert);
     logger.info("✅ Categories seeded successfully", {
       count: baseCategories.length,
     });
 
-    const [result] = await db
+    // Create or reuse test user
+    await tx
       .insert(userTable)
       .values({
         username: testUser.username,
         email: testUser.email,
       })
-      .returning({ id: userTable.id });
+      .onConflictDoNothing({ target: userTable.email });
 
-    // Hash password and insert auth record
-    const passwordHash = await hashPassword(testUser.password);
-    await db.insert(authTable).values({
-      user_id: result.id,
-      password_hash: passwordHash,
+    const user = await tx.query.userTable.findFirst({
+      where: eq(userTable.email, testUser.email),
+      columns: { id: true },
     });
+
+    if (!user) {
+      throw new Error("Failed to create/find test user");
+    }
+
+    // Hash password and upsert auth record
+    const passwordHash = await hashPassword(testUser.password);
+    const existingAuth = await tx.query.authTable.findFirst({
+      where: eq(authTable.user_id, user.id),
+      columns: { id: true },
+    });
+    if (existingAuth) {
+      await tx
+        .update(authTable)
+        .set({ password_hash: passwordHash })
+        .where(eq(authTable.id, existingAuth.id));
+    } else {
+      await tx.insert(authTable).values({
+        user_id: user.id,
+        password_hash: passwordHash,
+      });
+    }
+
+    // Create or update the user's (single) wallet
+    await tx.insert(walletTable).values({
+      user_id: user.id,
+      name: "Main Wallet",
+      balance: 1000,
+    });
+
+    const wallet = await tx.query.walletTable.findFirst({
+      where: eq(walletTable.user_id, user.id),
+      columns: { id: true },
+    });
+
+    if (!wallet) {
+      throw new Error("Failed to create/find wallet for test user");
+    }
+
+    const categories = await tx
+      .select({ id: categoryTable.id, name: categoryTable.name })
+      .from(categoryTable);
+
+    if (!categories.length) {
+      throw new Error("No categories found to seed transactions");
+    }
+
+    const seededTransactions = Array.from({ length: transactionCount }).map(
+      () => {
+        const category = randomChoice(categories);
+        const amount = Number((Math.random() * 120 + 3).toFixed(2));
+        const daysAgo = randomInt(0, 120);
+
+        return {
+          user_id: user.id,
+          wallet_id: wallet.id,
+          category_id: category.id,
+          amount,
+          description: `Seeded: ${category.name}`,
+          created_at: isoDaysAgo(daysAgo),
+        };
+      },
+    );
+
+    await tx.insert(transactionTable).values(seededTransactions);
 
     logger.info("✅ Test user created", {
       username: testUser.username,
       email: testUser.email,
+    });
+
+    logger.info("✅ Wallet seeded", {
+      walletName: "Main Wallet",
+      balance: 1000,
+    });
+
+    logger.info("✅ Transactions seeded", {
+      count: transactionCount,
     });
   });
 }

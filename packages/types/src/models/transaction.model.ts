@@ -5,7 +5,7 @@ import { CursorModel } from "./cursor.model";
 
 export namespace TransactionModel {
   export const TransactionSchema = BaseModel.BaseRowSchema.extend({
-    user_id: z.coerce.number(),
+    wallet_id: z.coerce.number(),
     amount: z.number(),
     description: z.string().optional().nullable(),
     category_id: z.number(),
