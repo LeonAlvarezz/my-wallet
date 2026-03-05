@@ -33,7 +33,7 @@ export function HubSection({
             }}
             className="disabled:opacity-50"
           >
-            <div className="bg-card hover:bg-accent/40 flex items-center justify-between gap-3 rounded-lg border p-3 text-left transition-colors">
+            <div className="bg-secondary hover:bg-accent/40 flex items-center justify-between gap-3 rounded-lg border p-3 text-left transition-colors">
               <div className="flex items-center gap-3">
                 <div className="bg-secondary flex size-10 items-center justify-center rounded-lg">
                   <Icon icon={item.icon} className="size-6" />

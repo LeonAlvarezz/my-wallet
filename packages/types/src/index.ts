@@ -6,6 +6,7 @@ export { UserModel } from "./models/user.model";
 export { AuthModel } from "./models/auth.model";
 export { SessionModel } from "./models/session.model";
 export { CursorModel } from "./models/cursor.model";
+export { WalletEventModel } from "./models/wallet-event.model";
 
 export {
   FailSchema,

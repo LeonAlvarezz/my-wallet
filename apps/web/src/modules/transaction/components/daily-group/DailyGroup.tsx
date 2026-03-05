@@ -1,5 +1,6 @@
 import type { TransactionModel } from "@my-wallet/types";
 import { TransactionCard } from "../transaction-card";
+import { AmountDisplay } from "@/components/amount/AmountDisplay";
 // import TransactionCard, {
 //   type TransactionCardData,
 // } from "../transaction-card/TransactionCard";
@@ -30,13 +31,20 @@ export default function DailyGroup({
           <p className="text-sm font-semibold">{label}</p>
           <p className="text-muted-foreground text-xs">{date}</p>
         </div>
-        <p className="font-semibold">-${total.toFixed(2)}</p>
+        <AmountDisplay
+          value={-total}
+          colorize={false}
+          className="font-semibold"
+        />
       </div>
 
       {/* Transactions */}
       <div className="flex flex-col gap-2">
         {transactions.map((transaction) => (
-          <div key={transaction.id} onClick={() => onTransactionClick?.(transaction.id.toString())}>
+          <div
+            key={transaction.id}
+            onClick={() => onTransactionClick?.(transaction.id.toString())}
+          >
             <TransactionCard transaction={transaction} />
           </div>
         ))}

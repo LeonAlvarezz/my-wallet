@@ -5,6 +5,7 @@ import type { CategoryModel, TransactionModel } from "@my-wallet/types";
 import UpdateTransactionDialog from "../update-transaction-dialog/UpdateTransactionDialog";
 import { useDeleteTransaction } from "../../hooks/use-delete-transaction";
 import DeleteButton from "@/components/delete-button/DeleteButton";
+import { AmountDisplay } from "@/components/amount/AmountDisplay";
 
 type TransactionCardProps = {
   transaction: TransactionModel.TransactionWithCategoryDto;
@@ -60,10 +61,7 @@ export default function TransactionCard({ transaction }: TransactionCardProps) {
               </div>
             </div>
           </div>
-          {/* Amount */}
-          <p className="font-semibold text-red-500">
-            -${transaction.amount.toFixed(2)}
-          </p>
+          <AmountDisplay value={-transaction.amount} />
         </Button>
       </UpdateTransactionDialog>
       <DeleteButton

@@ -10,6 +10,7 @@ import {
 import { timestamps } from "../common";
 import { userTable } from "./user.schema";
 import { transactionTable } from "./transaction.schema";
+import { walletEventTable } from "./wallet-event.schema";
 
 export const walletTable = pgTable("wallets", {
   id: serial().primaryKey(),
@@ -17,10 +18,10 @@ export const walletTable = pgTable("wallets", {
   user_id: integer()
     .notNull()
     .references(() => userTable.id, { onDelete: "cascade" }),
-  name: varchar({ length: 50 }).notNull(),
-  balance: numeric({ precision: 10, scale: 2, mode: "number" })
-    .notNull()
-    .default(0),
+  name: varchar({ length: 50 }).notNull().default("Saving Account"),
+  //   balance: numeric({ precision: 10, scale: 2, mode: "number" })
+  //     .notNull()
+  //     .default(0),
   ...timestamps,
 });
 
@@ -30,4 +31,5 @@ export const walletRelation = relations(walletTable, ({ one, many }) => ({
     references: [userTable.id],
   }),
   transactions: many(transactionTable),
+  events: many(walletEventTable),
 }));

@@ -49,11 +49,11 @@
   --foreground: oklch(0.985 0 0);
   --card: oklch(20.463% 0.00002 271.152);
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
+  --popover: oklch(20.083% 0.01154 278);
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklab(50.951% -0.01718 -0.27401);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: rgb(30, 31, 37);
+  --secondary: oklch(24.083% 0.01154 278);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
@@ -208,7 +208,7 @@
   }
 
   .flex-col-center {
-  @apply flex flex-col items-center justify-center;
+    @apply flex flex-col items-center justify-center;
   }
 
   .outline-box {

@@ -3,10 +3,15 @@ import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { useSignOut } from "@/modules/auth/hooks/use-sign-out";
 import { useGetMe } from "@/modules/auth/hooks/use-get-me";
+import { useGetAccountBalance } from "@/modules/profile/hooks/use-get-account-balance";
+import { getDisplayAmount } from "@/utils/currency";
+import { cn } from "@/lib/utils";
+import { AmountDisplay } from "@/components/amount/AmountDisplay";
 export function ProfilePage() {
   const navigate = useNavigate();
   const signOutMutation = useSignOut();
   const { data } = useGetMe();
+  const accountBalanceQuery = useGetAccountBalance();
 
   const user = {
     name: "Leon",
@@ -14,9 +19,9 @@ export function ProfilePage() {
   };
 
   const account = {
-    totalBalance: 2385.75,
-    incomeThisMonth: 4120.0,
-    expenseThisMonth: 1734.25,
+    remaining: accountBalanceQuery.data?.remaining ?? 0,
+    balance: accountBalanceQuery.data?.balance ?? 0,
+    expenses: accountBalanceQuery.data?.expenses ?? 0,
   };
 
   const daysInView = 30;
@@ -95,37 +100,45 @@ export function ProfilePage() {
           </div>
         </div>
 
-        <div className="bg-card flex flex-col gap-2 rounded-lg border p-3">
+        <div className="bg-secondary flex flex-col gap-2 rounded-lg border p-3">
           <div className="flex items-center justify-between">
             <p className="text-muted-foreground text-xs font-semibold uppercase">
               Account Balance
             </p>
             <Icon icon="solar:wallet-money-bold-duotone" className="size-5" />
           </div>
-          <p className="text-3xl font-semibold">
-            ${account.totalBalance.toFixed(2)}
-          </p>
+          {/* <p
+            className={cn(
+              "text-3xl font-semibold tabular-nums",
+              account.remaining < 0 && "text-red-500",
+            )}
+          >
+            {getDisplayAmount(account.remaining)} */}
 
-          {/* <div className="flex items-baseline justify-between gap-3">
-            <p className="text-sm font-medium">Total available</p>
-            <p className="text-xl font-semibold">
-              ${account.totalBalance.toFixed(2)}
-            </p>
-          </div> */}
+          <AmountDisplay
+            value={account.remaining}
+            className="text-3xl font-bold"
+          />
+          {/* </p> */}
 
           <div className="grid grid-cols-2 gap-2">
-            <div className="bg-secondary/30 flex flex-col gap-1 rounded-lg border p-3">
-              <p className="text-muted-foreground text-xs">Income (month)</p>
-              <p className="text-sm font-semibold text-green-500">
-                +${account.incomeThisMonth.toFixed(2)}
-              </p>
+            <div className="bg-secondary/10 flex flex-col gap-1 rounded-lg border p-3">
+              <p className="text-muted-foreground text-xs">Balance</p>
+              {/* <p className="text-sm font-semibold text-green-500 tabular-nums">
+                +{getDisplayAmount(account.balance)}
+              </p> */}
+              <AmountDisplay
+                value={account.balance}
+                className="font-semibold"
+              />
             </div>
 
-            <div className="bg-secondary/30 flex flex-col gap-1 rounded-lg border p-3">
-              <p className="text-muted-foreground text-xs">Expense (month)</p>
-              <p className="text-sm font-semibold text-red-500">
-                -${account.expenseThisMonth.toFixed(2)}
-              </p>
+            <div className="bg-secondary/10 flex flex-col gap-1 rounded-lg border p-3">
+              <p className="text-muted-foreground text-xs">Expenses</p>
+              <AmountDisplay
+                value={account.expenses}
+                className="font-semibold"
+              />
             </div>
           </div>
         </div>
@@ -136,12 +149,12 @@ export function ProfilePage() {
           <div className="flex flex-col">
             <h2 className="text-sm font-semibold">This month</h2>
             <p className="text-muted-foreground text-xs">
-              ${monthTotal.toFixed(2)} total • {daysInView} days
+              {getDisplayAmount(monthTotal)} total • {daysInView} days
             </p>
           </div>
         </div>
 
-        <div className="bg-card rounded-lg border p-3">
+        <div className="bg-secondary rounded-lg border p-3">
           <div className="flex flex-col gap-3">
             <svg
               viewBox="0 0 100 100"

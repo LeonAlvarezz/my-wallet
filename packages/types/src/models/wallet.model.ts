@@ -6,7 +6,6 @@ export namespace WalletModel {
     public_id: z.uuid(),
     user_id: z.number(),
     name: z.string(),
-    balance: z.number(),
   });
 
   export const WalletPublicSchema = WalletSchema.omit({
@@ -16,13 +15,26 @@ export namespace WalletModel {
 
   export const CreateWalletSchema = WalletSchema.pick({
     name: true,
-    balance: true,
   });
 
   export const UpdateWalletSchema = CreateWalletSchema.partial();
+
+  export const WalletQuerySchema = z.object({
+    time_frame: z
+      .enum(BaseModel.TimeFrameEnum)
+      .default(BaseModel.TimeFrameEnum.ALL_TIME),
+  });
+
+  export const AccountBalanceSchema = z.object({
+    balance: z.number(),
+    expenses: z.number(),
+    remaining: z.number(),
+  });
 
   export type WalletDto = z.infer<typeof WalletSchema>;
   export type WalletPublicDto = z.infer<typeof WalletPublicSchema>;
   export type CreateWalletDto = z.infer<typeof CreateWalletSchema>;
   export type UpdateWalletDto = z.infer<typeof UpdateWalletSchema>;
+  export type WalletQueryDto = z.infer<typeof WalletQuerySchema>;
+  export type AccountBalanceDto = z.infer<typeof AccountBalanceSchema>;
 }

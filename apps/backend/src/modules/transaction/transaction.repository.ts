@@ -1,8 +1,14 @@
 import { db, DrizzleTransaction } from "@/lib/db";
-import { categoryTable, userTable, walletTable } from "@/lib/db/schema";
+import { categoryTable, walletTable } from "@/lib/db/schema";
 import { transactionTable } from "@/lib/db/schema/transaction.schema";
 import { decodeCursor } from "@/util/cursor-pagination";
-import { BaseModel, CursorModel, TransactionModel } from "@my-wallet/types";
+import { getMonth } from "@/util/date";
+import {
+  BaseModel,
+  CursorModel,
+  TransactionModel,
+  WalletModel,
+} from "@my-wallet/types";
 import {
   and,
   avg,
@@ -95,6 +101,7 @@ export class TransactionRepository {
 
     return where;
   }
+
   static async findMany() {
     return await db.query.transactionTable.findMany();
   }
@@ -143,7 +150,7 @@ export class TransactionRepository {
   ) {
     const conditions = this.buildFilter({
       ...query,
-      page_size: 10,
+      page_size: 0,
     });
 
     const [result] = await db
@@ -165,6 +172,29 @@ export class TransactionRepository {
       .leftJoin(walletTable, eq(transactionTable.wallet_id, walletTable.id))
       .where(and(...conditions, eq(walletTable.user_id, user_id)));
 
+    return result;
+  }
+
+  static async findUserExpense(
+    user_id: number,
+    query: WalletModel.WalletQueryDto,
+  ) {
+    const conditions = this.buildFilter({
+      ...query,
+      page_size: 0,
+    });
+    const { monthStart, nextMonthStart } = getMonth();
+
+    const [result] = await db
+      .select({
+        total:
+          sql<number>`COALESCE(SUM(${transactionTable.amount}), 0)`.mapWith(
+            Number,
+          ),
+      })
+      .from(transactionTable)
+      .leftJoin(walletTable, eq(transactionTable.wallet_id, walletTable.id))
+      .where(and(...conditions, eq(walletTable.user_id, user_id)));
     return result;
   }
 

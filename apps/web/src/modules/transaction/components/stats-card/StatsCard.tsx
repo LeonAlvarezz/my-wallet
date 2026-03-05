@@ -1,4 +1,6 @@
+import { AmountDisplay } from "@/components/amount/AmountDisplay";
 import { cn } from "@/lib/utils";
+import { toNumber } from "@/utils/currency";
 import { Icon } from "@iconify/react";
 
 export interface StatsCardProps {
@@ -27,7 +29,7 @@ export default function StatsCard({
   return (
     <div
       className={cn(
-        "bg-card flex flex-col gap-2 rounded-lg border p-4",
+        "bg-secondary flex flex-col gap-2 rounded-lg border p-4",
         className,
       )}
     >
@@ -39,7 +41,12 @@ export default function StatsCard({
       </div>
 
       <div className="flex items-baseline gap-2">
-        <h3 className="text-2xl font-bold">${amount}</h3>
+        <AmountDisplay
+          value={toNumber(amount)}
+          className="text-3xl font-bold"
+          showSign={false}
+          colorize={false}
+        />
         {trend !== "neutral" && (
           <Icon
             icon={

@@ -12,6 +12,7 @@ import { SimpleSuccess } from "@/core/response";
 import { UserRepository } from "@/modules/user/user.repository";
 import { RedisService } from "@/lib/redis/redis.service";
 import { AuthModel, UserModel } from "@my-wallet/types";
+import { WalletRepository } from "../wallet/wallet.repository";
 
 export class AuthService {
   static async signUp(payload: AuthModel.SignUpDto) {
@@ -37,6 +38,7 @@ export class AuthService {
         },
         tx,
       );
+      await WalletRepository.create(user.id, { name: "Saving Account" }, tx);
       return SimpleSuccess();
     });
   }
