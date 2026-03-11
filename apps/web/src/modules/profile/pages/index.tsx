@@ -1,17 +1,22 @@
+import { useState } from "react";
 import { Icon } from "@iconify/react";
 import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import { AmountDisplay } from "@/components/amount/AmountDisplay";
 import { useSignOut } from "@/modules/auth/hooks/use-sign-out";
 import { useGetMe } from "@/modules/auth/hooks/use-get-me";
+import { TopUpDrawer } from "@/modules/profile/components/TopUpDrawer";
+import { TopUpHistoryDrawer } from "@/modules/profile/components/TopUpHistoryDrawer";
 import { useGetAccountBalance } from "@/modules/profile/hooks/use-get-account-balance";
 import { getDisplayAmount } from "@/utils/currency";
-import { cn } from "@/lib/utils";
-import { AmountDisplay } from "@/components/amount/AmountDisplay";
+
 export function ProfilePage() {
   const navigate = useNavigate();
   const signOutMutation = useSignOut();
   const { data } = useGetMe();
   const accountBalanceQuery = useGetAccountBalance();
+  const [isTopUpHistoryOpen, setIsTopUpHistoryOpen] = useState(false);
+  const [isTopUpOpen, setIsTopUpOpen] = useState(false);
 
   const user = {
     name: "Leon",
@@ -62,22 +67,6 @@ export function ProfilePage() {
 
   return (
     <div className="flex h-full w-full flex-col gap-6 overflow-y-auto p-4 pb-[calc(var(--bottom-nav-total-h)+1rem)]">
-      {/* <header className="flex items-center justify-between">
-        <div className="w-24" />
-
-        <h1 className="text-lg font-semibold">Profile</h1>
-
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon-sm"
-          onClick={() => router.history.push("/settings")}
-        >
-          <Icon icon="solar:settings-line-duotone" className="size-6" />
-        </Button>
-      </header> */}
-      {/* <TopNav title="Profile" /> */}
-
       <section className="flex flex-col gap-3">
         <div className="flex items-center gap-4">
           <div className="bg-secondary flex size-16 items-center justify-center rounded-full border">
@@ -105,7 +94,20 @@ export function ProfilePage() {
             <p className="text-muted-foreground text-xs font-semibold uppercase">
               Account Balance
             </p>
-            <Icon icon="solar:wallet-money-bold-duotone" className="size-5" />
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                aria-label="Open top up history"
+                onClick={() => setIsTopUpHistoryOpen(true)}
+              >
+                <Icon icon="solar:history-bold-duotone" />
+              </Button>
+              <Button type="button" onClick={() => setIsTopUpOpen(true)}>
+                <Icon icon="solar:wallet-bold-duotone" />
+                Top Up
+              </Button>
+            </div>
           </div>
           {/* <p
             className={cn(
@@ -198,7 +200,7 @@ export function ProfilePage() {
             type="button"
             onClick={() =>
               navigate({
-                to: "/transaction",
+                to: "/expense",
               })
             }
             className="h-fit w-full justify-start p-3 text-left"
@@ -250,6 +252,12 @@ export function ProfilePage() {
           Sign out
         </Button>
       </section>
+
+      <TopUpDrawer open={isTopUpOpen} onOpenChange={setIsTopUpOpen} />
+      <TopUpHistoryDrawer
+        open={isTopUpHistoryOpen}
+        onOpenChange={setIsTopUpHistoryOpen}
+      />
     </div>
   );
 }

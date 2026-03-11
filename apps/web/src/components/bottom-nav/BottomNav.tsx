@@ -3,8 +3,8 @@ import BottomNavItem, { type BottomNavItemData } from "./BottomNavItem";
 export default function BottomNav() {
   const bottomNavItems: BottomNavItemData[] = [
     {
-      title: "Transaction",
-      to: "/transaction",
+      title: "Expense",
+      to: "/expense",
       icon: "solar:bill-list-line-duotone",
     },
     { title: "Add", to: "/", icon: "solar:add-circle-line-duotone" },

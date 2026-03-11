@@ -1,16 +1,6 @@
-import type { TransactionModel } from "@my-wallet/types";
+import type { DailyGroupData } from "@/utils/transaction";
 import { TransactionCard } from "../transaction-card";
 import { AmountDisplay } from "@/components/amount/AmountDisplay";
-// import TransactionCard, {
-//   type TransactionCardData,
-// } from "../transaction-card/TransactionCard";
-
-export interface DailyGroupData {
-  date: string;
-  label: string; // "Today", "Yesterday", "Mon, Jan 12"
-  total: number;
-  transactions: TransactionModel.TransactionWithCategoryDto[];
-}
 
 interface DailyGroupProps extends DailyGroupData {
   onTransactionClick?: (transactionId: string) => void;

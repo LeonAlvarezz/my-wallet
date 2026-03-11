@@ -5,4 +5,5 @@ export namespace OpenApiKey {
   export const Category = "Category";
   export const App = "App";
   export const Wallet = "Wallet";
+  export const WalletEvent = "WalletEvent";
 }

@@ -19,53 +19,11 @@ import {
 } from "@/components/ui/select";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect } from "react";
-
-interface DailyGroupData {
-  day: string; // YYYY-MM-DD (matches backend `extra[].day`)
-  date: string;
-  label: string;
-  total: number;
-  transactions: TransactionModel.TransactionWithCategoryDto[];
-}
-
-const groupTransactionsByDate = (
-  transactions: TransactionModel.TransactionWithCategoryDto[],
-  totalsByDay: Map<string, number>,
-): DailyGroupData[] => {
-  const grouped: Record<string, TransactionModel.TransactionWithCategoryDto[]> =
-    {};
-
-  for (const transaction of transactions) {
-    const day = transaction.created_at.split("T")[0];
-    if (!grouped[day]) {
-      grouped[day] = [];
-    }
-    grouped[day].push(transaction);
-  }
-
-  return Object.entries(grouped)
-    .map(([day, txns]) => {
-      // Parse as local date to keep Today/Yesterday labels intuitive.
-      // `day` is still the canonical key from backend.
-      const localIsoDate = `${day}T00:00:00`;
-      return {
-        day,
-        date: formatDate(localIsoDate),
-        label: getDateLabel(localIsoDate),
-        total:
-          totalsByDay.get(day) ?? txns.reduce((sum, t) => sum + t.amount, 0),
-        transactions: txns.sort(
-          (a, b) =>
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-        ),
-      };
-    })
-    .sort((a, b) => b.day.localeCompare(a.day));
-};
+import { groupTransactionsByDate } from "@/utils/transaction";
 
 export default function TransactionPage() {
   const navigate = useNavigate();
-  const search = useSearch({ from: "/_homeLayout/transaction/" });
+  const search = useSearch({ from: "/_homeLayout/expense/" });
   const { debouncedValue, setSearchQuery, searchQuery } =
     useSearchDebounce(500);
 
@@ -79,18 +37,10 @@ export default function TransactionPage() {
   const overview = useGetSpendingOverview({ time_frame: timeFrame });
 
   const transactions = infinite.data?.pages.flatMap((p) => p.data) || [];
-
-  const totalsByDay = () => {
-    const map = new Map<string, number>();
-    const pages = infinite.data?.pages ?? [];
-    for (const page of pages) {
-      const extra = page.extra ?? [];
-      for (const item of extra) {
-        map.set(item.day, item.total);
-      }
-    }
-    return map;
-  };
+  const extras =
+    infinite.data?.pages
+      .flatMap((p) => p.extra)
+      .filter((data) => data !== undefined) || [];
 
   const hasMore = !!infinite.hasNextPage;
 
@@ -101,10 +51,7 @@ export default function TransactionPage() {
   };
 
   // Group transactions by date
-  const groupedTransactions = groupTransactionsByDate(
-    transactions,
-    totalsByDay(),
-  );
+  const groupedTransactions = groupTransactionsByDate(transactions, extras);
 
   const totalSpent = overview.data?.total ?? 0;
   const avgPerTransaction = overview.data?.average ?? 0;
@@ -114,8 +61,8 @@ export default function TransactionPage() {
     const nextQuery = debouncedValue.trim();
     if ((search.query ?? "") === nextQuery) return;
 
-    void navigate({
-      to: "/transaction",
+    navigate({
+      to: "/expense",
       search: (prev) => ({
         ...prev,
         query: nextQuery.length ? nextQuery : undefined,
@@ -148,8 +95,8 @@ export default function TransactionPage() {
             <Select
               value={timeFrame}
               onValueChange={(value) => {
-                void navigate({
-                  to: "/transaction",
+                navigate({
+                  to: "/expense",
                   search: (prev) => ({
                     ...prev,
                     time_frame: value as BaseModel.TimeFrameEnum,
@@ -217,6 +164,7 @@ export default function TransactionPage() {
               {groupedTransactions.map((dailyGroup) => (
                 <DailyGroup
                   key={dailyGroup.day}
+                  day={dailyGroup.day}
                   date={dailyGroup.date}
                   label={dailyGroup.label}
                   total={dailyGroup.total}

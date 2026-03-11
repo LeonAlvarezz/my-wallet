@@ -16,7 +16,7 @@ import { TransactionModel } from "@my-wallet/types";
 //   }, z.enum(BaseModel.TimeFrameEnum).optional()),
 // });
 
-export const Route = createFileRoute("/_homeLayout/transaction/")({
+export const Route = createFileRoute("/_homeLayout/expense/")({
   beforeLoad: guard,
   validateSearch: (search) =>
     TransactionModel.TransactionBaseQuerySchema.parse(search),

@@ -120,15 +120,20 @@ export class TransactionRepository {
     return result.map((row) => row.transactions);
   }
 
-  static async findTotalAmountByDays(walletId: number, query?: string) {
+  static async findTotalAmountByDays(
+    dates: string[],
+    user_id: number,
+    searchQuery?: string,
+  ) {
     const where = this.buildFilter({
-      query,
+      query: searchQuery,
       page_size: 10,
     });
 
     const conditions: SQL[] = [
       ...where,
-      eq(transactionTable.wallet_id, walletId),
+      inArray(sql`DATE(${transactionTable.created_at})`, dates),
+      eq(walletTable.user_id, user_id),
     ];
 
     return await db

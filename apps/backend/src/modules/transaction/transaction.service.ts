@@ -21,6 +21,7 @@ export class TransactionService {
     const extra =
       dates.length > 0
         ? await TransactionRepository.findTotalAmountByDays(
+            dates,
             user_id,
             query.query,
           )
