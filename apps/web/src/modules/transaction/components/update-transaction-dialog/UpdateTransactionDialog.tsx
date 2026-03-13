@@ -11,7 +11,6 @@ import {
 import { TransactionModel } from "@my-wallet/types";
 import { Icon } from "@iconify/react";
 import { useState, type ReactNode } from "react";
-import { toast } from "sonner";
 import { useDeleteTransaction } from "../../hooks/use-delete-transaction";
 import DeleteButton from "@/components/delete-button/DeleteButton";
 import AddTransactionForm from "@/modules/add/components/forms/mutate-transaction-form/MutateTransactionForm";
@@ -61,7 +60,7 @@ export default function UpdateTransactionDialog({
           </AddTransactionContext.Provider>
         </div>
         <DialogFooter>
-          <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-2">
             <DeleteButton
               title="Delete transaction?"
               description="This action cannot be undone. This will permanently delete this transaction."

@@ -1,6 +1,5 @@
 import { Input } from "@/components/ui/input";
 import { Icon } from "@iconify/react";
-import StatsCard from "../components/stats-card/StatsCard";
 import DailyGroup from "../components/daily-group/DailyGroup";
 import { BaseModel } from "@my-wallet/types";
 import InfiniteScroll from "@/components/infinite-scroll/InfiniteScroll";
@@ -20,6 +19,7 @@ import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { groupTransactionsByDate } from "@/utils/transaction";
 import CashflowSummary from "../components/cashflow/CashflowSummary";
+import { StatsCard } from "../components/stats-card";
 
 export default function TransactionPage() {
   const navigate = useNavigate();
@@ -55,8 +55,6 @@ export default function TransactionPage() {
 
   const totalSpent = overview.data?.expense ?? 0;
   const totalTopUp = overview.data?.top_up ?? 0;
-  const avgPerTransaction = overview.data?.average ?? 0;
-  const highestTransaction = overview.data?.highest ?? 0;
 
   useEffect(() => {
     const nextQuery = debouncedValue.trim();
@@ -92,7 +90,7 @@ export default function TransactionPage() {
       {!debouncedValue && (
         <section className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">Overview</h2>
+            <h2 className="text-lg font-semibold">Transaction</h2>
             <Select
               value={timeFrame}
               onValueChange={(value) => {
@@ -120,27 +118,20 @@ export default function TransactionPage() {
                 </SelectGroup>
               </SelectContent>
             </Select>
-            {/* <Button variant="ghost" size="sm">
-            This Month
-          </Button> */}
           </div>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-1">
-            {/* <CashflowSummary income={totalTopUp} spent={totalSpent} /> */}
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-2">
             <StatsCard
               title="Income"
               amount={totalTopUp.toFixed(2)}
               icon="solar:arrow-up-bold-duotone"
-              className="border-emerald-500/50"
-              description="Money added to your wallet"
+              trend="up"
             />
             <StatsCard
               title="Spent"
               amount={-totalSpent.toFixed(2)}
               icon="solar:arrow-down-bold-duotone"
-              trend="up"
-              className="border-rose-500/50"
-              description="Total outgoing transactions"
+              trend="down"
             />
           </div>
         </section>

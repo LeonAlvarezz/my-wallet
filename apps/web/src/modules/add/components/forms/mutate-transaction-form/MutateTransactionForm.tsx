@@ -74,7 +74,7 @@ function MutateTransactionForm({ className, children }: Props) {
               <Field data-invalid={isInvalid}>
                 <div className="flex w-full flex-col items-center gap-4">
                   <FieldLabel htmlFor={field.name}>Enter Amount</FieldLabel>
-                  <div className="flex h-fit gap-4">
+                  <div className="relative left-6 flex h-fit gap-4">
                     <AmountInput
                       value={field.state.value}
                       id={field.name}
@@ -121,7 +121,7 @@ function MutateTransactionForm({ className, children }: Props) {
                     field.handleBlur();
                   }}
                   // defaultValue={TransactionModel.TransactionTypeEnum.EXPENSE}
-                  className="grid grid-cols-1 gap-3 sm:grid-cols-2"
+                  className="grid grid-cols-2 gap-3"
                 >
                   {transactionTypeOptions.map((option) => {
                     const isSelected = field.state.value === option.value;

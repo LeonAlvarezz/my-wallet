@@ -22,7 +22,7 @@ export default function AddPage() {
       <MutateTransactionContext.Provider value={{ ...formHook }}>
         <MutateTransactionForm>
           <MutateTransactionFormFooter>
-            <div className="max-w-mobile fixed inset-x-0 bottom-0 m-auto px-4">
+            <div className="max-w-mobile to-background fixed inset-x-0 bottom-0 m-auto bg-linear-180 px-4 pt-10">
               <div className="mb-[calc(var(--bottom-nav-total-h)+10px)] flex gap-2">
                 <SmartInput
                   value={smartText}

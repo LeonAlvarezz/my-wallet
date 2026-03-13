@@ -10,6 +10,7 @@ import { AmountDisplay } from "@/components/amount/AmountDisplay";
 type TransactionCardProps = {
   transaction: TransactionModel.TransactionWithCategoryDto;
 };
+
 const colorMap: Record<CategoryModel.CategoryColorEnum, string> = {
   GREEN: "bg-green-500",
   BLUE: "bg-blue-500",
@@ -24,6 +25,8 @@ const colorMap: Record<CategoryModel.CategoryColorEnum, string> = {
 };
 
 export default function TransactionCard({ transaction }: TransactionCardProps) {
+  const isExpense =
+    transaction.type === TransactionModel.TransactionTypeEnum.EXPENSE;
   const deleteMutation = useDeleteTransaction();
   return (
     <div className="group relative">
@@ -35,13 +38,21 @@ export default function TransactionCard({ transaction }: TransactionCardProps) {
           {/* Icon & Details */}
           <div className="flex w-full items-center gap-3">
             <div
-              className={`flex items-center justify-center rounded-lg p-2 ${transaction.category ? colorMap[transaction.category.color] : colorMap.DEFAULT}`}
+              className={`flex items-center justify-center rounded-lg p-2 ${
+                isExpense
+                  ? transaction.category
+                    ? colorMap[transaction.category.color]
+                    : colorMap.DEFAULT
+                  : colorMap.GREEN
+              }`}
             >
               <Icon
                 icon={
-                  transaction.category
-                    ? transaction.category.icon
-                    : "solar:question-circle-bold-duotone"
+                  isExpense
+                    ? transaction.category
+                      ? transaction.category.icon
+                      : "solar:question-circle-bold-duotone"
+                    : "solar:wallet-bold-duotone"
                 }
                 className="size-5 text-white"
               />
@@ -56,17 +67,17 @@ export default function TransactionCard({ transaction }: TransactionCardProps) {
                 </p>
                 <span className="text-muted-foreground text-xs">•</span>
                 <p className="text-muted-foreground text-xs">
-                  {transaction.category ? transaction.category.name : "Unknown"}
+                  {isExpense
+                    ? transaction.category
+                      ? transaction.category.name
+                      : "Unknown"
+                    : "Top up"}
                 </p>
               </div>
             </div>
           </div>
           <AmountDisplay
-            value={
-              transaction.type === TransactionModel.TransactionTypeEnum.EXPENSE
-                ? -transaction.amount
-                : transaction.amount
-            }
+            value={isExpense ? -transaction.amount : transaction.amount}
           />
         </Button>
       </UpdateTransactionDialog>

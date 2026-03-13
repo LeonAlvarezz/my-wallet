@@ -2,18 +2,18 @@ import { useState } from "react";
 import { Icon } from "@iconify/react";
 import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { AmountDisplay } from "@/components/amount/AmountDisplay";
 import { useSignOut } from "@/modules/auth/hooks/use-sign-out";
 import { useGetMe } from "@/modules/auth/hooks/use-get-me";
 import { TopUpDrawer } from "@/modules/profile/components/TopUpDrawer";
 import { TopUpHistoryDrawer } from "@/modules/profile/components/TopUpHistoryDrawer";
-import { useGetAccountBalance } from "@/modules/profile/hooks/use-get-account-balance";
 import { getDisplayAmount } from "@/utils/currency";
+import { HubSection } from "@/modules/settings/components/HubSection";
+import { useTheme } from "@/modules/theme/use-theme";
 
 export function ProfilePage() {
-  const navigate = useNavigate();
   const signOutMutation = useSignOut();
   const { data } = useGetMe();
+  const { theme, setTheme } = useTheme();
   const [isTopUpHistoryOpen, setIsTopUpHistoryOpen] = useState(false);
   const [isTopUpOpen, setIsTopUpOpen] = useState(false);
 
@@ -21,6 +21,7 @@ export function ProfilePage() {
     name: "Leon",
     email: "leon@example.com",
   };
+  const navigate = useNavigate();
 
   // const account = {
   //   remaining: accountBalanceQuery.data?.remaining ?? 0,
@@ -133,7 +134,7 @@ export function ProfilePage() {
           </div>
         </div> */}
       </section>
-
+      {/* 
       <section className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
@@ -175,77 +176,82 @@ export function ProfilePage() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
-      <section className="flex flex-col gap-2">
-        <h2 className="text-muted-foreground text-sm font-semibold uppercase">
-          Dashboard
-        </h2>
-
-        <div className="grid grid-cols-1 gap-2">
-          <Button
-            variant="outline"
-            type="button"
-            onClick={() =>
+      <HubSection
+        title="Preferences"
+        items={[
+          // {
+          //   title: "Notifications",
+          //   description: "Expense alerts, budgets, weekly reports",
+          //   icon: "solar:bell-bold-duotone",
+          //   to: "/settings/notifications",
+          // },
+          {
+            title: "Dark Mode",
+            description: "Dark Mode",
+            icon: "solar:lightbulb-bolt-bold-duotone",
+            switch: {
+              checked: theme === "dark",
+              onCheckedChange: (checked) => {
+                setTheme(checked ? "dark" : "light");
+              },
+            },
+          },
+          // {
+          //   title: "Currency",
+          //   description: "USD - US Dollar",
+          //   icon: "solar:wallet-bold-duotone",
+          //   onClick: () => {
+          //     navigate({
+          //       to: "/settings/notifications",
+          //     });
+          //   },
+          // },
+          {
+            title: "Category Matching",
+            description: "Manage how category will be match",
+            icon: "solar:tag-bold-duotone",
+            onClick: () => {
               navigate({
-                to: "/transaction",
-              })
-            }
-            className="h-fit w-full justify-start p-3 text-left"
-            size="lg"
-          >
-            <div className="bg-secondary flex size-10 items-center justify-center rounded-lg">
-              <Icon icon="solar:chart-square-bold-duotone" className="size-6" />
-            </div>
-            <div className="flex flex-col">
-              <p className="text-sm font-medium">Statistics</p>
-              <p className="text-muted-foreground text-xs">Transactions</p>
-            </div>
-          </Button>
-
-          <Button
-            variant="outline"
-            type="button"
-            onClick={() =>
-              navigate({
-                to: "/settings",
-              })
-            }
-            className="h-fit w-full justify-start p-3 text-left"
-            size="lg"
-          >
-            <div className="bg-secondary flex size-10 items-center justify-center rounded-lg">
-              <Icon icon="solar:chart-square-bold-duotone" className="size-6" />
-            </div>
-            <div className="flex flex-col">
-              <p className="text-sm font-medium">Setting</p>
-              <p className="text-muted-foreground text-xs">Transactions</p>
-            </div>
-          </Button>
-        </div>
-      </section>
-
-      <section className="flex flex-col gap-2">
-        <Button
-          type="button"
-          variant="destructive"
-          className="w-full"
-          loading={signOutMutation.isPending}
-          disabled={signOutMutation.isPending}
-          onClick={async () => {
-            await signOutMutation.mutateAsync();
-          }}
-        >
-          <Icon icon="solar:logout-2-bold" className="size-5" />
-          Sign out
-        </Button>
-      </section>
-
-      <TopUpDrawer open={isTopUpOpen} onOpenChange={setIsTopUpOpen} />
-      <TopUpHistoryDrawer
-        open={isTopUpHistoryOpen}
-        onOpenChange={setIsTopUpHistoryOpen}
+                to: "/settings/budget-goals",
+              });
+            },
+          },
+          // {
+          //   title: "Budget Goals",
+          //   description: "Monthly limits per category (CRUD)",
+          //   icon: "solar:wallet-money-bold-duotone",
+          //   to: "/settings/budget-goals",
+          // },
+        ]}
       />
+
+      <HubSection
+        title="Security"
+        items={[
+          {
+            title: "Change password",
+            description: "Change account password",
+            icon: "solar:lock-keyhole-minimalistic-unlocked-bold-duotone",
+            disabled: true,
+          },
+        ]}
+      />
+
+      <Button
+        type="button"
+        variant="destructive"
+        className="w-full"
+        loading={signOutMutation.isPending}
+        disabled={signOutMutation.isPending}
+        onClick={async () => {
+          await signOutMutation.mutateAsync();
+        }}
+      >
+        <Icon icon="solar:logout-2-bold" className="size-5" />
+        Sign out
+      </Button>
     </div>
   );
 }
