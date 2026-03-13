@@ -12,9 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as PublicLayoutRouteRouteImport } from './routes/_publicLayout/route'
 import { Route as HomeLayoutRouteRouteImport } from './routes/_homeLayout/route'
 import { Route as HomeLayoutIndexRouteImport } from './routes/_homeLayout/index'
+import { Route as HomeLayoutTransactionIndexRouteImport } from './routes/_homeLayout/transaction/index'
 import { Route as HomeLayoutSettingsIndexRouteImport } from './routes/_homeLayout/settings/index'
 import { Route as HomeLayoutProfileIndexRouteImport } from './routes/_homeLayout/profile/index'
-import { Route as HomeLayoutExpenseIndexRouteImport } from './routes/_homeLayout/expense/index'
 import { Route as PublicLayoutAuthRegisterIndexRouteImport } from './routes/_publicLayout/auth/register/index'
 import { Route as PublicLayoutAuthLoginIndexRouteImport } from './routes/_publicLayout/auth/login/index'
 import { Route as HomeLayoutSettingsNotificationsIndexRouteImport } from './routes/_homeLayout/settings/notifications/index'
@@ -33,6 +33,12 @@ const HomeLayoutIndexRoute = HomeLayoutIndexRouteImport.update({
   path: '/',
   getParentRoute: () => HomeLayoutRouteRoute,
 } as any)
+const HomeLayoutTransactionIndexRoute =
+  HomeLayoutTransactionIndexRouteImport.update({
+    id: '/transaction/',
+    path: '/transaction/',
+    getParentRoute: () => HomeLayoutRouteRoute,
+  } as any)
 const HomeLayoutSettingsIndexRoute = HomeLayoutSettingsIndexRouteImport.update({
   id: '/settings/',
   path: '/settings/',
@@ -41,11 +47,6 @@ const HomeLayoutSettingsIndexRoute = HomeLayoutSettingsIndexRouteImport.update({
 const HomeLayoutProfileIndexRoute = HomeLayoutProfileIndexRouteImport.update({
   id: '/profile/',
   path: '/profile/',
-  getParentRoute: () => HomeLayoutRouteRoute,
-} as any)
-const HomeLayoutExpenseIndexRoute = HomeLayoutExpenseIndexRouteImport.update({
-  id: '/expense/',
-  path: '/expense/',
   getParentRoute: () => HomeLayoutRouteRoute,
 } as any)
 const PublicLayoutAuthRegisterIndexRoute =
@@ -75,9 +76,9 @@ const HomeLayoutSettingsBudgetGoalsIndexRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof HomeLayoutIndexRoute
-  '/expense/': typeof HomeLayoutExpenseIndexRoute
   '/profile/': typeof HomeLayoutProfileIndexRoute
   '/settings/': typeof HomeLayoutSettingsIndexRoute
+  '/transaction/': typeof HomeLayoutTransactionIndexRoute
   '/settings/budget-goals/': typeof HomeLayoutSettingsBudgetGoalsIndexRoute
   '/settings/notifications/': typeof HomeLayoutSettingsNotificationsIndexRoute
   '/auth/login/': typeof PublicLayoutAuthLoginIndexRoute
@@ -85,9 +86,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof HomeLayoutIndexRoute
-  '/expense': typeof HomeLayoutExpenseIndexRoute
   '/profile': typeof HomeLayoutProfileIndexRoute
   '/settings': typeof HomeLayoutSettingsIndexRoute
+  '/transaction': typeof HomeLayoutTransactionIndexRoute
   '/settings/budget-goals': typeof HomeLayoutSettingsBudgetGoalsIndexRoute
   '/settings/notifications': typeof HomeLayoutSettingsNotificationsIndexRoute
   '/auth/login': typeof PublicLayoutAuthLoginIndexRoute
@@ -98,9 +99,9 @@ export interface FileRoutesById {
   '/_homeLayout': typeof HomeLayoutRouteRouteWithChildren
   '/_publicLayout': typeof PublicLayoutRouteRouteWithChildren
   '/_homeLayout/': typeof HomeLayoutIndexRoute
-  '/_homeLayout/expense/': typeof HomeLayoutExpenseIndexRoute
   '/_homeLayout/profile/': typeof HomeLayoutProfileIndexRoute
   '/_homeLayout/settings/': typeof HomeLayoutSettingsIndexRoute
+  '/_homeLayout/transaction/': typeof HomeLayoutTransactionIndexRoute
   '/_homeLayout/settings/budget-goals/': typeof HomeLayoutSettingsBudgetGoalsIndexRoute
   '/_homeLayout/settings/notifications/': typeof HomeLayoutSettingsNotificationsIndexRoute
   '/_publicLayout/auth/login/': typeof PublicLayoutAuthLoginIndexRoute
@@ -110,9 +111,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/expense/'
     | '/profile/'
     | '/settings/'
+    | '/transaction/'
     | '/settings/budget-goals/'
     | '/settings/notifications/'
     | '/auth/login/'
@@ -120,9 +121,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/expense'
     | '/profile'
     | '/settings'
+    | '/transaction'
     | '/settings/budget-goals'
     | '/settings/notifications'
     | '/auth/login'
@@ -132,9 +133,9 @@ export interface FileRouteTypes {
     | '/_homeLayout'
     | '/_publicLayout'
     | '/_homeLayout/'
-    | '/_homeLayout/expense/'
     | '/_homeLayout/profile/'
     | '/_homeLayout/settings/'
+    | '/_homeLayout/transaction/'
     | '/_homeLayout/settings/budget-goals/'
     | '/_homeLayout/settings/notifications/'
     | '/_publicLayout/auth/login/'
@@ -169,6 +170,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeLayoutIndexRouteImport
       parentRoute: typeof HomeLayoutRouteRoute
     }
+    '/_homeLayout/transaction/': {
+      id: '/_homeLayout/transaction/'
+      path: '/transaction'
+      fullPath: '/transaction/'
+      preLoaderRoute: typeof HomeLayoutTransactionIndexRouteImport
+      parentRoute: typeof HomeLayoutRouteRoute
+    }
     '/_homeLayout/settings/': {
       id: '/_homeLayout/settings/'
       path: '/settings'
@@ -181,13 +189,6 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile/'
       preLoaderRoute: typeof HomeLayoutProfileIndexRouteImport
-      parentRoute: typeof HomeLayoutRouteRoute
-    }
-    '/_homeLayout/expense/': {
-      id: '/_homeLayout/expense/'
-      path: '/expense'
-      fullPath: '/expense/'
-      preLoaderRoute: typeof HomeLayoutExpenseIndexRouteImport
       parentRoute: typeof HomeLayoutRouteRoute
     }
     '/_publicLayout/auth/register/': {
@@ -223,18 +224,18 @@ declare module '@tanstack/react-router' {
 
 interface HomeLayoutRouteRouteChildren {
   HomeLayoutIndexRoute: typeof HomeLayoutIndexRoute
-  HomeLayoutExpenseIndexRoute: typeof HomeLayoutExpenseIndexRoute
   HomeLayoutProfileIndexRoute: typeof HomeLayoutProfileIndexRoute
   HomeLayoutSettingsIndexRoute: typeof HomeLayoutSettingsIndexRoute
+  HomeLayoutTransactionIndexRoute: typeof HomeLayoutTransactionIndexRoute
   HomeLayoutSettingsBudgetGoalsIndexRoute: typeof HomeLayoutSettingsBudgetGoalsIndexRoute
   HomeLayoutSettingsNotificationsIndexRoute: typeof HomeLayoutSettingsNotificationsIndexRoute
 }
 
 const HomeLayoutRouteRouteChildren: HomeLayoutRouteRouteChildren = {
   HomeLayoutIndexRoute: HomeLayoutIndexRoute,
-  HomeLayoutExpenseIndexRoute: HomeLayoutExpenseIndexRoute,
   HomeLayoutProfileIndexRoute: HomeLayoutProfileIndexRoute,
   HomeLayoutSettingsIndexRoute: HomeLayoutSettingsIndexRoute,
+  HomeLayoutTransactionIndexRoute: HomeLayoutTransactionIndexRoute,
   HomeLayoutSettingsBudgetGoalsIndexRoute:
     HomeLayoutSettingsBudgetGoalsIndexRoute,
   HomeLayoutSettingsNotificationsIndexRoute:

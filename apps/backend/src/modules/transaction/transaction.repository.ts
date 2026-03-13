@@ -140,7 +140,7 @@ export class TransactionRepository {
       .select({
         day: sql<string>`DATE(${transactionTable.created_at})`,
         // Postgres returns SUM(numeric) as string; cast to float to ensure JSON number.
-        total: sql<number>`COALESCE(SUM(${transactionTable.amount}), 0)::float8`,
+        total: sql<number>`COALESCE(SUM(CASE WHEN type = 'TOP_UP' THEN ${transactionTable.amount} ELSE - ${transactionTable.amount} END), 0)::float8`,
       })
       .from(transactionTable)
       .leftJoin(walletTable, eq(transactionTable.wallet_id, walletTable.id))
@@ -160,8 +160,12 @@ export class TransactionRepository {
 
     const [result] = await db
       .select({
-        total:
-          sql<number>`COALESCE(SUM(${transactionTable.amount}), 0)`.mapWith(
+        expense:
+          sql<number>`COALESCE(SUM(CASE WHEN type = 'EXPENSE' THEN ${transactionTable.amount} ELSE 0 END), 0)`.mapWith(
+            Number,
+          ),
+        top_up:
+          sql<number>`COALESCE(SUM(CASE WHEN type = 'TOP_UP' THEN ${transactionTable.amount} ELSE 0 END), 0)`.mapWith(
             Number,
           ),
         average:
@@ -169,7 +173,7 @@ export class TransactionRepository {
             Number,
           ),
         highest:
-          sql<number>`COALESCE(MAX(${transactionTable.amount}), 0)`.mapWith(
+          sql<number>`COALESCE(MAX(CASE WHEN type = 'TOP_UP' THEN ${transactionTable.amount} ELSE 0 END), 0)`.mapWith(
             Number,
           ),
       })

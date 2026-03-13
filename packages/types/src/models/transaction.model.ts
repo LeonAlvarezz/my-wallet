@@ -4,19 +4,27 @@ import { CategoryModel } from "./category.model";
 import { CursorModel } from "./cursor.model";
 
 export namespace TransactionModel {
+  export enum TransactionTypeEnum {
+    TOP_UP = "TOP_UP",
+    EXPENSE = "EXPENSE",
+  }
   export const TransactionSchema = BaseModel.BaseRowSchema.extend({
     wallet_id: z.coerce.number(),
     amount: z.number(),
     description: z.string().optional().nullable(),
-    category_id: z.number(),
+    category_id: z.number().nullable().optional(),
+    type: z.enum(TransactionTypeEnum),
   });
+
   export const TransactionBaseQuerySchema = z.object({
     query: z.string().optional(),
     time_frame: z.enum(BaseModel.TimeFrameEnum).optional(),
   });
+
   export const TransactionFilterSchema = CursorModel.CursorQuerySchema.extend(
     TransactionBaseQuerySchema.shape,
   );
+
   export const TransactionWithCategorySchema = TransactionSchema.omit({
     category_id: true,
   }).extend({
@@ -26,14 +34,17 @@ export namespace TransactionModel {
     amount: true,
     description: true,
     category_id: true,
+    type: true,
   });
+
   export const UpdateTransactionSchema = CreateTransactionSchema.partial();
   export const ExtraDailyTotalSchema = z.object({
     day: z.string(),
     total: z.number(),
   });
   export const UserOverviewSchema = z.object({
-    total: z.number(),
+    expense: z.number(),
+    top_up: z.number(),
     average: z.number(),
     highest: z.number(),
   });

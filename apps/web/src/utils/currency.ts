@@ -7,6 +7,6 @@ export function getDisplayAmount(amount: number) {
   });
 }
 
-export function toNumber(amount: number | string) {
+export function formatAmount(amount: number | string) {
   return !Number.isNaN(Number(amount)) ? Number(amount) : 0;
 }

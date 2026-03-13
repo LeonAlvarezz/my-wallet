@@ -14,7 +14,6 @@ export function ProfilePage() {
   const navigate = useNavigate();
   const signOutMutation = useSignOut();
   const { data } = useGetMe();
-  const accountBalanceQuery = useGetAccountBalance();
   const [isTopUpHistoryOpen, setIsTopUpHistoryOpen] = useState(false);
   const [isTopUpOpen, setIsTopUpOpen] = useState(false);
 
@@ -23,11 +22,11 @@ export function ProfilePage() {
     email: "leon@example.com",
   };
 
-  const account = {
-    remaining: accountBalanceQuery.data?.remaining ?? 0,
-    balance: accountBalanceQuery.data?.balance ?? 0,
-    expenses: accountBalanceQuery.data?.expenses ?? 0,
-  };
+  // const account = {
+  //   remaining: accountBalanceQuery.data?.remaining ?? 0,
+  //   balance: accountBalanceQuery.data?.balance ?? 0,
+  //   expenses: accountBalanceQuery.data?.expenses ?? 0,
+  // };
 
   const daysInView = 30;
   // React 19 automatically memoizes this computation
@@ -89,7 +88,7 @@ export function ProfilePage() {
           </div>
         </div>
 
-        <div className="bg-secondary flex flex-col gap-2 rounded-lg border p-3">
+        {/* <div className="bg-secondary flex flex-col gap-2 rounded-lg border p-3">
           <div className="flex items-center justify-between">
             <p className="text-muted-foreground text-xs font-semibold uppercase">
               Account Balance
@@ -109,26 +108,15 @@ export function ProfilePage() {
               </Button>
             </div>
           </div>
-          {/* <p
-            className={cn(
-              "text-3xl font-semibold tabular-nums",
-              account.remaining < 0 && "text-red-500",
-            )}
-          >
-            {getDisplayAmount(account.remaining)} */}
-
           <AmountDisplay
             value={account.remaining}
             className="text-3xl font-bold"
           />
-          {/* </p> */}
 
           <div className="grid grid-cols-2 gap-2">
             <div className="bg-secondary/10 flex flex-col gap-1 rounded-lg border p-3">
               <p className="text-muted-foreground text-xs">Balance</p>
-              {/* <p className="text-sm font-semibold text-green-500 tabular-nums">
-                +{getDisplayAmount(account.balance)}
-              </p> */}
+
               <AmountDisplay
                 value={account.balance}
                 className="font-semibold"
@@ -143,7 +131,7 @@ export function ProfilePage() {
               />
             </div>
           </div>
-        </div>
+        </div> */}
       </section>
 
       <section className="flex flex-col gap-3">
@@ -200,7 +188,7 @@ export function ProfilePage() {
             type="button"
             onClick={() =>
               navigate({
-                to: "/expense",
+                to: "/transaction",
               })
             }
             className="h-fit w-full justify-start p-3 text-left"

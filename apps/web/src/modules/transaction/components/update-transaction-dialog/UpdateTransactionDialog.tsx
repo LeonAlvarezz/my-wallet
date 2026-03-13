@@ -33,6 +33,7 @@ export default function UpdateTransactionDialog({
     amount: transaction.amount,
     category_id: transaction.category?.id ?? 0,
     description: transaction.description ?? "",
+    type: transaction.type,
   };
   const handleOpenChange = () => setOpen((prev) => !prev);
   const formHook = useMutateTransactionForm({
@@ -67,7 +68,6 @@ export default function UpdateTransactionDialog({
               confirmText="Delete"
               onConfirm={async () => {
                 await deleteMutation.mutateAsync(transaction.id);
-                toast.success("Transaction deleted");
                 setOpen(false);
               }}
               className="text-red-500"

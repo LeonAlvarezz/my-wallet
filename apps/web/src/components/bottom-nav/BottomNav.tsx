@@ -4,7 +4,7 @@ export default function BottomNav() {
   const bottomNavItems: BottomNavItemData[] = [
     {
       title: "Expense",
-      to: "/expense",
+      to: "/transaction",
       icon: "solar:bill-list-line-duotone",
     },
     { title: "Add", to: "/", icon: "solar:add-circle-line-duotone" },

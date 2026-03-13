@@ -1,6 +1,6 @@
 import { AmountDisplay } from "@/components/amount/AmountDisplay";
 import { cn } from "@/lib/utils";
-import { toNumber } from "@/utils/currency";
+import { formatAmount } from "@/utils/currency";
 import { Icon } from "@iconify/react";
 
 export interface StatsCardProps {
@@ -34,27 +34,23 @@ export default function StatsCard({
       )}
     >
       <div className="flex items-center justify-between">
-        <p className="text-muted-foreground text-xs font-medium uppercase">
-          {title}
-        </p>
-        {icon && <Icon icon={icon} className="text-muted-foreground size-5" />}
+        <p className="text-xs font-medium uppercase">{title}</p>
+        {icon && <Icon icon={icon} className="size-5" />}
       </div>
 
       <div className="flex items-baseline gap-2">
         <AmountDisplay
-          value={toNumber(amount)}
+          value={formatAmount(amount)}
           className="text-3xl font-bold"
-          showSign={false}
-          colorize={false}
         />
-        {trend !== "neutral" && (
+        {/* {trend !== "neutral" && (
           <Icon
             icon={
               trend === "up" ? "solar:arrow-up-bold" : "solar:arrow-down-bold"
             }
             className={`size-4 ${trendColor[trend]}`}
           />
-        )}
+        )} */}
       </div>
 
       {description && (

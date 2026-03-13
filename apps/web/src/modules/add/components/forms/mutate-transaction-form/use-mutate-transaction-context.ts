@@ -49,6 +49,7 @@ export const useMutateTransactionForm = (props: Props) => {
           amount: 0,
           category_id: 0,
           description: "",
+          type: TransactionModel.TransactionTypeEnum.EXPENSE,
         },
 
     validators: {
@@ -61,14 +62,19 @@ export const useMutateTransactionForm = (props: Props) => {
     },
     onSubmit: async ({ value, formApi }) => {
       setLoading(true);
+      const payload = {
+        ...value,
+        category_id: value.category_id === 0 ? null : value.category_id,
+      };
+
       try {
         if (props.action !== "update") {
-          await addMutation.mutateAsync(value);
+          await addMutation.mutateAsync(payload);
           toast.success("Transaction added");
         } else {
           await updateMutation.mutateAsync({
             id: props.transactionId,
-            payload: value,
+            payload,
           });
           toast.success("Transaction updated");
         }
@@ -87,7 +93,11 @@ export const useMutateTransactionForm = (props: Props) => {
   const isFormComplete = () => {
     const amount = form.getFieldValue("amount");
     const category = form.getFieldValue("category_id");
-    return amount > 0 && category > 0;
+    const type = form.getFieldValue("type");
+    if (type === TransactionModel.TransactionTypeEnum.TOP_UP) {
+      return amount > 0;
+    }
+    return amount > 0 && (category ?? 0) > 0;
   };
 
   const applySmartInput = (options?: {
@@ -123,6 +133,10 @@ export const useMutateTransactionForm = (props: Props) => {
       );
     }
 
+    if (result.type !== undefined) {
+      form.setFieldValue("type", result.type);
+    }
+
     if (showToasts) {
       if (!didParseAnything) {
         toast("Couldn't understand that input", {
@@ -147,10 +161,12 @@ export const useMutateTransactionForm = (props: Props) => {
   const handleSmartSubmit = () => {
     // 1st tap: apply smart input into the form
     // 2nd tap: if the form is complete, submit
+    console.log("submitAttempts:", submitAttempts);
+    console.log("smartAppliedOnce:", smartAppliedOnce);
     setSubmitAttempts((n) => n + 1);
 
     if (!smartAppliedOnce) {
-      applySmartInput({ focusNote: true, showToasts: false });
+      applySmartInput({ focusNote: false, showToasts: false });
       return;
     }
 
@@ -159,7 +175,7 @@ export const useMutateTransactionForm = (props: Props) => {
       return;
     }
 
-    applySmartInput({ focusNote: true, showToasts: false });
+    applySmartInput({ focusNote: false, showToasts: false });
   };
 
   return {

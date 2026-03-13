@@ -2,8 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Icon } from "@iconify/react";
 import StatsCard from "../components/stats-card/StatsCard";
 import DailyGroup from "../components/daily-group/DailyGroup";
-import { BaseModel, type TransactionModel } from "@my-wallet/types";
-import { formatDate, getDateLabel } from "@/utils/date";
+import { BaseModel } from "@my-wallet/types";
 import InfiniteScroll from "@/components/infinite-scroll/InfiniteScroll";
 import { Spinner } from "@/components/ui/spinner";
 import { useInfiniteTransactions } from "../hooks/use-infinite-transactions";
@@ -20,10 +19,11 @@ import {
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { groupTransactionsByDate } from "@/utils/transaction";
+import CashflowSummary from "../components/cashflow/CashflowSummary";
 
 export default function TransactionPage() {
   const navigate = useNavigate();
-  const search = useSearch({ from: "/_homeLayout/expense/" });
+  const search = useSearch({ from: "/_homeLayout/transaction/" });
   const { debouncedValue, setSearchQuery, searchQuery } =
     useSearchDebounce(500);
 
@@ -53,7 +53,8 @@ export default function TransactionPage() {
   // Group transactions by date
   const groupedTransactions = groupTransactionsByDate(transactions, extras);
 
-  const totalSpent = overview.data?.total ?? 0;
+  const totalSpent = overview.data?.expense ?? 0;
+  const totalTopUp = overview.data?.top_up ?? 0;
   const avgPerTransaction = overview.data?.average ?? 0;
   const highestTransaction = overview.data?.highest ?? 0;
 
@@ -62,7 +63,7 @@ export default function TransactionPage() {
     if ((search.query ?? "") === nextQuery) return;
 
     navigate({
-      to: "/expense",
+      to: "/transaction",
       search: (prev) => ({
         ...prev,
         query: nextQuery.length ? nextQuery : undefined,
@@ -96,7 +97,7 @@ export default function TransactionPage() {
               value={timeFrame}
               onValueChange={(value) => {
                 navigate({
-                  to: "/expense",
+                  to: "/transaction",
                   search: (prev) => ({
                     ...prev,
                     time_frame: value as BaseModel.TimeFrameEnum,
@@ -124,25 +125,22 @@ export default function TransactionPage() {
           </Button> */}
           </div>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-1">
+            {/* <CashflowSummary income={totalTopUp} spent={totalSpent} /> */}
             <StatsCard
-              title="Total Spent"
-              amount={totalSpent.toFixed(2)}
-              icon="solar:wallet-bold-duotone"
-              className="sm:col-span-2"
-            />
-            <StatsCard
-              title="Average"
-              amount={avgPerTransaction.toFixed(2)}
-              icon="solar:chart-2-bold-duotone"
-              description="per transaction"
-            />
-            <StatsCard
-              title="Highest"
-              amount={highestTransaction.toFixed(2)}
+              title="Income"
+              amount={totalTopUp.toFixed(2)}
               icon="solar:arrow-up-bold-duotone"
+              className="border-emerald-500/50"
+              description="Money added to your wallet"
+            />
+            <StatsCard
+              title="Spent"
+              amount={-totalSpent.toFixed(2)}
+              icon="solar:arrow-down-bold-duotone"
               trend="up"
-              description="single transaction"
+              className="border-rose-500/50"
+              description="Total outgoing transactions"
             />
           </div>
         </section>

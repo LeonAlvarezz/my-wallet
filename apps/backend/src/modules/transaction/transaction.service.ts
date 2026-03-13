@@ -53,19 +53,29 @@ export class TransactionService {
     payload: TransactionModel.CreateTransactionDto,
     user_id: number,
   ) {
-    const category = await CategoryRepository.findById(payload.category_id);
-
-    if (!category) {
-      throw new BadRequestException({ message: "Invalid category_id" });
+    switch (payload.type) {
+      case TransactionModel.TransactionTypeEnum.TOP_UP: {
+        const wallet = await WalletRepository.findByUserId(user_id);
+        if (!wallet) {
+          throw new NotFoundException({ message: "Wallet not found" });
+        }
+        return TransactionRepository.create(payload, wallet.id);
+      }
+      default: {
+        if (!payload.category_id) {
+          throw new BadRequestException({ message: "Invalid category_id" });
+        }
+        const category = await CategoryRepository.findById(payload.category_id);
+        if (!category) {
+          throw new BadRequestException({ message: "Invalid category_id" });
+        }
+        const wallet = await WalletRepository.findByUserId(user_id);
+        if (!wallet) {
+          throw new NotFoundException({ message: "Wallet not found" });
+        }
+        return TransactionRepository.create(payload, wallet.id);
+      }
     }
-
-    const wallet = await WalletRepository.findByUserId(user_id);
-
-    if (!wallet) {
-      throw new NotFoundException({ message: "Wallet not found" });
-    }
-
-    return TransactionRepository.create(payload, wallet.id);
   }
 
   static async update(

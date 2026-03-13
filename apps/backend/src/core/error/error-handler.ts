@@ -15,6 +15,7 @@ import { getKey } from "@my-wallet/types/enum";
 export const errorHandler = new Elysia({ name: "error-handling" })
   .use(ip)
   .onError(async ({ error, code, set, ip, request }) => {
+    console.log("request:", request.url);
     logger.error("🔥 Error occurred: ", error);
 
     if (code === "VALIDATION") {

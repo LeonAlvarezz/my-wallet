@@ -10,7 +10,6 @@ import {
 import { timestamps } from "../common";
 import { userTable } from "./user.schema";
 import { transactionTable } from "./transaction.schema";
-import { walletEventTable } from "./wallet-event.schema";
 
 export const walletTable = pgTable("wallets", {
   id: serial().primaryKey(),
@@ -31,5 +30,4 @@ export const walletRelation = relations(walletTable, ({ one, many }) => ({
     references: [userTable.id],
   }),
   transactions: many(transactionTable),
-  events: many(walletEventTable),
 }));

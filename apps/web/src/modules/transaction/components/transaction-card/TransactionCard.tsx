@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { formatTime } from "@/utils/date";
 import { Icon } from "@iconify/react";
-import type { CategoryModel, TransactionModel } from "@my-wallet/types";
+import { TransactionModel, type CategoryModel } from "@my-wallet/types";
 import UpdateTransactionDialog from "../update-transaction-dialog/UpdateTransactionDialog";
 import { useDeleteTransaction } from "../../hooks/use-delete-transaction";
 import DeleteButton from "@/components/delete-button/DeleteButton";
@@ -61,7 +61,13 @@ export default function TransactionCard({ transaction }: TransactionCardProps) {
               </div>
             </div>
           </div>
-          <AmountDisplay value={-transaction.amount} />
+          <AmountDisplay
+            value={
+              transaction.type === TransactionModel.TransactionTypeEnum.EXPENSE
+                ? -transaction.amount
+                : transaction.amount
+            }
+          />
         </Button>
       </UpdateTransactionDialog>
       <DeleteButton

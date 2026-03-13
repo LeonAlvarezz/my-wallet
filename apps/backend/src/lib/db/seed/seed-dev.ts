@@ -6,7 +6,7 @@ import { walletTable } from "../schema/wallet.schema";
 import { transactionTable } from "../schema/transaction.schema";
 import { hashPassword } from "@/util/password";
 import logger from "@/lib/logger";
-import { CategoryModel } from "@my-wallet/types";
+import { CategoryModel, TransactionModel } from "@my-wallet/types";
 import { eq } from "drizzle-orm";
 
 async function seedDatabaseDev() {
@@ -148,7 +148,6 @@ async function seedDatabaseDev() {
     await tx.insert(walletTable).values({
       user_id: user.id,
       name: "Main Wallet",
-      balance: 1000,
     });
 
     const wallet = await tx.query.walletTable.findFirst({
@@ -171,15 +170,25 @@ async function seedDatabaseDev() {
     const seededTransactions = Array.from({ length: transactionCount }).map(
       () => {
         const category = randomChoice(categories);
+        const type = randomChoice(
+          Object.values(TransactionModel.TransactionTypeEnum),
+        );
         const amount = Number((Math.random() * 120 + 3).toFixed(2));
         const daysAgo = randomInt(0, 120);
 
         return {
           user_id: user.id,
           wallet_id: wallet.id,
-          category_id: category.id,
+          category_id:
+            type === TransactionModel.TransactionTypeEnum.EXPENSE
+              ? category.id
+              : null,
           amount,
-          description: `Seeded: ${category.name}`,
+          type,
+          description:
+            type === TransactionModel.TransactionTypeEnum.EXPENSE
+              ? `Seeded: ${category.name}`
+              : "Top-up",
           created_at: isoDaysAgo(daysAgo),
         };
       },
@@ -194,7 +203,6 @@ async function seedDatabaseDev() {
 
     logger.info("✅ Wallet seeded", {
       walletName: "Main Wallet",
-      balance: 1000,
     });
 
     logger.info("✅ Transactions seeded", {

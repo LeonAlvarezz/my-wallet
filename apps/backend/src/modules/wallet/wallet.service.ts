@@ -1,7 +1,6 @@
 import { BaseModel, WalletEventModel, WalletModel } from "@my-wallet/types";
 import { WalletRepository } from "./wallet.repository";
 import { NotFoundException } from "@my-wallet/exception";
-import { WalletEventRepository } from "../wallet-event/wallet-event.repository";
 import { TransactionRepository } from "../transaction/transaction.repository";
 
 export class WalletService {
@@ -10,8 +9,8 @@ export class WalletService {
     return WalletModel.WalletPublicSchema.parse(result);
   }
 
-  static async findUserAccountBalance(user_id: number) {
-    const result = await WalletRepository.findUserBalance(user_id);
-    return WalletModel.AccountBalanceSchema.parse(result);
-  }
+  // static async findUserAccountBalance(user_id: number) {
+  //   const result = await WalletRepository.findUserBalance(user_id);
+  //   return WalletModel.AccountBalanceSchema.parse(result);
+  // }
 }

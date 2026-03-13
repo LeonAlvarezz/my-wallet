@@ -22,8 +22,9 @@ export default function DailyGroup({
           <p className="text-muted-foreground text-xs">{date}</p>
         </div>
         <AmountDisplay
-          value={-total}
+          value={total}
           colorize={false}
+          showSign={false}
           className="font-semibold"
         />
       </div>

@@ -13,17 +13,35 @@ import { Icon } from "@iconify/react";
 import { type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import CategoryBlockSkeleton from "../../skeletons/CategoryBlockSkeleton";
-import AddTransactionFormFooter from "./MutateTransactionFormFooter";
+import MutateTransactionFormFooter from "./MutateTransactionFormFooter";
 import React from "react";
 import { useMutateTransactionContext } from "./use-mutate-transaction-context";
-import type { TransactionModel } from "@my-wallet/types";
+import { TransactionModel } from "@my-wallet/types";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
+const transactionTypeOptions = [
+  {
+    value: TransactionModel.TransactionTypeEnum.EXPENSE,
+    title: "Expense",
+    icon: "solar:card-send-bold-duotone",
+    activeClassName:
+      "border-rose-500/30 bg-rose-500/8 shadow-rose-500/10 [&_[data-role=type-icon]]:bg-rose-500 [&_[data-role=type-icon]]:text-white",
+  },
+  {
+    value: TransactionModel.TransactionTypeEnum.TOP_UP,
+    title: "Top Up",
+    icon: "solar:wallet-money-bold-duotone",
+    activeClassName:
+      "border-emerald-500/30 bg-emerald-500/8 shadow-emerald-500/10 [&_[data-role=type-icon]]:bg-emerald-500 [&_[data-role=type-icon]]:text-white",
+  },
+] as const;
 
 type Props = {
   className?: string;
   children?: ReactNode;
   value?: TransactionModel.CreateTransactionDto;
 };
-function AddTransactionForm({ className, children }: Props) {
+function MutateTransactionForm({ className, children }: Props) {
   const {
     form,
     categories,
@@ -40,7 +58,8 @@ function AddTransactionForm({ className, children }: Props) {
 
   const footer = React.Children.toArray(children).find(
     (child) =>
-      React.isValidElement(child) && child.type === AddTransactionForm.Footer,
+      React.isValidElement(child) &&
+      child.type === MutateTransactionForm.Footer,
   );
   return (
     <form id="add-transaction-form" className={className}>
@@ -74,72 +93,162 @@ function AddTransactionForm({ className, children }: Props) {
           }}
         />
         <form.Field
-          name="category_id"
+          name="type"
           children={(field) => {
             const isInvalid =
               (field.state.meta.isTouched || submitAttempts > 0) &&
               !field.state.meta.isValid;
+
             return (
               <Field data-invalid={isInvalid}>
-                <div className="flex flex-col gap-4">
-                  <FieldLabel htmlFor={field.name}>Category</FieldLabel>
-                  {isCategoryLoading ? (
-                    <CategoryBlockSkeleton />
-                  ) : (
-                    <>
-                      <div className="flex h-fit gap-4">
-                        <ToggleGroup
-                          type="single"
-                          value={field.state.value.toString()}
-                          onValueChange={(value) => {
-                            console.log("value:", value);
-                            field.handleChange(Number(value));
-                            field.handleBlur();
-                          }}
-                          className="grid w-full grid-cols-2 gap-2 sm:grid-cols-3"
-                        >
-                          {visibleCategories.map((category) => (
-                            <CategoryBlock
-                              key={category.id}
-                              category={category}
-                              value={category.id.toString()}
-                              className={cn(
-                                isInvalid && "border border-red-500",
-                              )}
-                            />
-                          ))}
-                        </ToggleGroup>
-                      </div>
-                      {categories.length > CATEGORY_PREVIEW_COUNT && (
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          className=""
-                          aria-expanded={isCategoryExpanded}
-                          onClick={() => setIsCategoryExpanded((prev) => !prev)}
-                        >
-                          <Icon
-                            icon={
-                              isCategoryExpanded
-                                ? "solar:alt-arrow-up-bold"
-                                : "solar:alt-arrow-down-bold"
-                            }
-                            className="size-6"
-                          />
-                          {isCategoryExpanded ? "Show less" : "Expand more"}
-                        </Button>
-                      )}
-                      {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
-                    </>
-                  )}
-                </div>
+                <FieldLabel htmlFor={field.name}>Type</FieldLabel>
+                <RadioGroup
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value}
+                  onValueChange={(value) => {
+                    const nextValue =
+                      value as TransactionModel.TransactionTypeEnum;
+
+                    field.handleChange(nextValue);
+
+                    if (
+                      nextValue === TransactionModel.TransactionTypeEnum.TOP_UP
+                    ) {
+                      form.setFieldValue("category_id", null);
+                    }
+
+                    field.handleBlur();
+                  }}
+                  // defaultValue={TransactionModel.TransactionTypeEnum.EXPENSE}
+                  className="grid grid-cols-1 gap-3 sm:grid-cols-2"
+                >
+                  {transactionTypeOptions.map((option) => {
+                    const isSelected = field.state.value === option.value;
+
+                    return (
+                      <label
+                        key={option.value}
+                        htmlFor={option.value}
+                        className={cn(
+                          "border-input bg-secondary hover:bg-accent/60 flex cursor-pointer items-start gap-3 rounded-xl border p-2 text-left transition-all",
+                          "has-data-[state=checked]:shadow-md",
+                          isSelected && option.activeClassName,
+                          isInvalid && "border-destructive/60",
+                        )}
+                      >
+                        <RadioGroupItem
+                          value={option.value}
+                          id={option.value}
+                          indicator={false}
+                        />
+
+                        <div className="flex min-w-0 flex-1 items-center gap-3">
+                          <div
+                            data-role="type-icon"
+                            className="bg-background text-muted-foreground flex size-10 shrink-0 items-center justify-center rounded-full border transition-colors"
+                          >
+                            <Icon icon={option.icon} className="size-5" />
+                          </div>
+
+                          <p className="text-sm font-semibold">
+                            {option.title}
+                          </p>
+                        </div>
+                      </label>
+                    );
+                  })}
+                </RadioGroup>
+
+                {isInvalid && <FieldError errors={field.state.meta.errors} />}
               </Field>
             );
           }}
         />
+        <form.Field
+          name="type"
+          children={(typeField) => {
+            if (
+              typeField.state.value ===
+              TransactionModel.TransactionTypeEnum.TOP_UP
+            ) {
+              return null;
+            }
 
+            return (
+              <form.Field
+                name="category_id"
+                children={(field) => {
+                  const isInvalid =
+                    (field.state.meta.isTouched || submitAttempts > 0) &&
+                    !field.state.meta.isValid;
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <div className="flex flex-col gap-4">
+                        <FieldLabel htmlFor={field.name}>Category</FieldLabel>
+                        {isCategoryLoading ? (
+                          <CategoryBlockSkeleton />
+                        ) : (
+                          <>
+                            <div className="flex h-fit gap-4">
+                              <ToggleGroup
+                                type="single"
+                                value={field.state.value?.toString()}
+                                onValueChange={(value) => {
+                                  if (!value) return;
+                                  field.handleChange(Number(value));
+                                  field.handleBlur();
+                                }}
+                                className="grid w-full grid-cols-2 gap-2 sm:grid-cols-3"
+                              >
+                                {visibleCategories.map((category) => (
+                                  <CategoryBlock
+                                    key={category.id}
+                                    category={category}
+                                    value={category.id.toString()}
+                                    className={cn(
+                                      isInvalid && "border border-red-500",
+                                    )}
+                                  />
+                                ))}
+                              </ToggleGroup>
+                            </div>
+                            {categories.length > CATEGORY_PREVIEW_COUNT && (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                className=""
+                                aria-expanded={isCategoryExpanded}
+                                onClick={() =>
+                                  setIsCategoryExpanded((prev) => !prev)
+                                }
+                              >
+                                <Icon
+                                  icon={
+                                    isCategoryExpanded
+                                      ? "solar:alt-arrow-up-bold"
+                                      : "solar:alt-arrow-down-bold"
+                                  }
+                                  className="size-6"
+                                />
+                                {isCategoryExpanded
+                                  ? "Show less"
+                                  : "Expand more"}
+                              </Button>
+                            )}
+                            {isInvalid && (
+                              <FieldError errors={field.state.meta.errors} />
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </Field>
+                  );
+                }}
+              />
+            );
+          }}
+        />
         <form.Field
           name="description"
           children={(field) => {
@@ -171,5 +280,5 @@ function AddTransactionForm({ className, children }: Props) {
     </form>
   );
 }
-AddTransactionForm.Footer = AddTransactionFormFooter;
-export default AddTransactionForm;
+MutateTransactionForm.Footer = MutateTransactionFormFooter;
+export default MutateTransactionForm;

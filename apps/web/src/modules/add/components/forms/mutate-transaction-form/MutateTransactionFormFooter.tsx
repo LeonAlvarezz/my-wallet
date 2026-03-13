@@ -1,4 +1,4 @@
-export default function AddTransactionFormFooter({
+export default function MutateTransactionFormFooter({
   children,
 }: {
   children: React.ReactNode;
