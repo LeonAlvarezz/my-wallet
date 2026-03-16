@@ -8,7 +8,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import { CartesianGrid, XAxis, Area, AreaChart } from "recharts";
+import { CartesianGrid, XAxis, Bar, BarChart } from "recharts";
 import { useCategories } from "../category/hooks/query/use-categories";
 import CategoryAmountCard from "./components/category-stats/CategoryAmountCard";
 import CategoryAmountCardSkeleton from "./components/category-stats/CategoryAmountCardSkeleton";
@@ -21,6 +21,7 @@ import TimeframeButtonGroups from "@/components/time-frame-button-groups/Timefra
 import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
 import Empty from "@/components/empty/Empty";
+import { formatAmount } from "@/utils/currency";
 
 const chartConfig = {
   amount: {
@@ -117,27 +118,15 @@ export default function Dashboard() {
       <section className="space-y-4 font-bold">
         <div className="flex justify-between">
           <h1>Chart</h1>
-          <TimeframeButtonGroups value={timeFrame} onChange={setTimeFrame} />
+          <div className="flex items-center gap-2">
+            <TimeframeButtonGroups value={timeFrame} onChange={setTimeFrame} />
+          </div>
         </div>
         <ChartContainer
           config={chartConfig}
           className="aspect-auto h-52 w-full"
         >
-          <AreaChart data={chartData}>
-            <defs>
-              <linearGradient id="fillAmount" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-amount)"
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-amount)"
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
-            </defs>
+          <BarChart data={chartData}>
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="date"
@@ -154,7 +143,7 @@ export default function Dashboard() {
               }}
             />
             <ChartTooltip
-              cursor={false}
+              cursor={true}
               content={
                 <ChartTooltipContent
                   labelFormatter={(value) => {
@@ -164,18 +153,19 @@ export default function Dashboard() {
                       day: "numeric",
                     });
                   }}
+                  formatter={(value) => {
+                    return `$${formatAmount(value.toString())}`;
+                  }}
                   indicator="dot"
                 />
               }
             />
-            <Area
+            <Bar
               dataKey="amount"
-              type="natural"
-              fill="url(#fillAmount)"
-              stroke="var(--color-amount)"
-              stackId="a"
+              fill="var(--color-amount)"
+              radius={[6, 6, 0, 0]}
             />
-          </AreaChart>
+          </BarChart>
         </ChartContainer>
       </section>
 
