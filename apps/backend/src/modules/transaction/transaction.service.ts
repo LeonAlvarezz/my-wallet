@@ -62,8 +62,11 @@ export class TransactionService {
     return TransactionRepository.findStatistic(query, user_id);
   }
 
-  static getTotalAmountByCategory(user_id: number) {
-    return TransactionRepository.getTotalAmountByCategory(user_id);
+  static getTotalAmountByCategory(
+    query: TransactionModel.StatisticFilterDto,
+    user_id: number,
+  ) {
+    return TransactionRepository.getTotalAmountByCategory(query, user_id);
   }
 
   static async create(

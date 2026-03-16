@@ -214,7 +214,11 @@ export class TransactionRepository {
       .orderBy(asc(transactionTable.created_at));
   }
 
-  static async getTotalAmountByCategory(user_id: number) {
+  static async getTotalAmountByCategory(
+    query: TransactionModel.StatisticFilterDto,
+    user_id: number,
+  ) {
+    const where = this.buildStatisticFilter(query);
     return db
       .select({
         amount: sum(transactionTable.amount).mapWith(Number),
@@ -228,6 +232,7 @@ export class TransactionRepository {
       .leftJoin(walletTable, eq(transactionTable.wallet_id, walletTable.id))
       .where(
         and(
+          ...where,
           eq(walletTable.user_id, user_id),
           eq(
             transactionTable.type,

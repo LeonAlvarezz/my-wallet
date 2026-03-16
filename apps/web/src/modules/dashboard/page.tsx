@@ -11,6 +11,7 @@ import {
 import { CartesianGrid, XAxis, Area, AreaChart } from "recharts";
 import { useCategories } from "../category/hooks/query/use-categories";
 import CategoryAmountCard from "./components/category-stats/CategoryAmountCard";
+import CategoryAmountCardSkeleton from "./components/category-stats/CategoryAmountCardSkeleton";
 import { TransactionCard } from "../transaction/components/transaction-card";
 import { useGetTotalByCategory } from "./hooks/use-get-total-by-category";
 import { Link } from "@tanstack/react-router";
@@ -19,6 +20,7 @@ import { useGetStatistic } from "./hooks/use-get-statistic";
 import TimeframeButtonGroups from "@/components/time-frame-button-groups/TimeframeButtonGroups";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
+import Empty from "@/components/empty/Empty";
 
 const chartConfig = {
   amount: {
@@ -34,8 +36,6 @@ export default function Dashboard() {
   const [isCategoryExpanded, setIsCategoryExpanded] = useState(false);
   const { data: statisticData } = useGetStatistic({ time_frame: timeFrame });
   const chartData = statisticData ?? [];
-
-  // const search = useSearch({ from: "/_homeLayout/" });
   const { data: summary } = useGetCashflowSummary();
 
   const mockRecentTransactions: TransactionModel.TransactionWithCategoryDto[] =
@@ -84,7 +84,13 @@ export default function Dashboard() {
     ];
 
   const { data: categories } = useCategories();
-  const { data: totalByCategory } = useGetTotalByCategory();
+  const {
+    data: totalByCategory,
+    isFetching: isCategoryFetching,
+    isLoading: isCategoryLoading,
+  } = useGetTotalByCategory({
+    time_frame: timeFrame,
+  });
   const categoryTotal =
     totalByCategory?.reduce((sum, c) => sum + c.amount, 0) ?? 0;
   const visibleCategories = isCategoryExpanded
@@ -96,7 +102,7 @@ export default function Dashboard() {
       <div className="flex w-full items-center justify-between">
         <div className="flex flex-col gap-1">
           <p className="text-white/50">Good morning</p>
-          <p className="text-primary text-xl font-bold">Leon</p>
+          <p className="text-primary text-xl font-bold">Leon 👋</p>
         </div>
         <Avatar size="lg">
           <AvatarFallback>L</AvatarFallback>
@@ -169,38 +175,40 @@ export default function Dashboard() {
               stroke="var(--color-amount)"
               stackId="a"
             />
-
-            {/* <ChartLegend content={<ChartLegendContent />} /> */}
           </AreaChart>
         </ChartContainer>
       </section>
 
       <section className="space-y-4">
         <h1 className="font-bold">Top Category</h1>
-        {!totalByCategory || totalByCategory.length === 0 ? (
-          <div>Empty</div>
+        {isCategoryLoading ? (
+          <div className="space-y-4">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <CategoryAmountCardSkeleton key={index} />
+            ))}
+          </div>
+        ) : !totalByCategory || totalByCategory.length === 0 ? (
+          <Empty />
         ) : (
           <>
-            {visibleCategories.map((item) => {
-              const category = categories?.find((c) => c.name === item.name);
-              return (
-                <CategoryAmountCard
-                  key={item.name}
-                  item={item}
-                  total={categoryTotal}
-                  category={category}
-                />
-              );
-            })}
+            <div
+              className={`space-y-4 transition-opacity duration-300 ${
+                isCategoryFetching ? "opacity-60" : "opacity-100"
+              }`}
+            >
+              {visibleCategories.map((item) => {
+                const category = categories?.find((c) => c.name === item.name);
+                return (
+                  <CategoryAmountCard
+                    key={item.name}
+                    item={item}
+                    total={categoryTotal}
+                    category={category}
+                  />
+                );
+              })}
+            </div>
             {totalByCategory.length > 3 && (
-              // <button
-              //   onClick={() => setCategoryExpanded((prev) => !prev)}
-              //   className="text-primary w-full text-center text-sm"
-              // >
-              //   {categoryExpanded
-              //     ? "See less"
-              //     : `See all (${totalByCategory.length})`}
-              // </button>
               <Button
                 type="button"
                 variant="ghost"

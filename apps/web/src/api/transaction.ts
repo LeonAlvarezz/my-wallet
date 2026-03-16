@@ -37,9 +37,12 @@ const transaction = {
     requestClient.get<TransactionModel.StatisticDto[]>(`${key}/statistic`, {
       params: filter,
     }),
-  getTotalByCategory: () =>
+  getTotalByCategory: (filter?: TransactionModel.StatisticFilterDto) =>
     requestClient.get<TransactionModel.TotalAmountByCategoryDto[]>(
       `${key}/by-category`,
+      {
+        params: filter,
+      },
     ),
 };
 export default transaction;

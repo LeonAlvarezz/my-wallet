@@ -28,6 +28,9 @@ export default {
     ["transactions", "cashflow", id] as const,
   statistic: (id: string | undefined, options?: { time_frame?: string }) =>
     ["transactions", "statistic", id, options?.time_frame ?? null] as const,
-  totalByCategory: (id: string | undefined) =>
-    ["transactions", "by-category", id] as const,
+  totalByCategory: (
+    id: string | undefined,
+    options?: { time_frame?: string },
+  ) =>
+    ["transactions", "by-category", id, options?.time_frame ?? null] as const,
 };

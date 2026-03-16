@@ -1,13 +1,17 @@
 import { api } from "@/api";
 import { queryKey } from "@/api/keys";
 import { useGetMe } from "@/modules/auth/hooks/use-get-me";
-import { useQuery } from "@tanstack/react-query";
+import type { TransactionModel } from "@my-wallet/types";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-export function useGetTotalByCategory() {
+export function useGetTotalByCategory(
+  filter?: TransactionModel.StatisticFilterDto,
+) {
   const { data: me } = useGetMe();
   return useQuery({
-    queryKey: queryKey.transaction.totalByCategory(me?.public_id),
-    queryFn: api.transaction.getTotalByCategory,
+    queryKey: queryKey.transaction.totalByCategory(me?.public_id, filter),
+    queryFn: () => api.transaction.getTotalByCategory(filter),
+    placeholderData: keepPreviousData,
     enabled: !!me?.public_id,
   });
 }

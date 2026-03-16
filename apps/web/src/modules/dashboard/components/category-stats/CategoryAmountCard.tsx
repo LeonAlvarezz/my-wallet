@@ -27,12 +27,7 @@ export default function CategoryAmountCard({ item, total, category }: Props) {
       <div className="min-w-0 flex-1 space-y-1">
         <div className="flex justify-between">
           <p className="truncate">{item.name ?? "Uncategorized"}</p>
-          <AmountDisplay
-            value={-item.amount}
-            // colorize={false}
-            // showSign={false}
-            className="text-sm"
-          />
+          <AmountDisplay value={-item.amount} className="text-sm" />
         </div>
         <Progress
           value={percentage}

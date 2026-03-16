@@ -108,12 +108,16 @@ export const transaction = new Elysia()
 
     app.get(
       "/by-category",
-      async ({ user }) => {
-        const data = await TransactionService.getTotalAmountByCategory(user.id);
+      async ({ user, query }) => {
+        const data = await TransactionService.getTotalAmountByCategory(
+          query,
+          user.id,
+        );
         return Success(data);
       },
       {
         authenticated: true,
+        query: TransactionModel.StatisticFilterSchema,
         detail: {
           summary: "Get user total spending by section by category",
           tags: [OpenApiKey.Transaction],
