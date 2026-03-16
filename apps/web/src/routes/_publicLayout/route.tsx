@@ -6,7 +6,7 @@ export const Route = createFileRoute("/_publicLayout")({
 
 function RouteComponent() {
   return (
-    <div className="flex h-dvh items-center justify-center">
+    <div className="h-vh flex items-center justify-center">
       <Outlet />
     </div>
   );

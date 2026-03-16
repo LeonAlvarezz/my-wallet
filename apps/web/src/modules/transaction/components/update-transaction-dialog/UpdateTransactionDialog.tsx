@@ -13,10 +13,10 @@ import { Icon } from "@iconify/react";
 import { useState, type ReactNode } from "react";
 import { useDeleteTransaction } from "../../hooks/use-delete-transaction";
 import DeleteButton from "@/components/delete-button/DeleteButton";
-import AddTransactionForm from "@/modules/add/components/forms/mutate-transaction-form/MutateTransactionForm";
-import AddTransactionContext, {
+import MutateTransactionContext, {
   useMutateTransactionForm,
-} from "@/modules/add/components/forms/mutate-transaction-form/use-mutate-transaction-context";
+} from "../forms/mutate-transaction-form/use-mutate-transaction-context";
+import MutateTransactionForm from "../forms/mutate-transaction-form/MutateTransactionForm";
 
 type Props = {
   children: ReactNode;
@@ -55,12 +55,12 @@ export default function UpdateTransactionDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="-mx-4 max-h-[60vh] overflow-y-auto px-4">
-          <AddTransactionContext.Provider value={{ ...formHook }}>
-            <AddTransactionForm className="py-4" value={defaultValue} />
-          </AddTransactionContext.Provider>
+          <MutateTransactionContext.Provider value={{ ...formHook }}>
+            <MutateTransactionForm className="py-4" value={defaultValue} />
+          </MutateTransactionContext.Provider>
         </div>
         <DialogFooter>
-        <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             <DeleteButton
               title="Delete transaction?"
               description="This action cannot be undone. This will permanently delete this transaction."

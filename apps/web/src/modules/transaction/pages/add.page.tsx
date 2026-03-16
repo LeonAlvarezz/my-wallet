@@ -6,7 +6,7 @@ import MutateTransactionContext, {
 } from "../components/forms/mutate-transaction-form/use-mutate-transaction-context";
 import { Button } from "@/components/ui/button";
 
-export default function AddPage() {
+export default function AddTransactionPage() {
   const formHook = useMutateTransactionForm({ action: "create" });
   const {
     smartText,
@@ -17,6 +17,7 @@ export default function AddPage() {
     loading,
     handleSmartSubmit,
   } = formHook;
+
   return (
     <div className="flex h-full w-full flex-col gap-8 overflow-y-auto p-4 py-[calc(var(--bottom-nav-h))]">
       <MutateTransactionContext.Provider value={{ ...formHook }}>

@@ -1,1 +1,1 @@
-export { default as TransactionPage } from "./pages";
+export { default as TransactionPage } from "./pages/page";

@@ -9,7 +9,7 @@ function RouteComponent() {
   return (
     <>
       {/* <h1>Pathless layout</h1> */}
-      <main className="h-[calc(100dvh-var(--bottom-nav-total-h))]">
+      <main className="h-[calc(100vh-var(--bottom-nav-total-h))]">
         <Outlet />
       </main>
       <BottomNav />

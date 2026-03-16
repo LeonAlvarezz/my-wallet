@@ -12,12 +12,12 @@ import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
 import { type ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import CategoryBlockSkeleton from "../../skeletons/CategoryBlockSkeleton";
-import MutateTransactionFormFooter from "./MutateTransactionFormFooter";
 import React from "react";
 import { useMutateTransactionContext } from "./use-mutate-transaction-context";
 import { TransactionModel } from "@my-wallet/types";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import CategoryBlockSkeleton from "../../../../category/components/category-block/CategoryBlockSkeleton";
+import MutateTransactionFormFooter from "./MutateTransactionFormFooter";
 
 const transactionTypeOptions = [
   {

@@ -12,7 +12,7 @@ function RootComponent() {
   return (
     <React.Fragment>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <div className="max-w-mobile relative m-auto flex min-h-dvh flex-col border">
+        <div className="max-w-mobile min-h-vh relative m-auto flex flex-col border">
           <Outlet />
           <Toaster position="top-center" />
         </div>

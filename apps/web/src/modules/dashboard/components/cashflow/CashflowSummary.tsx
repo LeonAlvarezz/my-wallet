@@ -19,7 +19,7 @@ export default function CashflowSummary({
   return (
     <Card
       className={cn(
-        "border-input/50 bg-card relative overflow-hidden",
+        "border-input/50 bg-card relative shrink-0 overflow-hidden",
         className,
       )}
     >

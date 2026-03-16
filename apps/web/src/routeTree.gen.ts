@@ -17,6 +17,7 @@ import { Route as HomeLayoutSettingsIndexRouteImport } from './routes/_homeLayou
 import { Route as HomeLayoutProfileIndexRouteImport } from './routes/_homeLayout/profile/index'
 import { Route as PublicLayoutAuthRegisterIndexRouteImport } from './routes/_publicLayout/auth/register/index'
 import { Route as PublicLayoutAuthLoginIndexRouteImport } from './routes/_publicLayout/auth/login/index'
+import { Route as HomeLayoutTransactionAddIndexRouteImport } from './routes/_homeLayout/transaction/add/index'
 import { Route as HomeLayoutSettingsNotificationsIndexRouteImport } from './routes/_homeLayout/settings/notifications/index'
 import { Route as HomeLayoutSettingsBudgetGoalsIndexRouteImport } from './routes/_homeLayout/settings/budget-goals/index'
 
@@ -61,6 +62,12 @@ const PublicLayoutAuthLoginIndexRoute =
     path: '/auth/login/',
     getParentRoute: () => PublicLayoutRouteRoute,
   } as any)
+const HomeLayoutTransactionAddIndexRoute =
+  HomeLayoutTransactionAddIndexRouteImport.update({
+    id: '/transaction/add/',
+    path: '/transaction/add/',
+    getParentRoute: () => HomeLayoutRouteRoute,
+  } as any)
 const HomeLayoutSettingsNotificationsIndexRoute =
   HomeLayoutSettingsNotificationsIndexRouteImport.update({
     id: '/settings/notifications/',
@@ -81,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/transaction/': typeof HomeLayoutTransactionIndexRoute
   '/settings/budget-goals/': typeof HomeLayoutSettingsBudgetGoalsIndexRoute
   '/settings/notifications/': typeof HomeLayoutSettingsNotificationsIndexRoute
+  '/transaction/add/': typeof HomeLayoutTransactionAddIndexRoute
   '/auth/login/': typeof PublicLayoutAuthLoginIndexRoute
   '/auth/register/': typeof PublicLayoutAuthRegisterIndexRoute
 }
@@ -91,6 +99,7 @@ export interface FileRoutesByTo {
   '/transaction': typeof HomeLayoutTransactionIndexRoute
   '/settings/budget-goals': typeof HomeLayoutSettingsBudgetGoalsIndexRoute
   '/settings/notifications': typeof HomeLayoutSettingsNotificationsIndexRoute
+  '/transaction/add': typeof HomeLayoutTransactionAddIndexRoute
   '/auth/login': typeof PublicLayoutAuthLoginIndexRoute
   '/auth/register': typeof PublicLayoutAuthRegisterIndexRoute
 }
@@ -104,6 +113,7 @@ export interface FileRoutesById {
   '/_homeLayout/transaction/': typeof HomeLayoutTransactionIndexRoute
   '/_homeLayout/settings/budget-goals/': typeof HomeLayoutSettingsBudgetGoalsIndexRoute
   '/_homeLayout/settings/notifications/': typeof HomeLayoutSettingsNotificationsIndexRoute
+  '/_homeLayout/transaction/add/': typeof HomeLayoutTransactionAddIndexRoute
   '/_publicLayout/auth/login/': typeof PublicLayoutAuthLoginIndexRoute
   '/_publicLayout/auth/register/': typeof PublicLayoutAuthRegisterIndexRoute
 }
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/transaction/'
     | '/settings/budget-goals/'
     | '/settings/notifications/'
+    | '/transaction/add/'
     | '/auth/login/'
     | '/auth/register/'
   fileRoutesByTo: FileRoutesByTo
@@ -126,6 +137,7 @@ export interface FileRouteTypes {
     | '/transaction'
     | '/settings/budget-goals'
     | '/settings/notifications'
+    | '/transaction/add'
     | '/auth/login'
     | '/auth/register'
   id:
@@ -138,6 +150,7 @@ export interface FileRouteTypes {
     | '/_homeLayout/transaction/'
     | '/_homeLayout/settings/budget-goals/'
     | '/_homeLayout/settings/notifications/'
+    | '/_homeLayout/transaction/add/'
     | '/_publicLayout/auth/login/'
     | '/_publicLayout/auth/register/'
   fileRoutesById: FileRoutesById
@@ -205,6 +218,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicLayoutAuthLoginIndexRouteImport
       parentRoute: typeof PublicLayoutRouteRoute
     }
+    '/_homeLayout/transaction/add/': {
+      id: '/_homeLayout/transaction/add/'
+      path: '/transaction/add'
+      fullPath: '/transaction/add/'
+      preLoaderRoute: typeof HomeLayoutTransactionAddIndexRouteImport
+      parentRoute: typeof HomeLayoutRouteRoute
+    }
     '/_homeLayout/settings/notifications/': {
       id: '/_homeLayout/settings/notifications/'
       path: '/settings/notifications'
@@ -229,6 +249,7 @@ interface HomeLayoutRouteRouteChildren {
   HomeLayoutTransactionIndexRoute: typeof HomeLayoutTransactionIndexRoute
   HomeLayoutSettingsBudgetGoalsIndexRoute: typeof HomeLayoutSettingsBudgetGoalsIndexRoute
   HomeLayoutSettingsNotificationsIndexRoute: typeof HomeLayoutSettingsNotificationsIndexRoute
+  HomeLayoutTransactionAddIndexRoute: typeof HomeLayoutTransactionAddIndexRoute
 }
 
 const HomeLayoutRouteRouteChildren: HomeLayoutRouteRouteChildren = {
@@ -240,6 +261,7 @@ const HomeLayoutRouteRouteChildren: HomeLayoutRouteRouteChildren = {
     HomeLayoutSettingsBudgetGoalsIndexRoute,
   HomeLayoutSettingsNotificationsIndexRoute:
     HomeLayoutSettingsNotificationsIndexRoute,
+  HomeLayoutTransactionAddIndexRoute: HomeLayoutTransactionAddIndexRoute,
 }
 
 const HomeLayoutRouteRouteWithChildren = HomeLayoutRouteRoute._addFileChildren(

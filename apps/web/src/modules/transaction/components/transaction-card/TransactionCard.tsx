@@ -81,12 +81,12 @@ export default function TransactionCard({ transaction }: TransactionCardProps) {
           />
         </Button>
       </UpdateTransactionDialog>
-      <DeleteButton
+      {/* <DeleteButton
         variant="icon"
         onConfirm={async () => {
           await deleteMutation.mutateAsync(transaction.id);
         }}
-      />
+      /> */}
     </div>
   );
 }

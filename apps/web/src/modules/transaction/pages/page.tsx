@@ -6,7 +6,6 @@ import InfiniteScroll from "@/components/infinite-scroll/InfiniteScroll";
 import { Spinner } from "@/components/ui/spinner";
 import { useInfiniteTransactions } from "../hooks/use-infinite-transactions";
 import { useSearchDebounce } from "@/hooks/use-search-debounce";
-import { useGetSpendingOverview } from "@/modules/add/hooks/use-get-spending-overview";
 import {
   Select,
   SelectContent,
@@ -18,8 +17,8 @@ import {
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { groupTransactionsByDate } from "@/utils/transaction";
-import CashflowSummary from "../components/cashflow/CashflowSummary";
 import { StatsCard } from "../components/stats-card";
+import { useGetSpendingOverview } from "../hooks/use-get-spending-overview";
 
 export default function TransactionPage() {
   const navigate = useNavigate();
