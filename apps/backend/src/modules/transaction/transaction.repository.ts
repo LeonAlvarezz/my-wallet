@@ -2,23 +2,17 @@ import { db, DrizzleTransaction } from "@/lib/db";
 import { categoryTable, walletTable } from "@/lib/db/schema";
 import { transactionTable } from "@/lib/db/schema/transaction.schema";
 import { decodeCursor } from "@/util/cursor-pagination";
-import { getMonth } from "@/util/date";
-import {
-  BaseModel,
-  CursorModel,
-  TransactionModel,
-  WalletModel,
-} from "@my-wallet/types";
+import { getTimeFrameRange } from "@/util/date";
+import { BaseModel, TransactionModel } from "@my-wallet/types";
 import {
   and,
-  avg,
+  asc,
   desc,
   eq,
   gte,
   ilike,
   inArray,
   lt,
-  max,
   or,
   sql,
   SQL,
@@ -47,49 +41,7 @@ export class TransactionRepository {
     }
 
     if (filter.time_frame) {
-      const now = new Date();
-      const startOfDayUtc = (d: Date) =>
-        new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
-
-      let start: Date | undefined;
-      let endExclusive: Date | undefined;
-
-      switch (filter.time_frame) {
-        case BaseModel.TimeFrameEnum.TODAY: {
-          start = startOfDayUtc(now);
-          endExclusive = new Date(start);
-          endExclusive.setUTCDate(endExclusive.getUTCDate() + 1);
-          break;
-        }
-        case BaseModel.TimeFrameEnum.YESTERDAY: {
-          endExclusive = startOfDayUtc(now);
-          start = new Date(endExclusive);
-          start.setUTCDate(start.getUTCDate() - 1);
-          break;
-        }
-        case BaseModel.TimeFrameEnum.WEEK: {
-          // "This week" = from Monday 00:00 (UTC) to now
-          const day = now.getUTCDay(); // 0=Sun..6=Sat
-          const diffFromMonday = (day + 6) % 7;
-          start = startOfDayUtc(now);
-          start.setUTCDate(start.getUTCDate() - diffFromMonday);
-          break;
-        }
-        case BaseModel.TimeFrameEnum.MONTH: {
-          start = new Date(
-            Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
-          );
-          break;
-        }
-        case BaseModel.TimeFrameEnum.YEAR: {
-          start = new Date(Date.UTC(now.getUTCFullYear(), 0, 1));
-          break;
-        }
-        case BaseModel.TimeFrameEnum.ALL_TIME:
-        default: {
-          break;
-        }
-      }
+      const { start, endExclusive } = getTimeFrameRange(filter.time_frame);
 
       if (start) {
         where.push(gte(transactionTable.created_at, start.toISOString()));
@@ -102,13 +54,54 @@ export class TransactionRepository {
     return where;
   }
 
+  static buildStatisticFilter(filter: TransactionModel.StatisticFilterDto) {
+    const where: SQL[] = [];
+    if (filter.time_frame) {
+      console.log("filter.time_frame:", filter.time_frame);
+      const { start, endExclusive } = getTimeFrameRange(filter.time_frame);
+      if (start) {
+        where.push(gte(transactionTable.created_at, start.toISOString()));
+      }
+      if (endExclusive) {
+        where.push(lt(transactionTable.created_at, endExclusive.toISOString()));
+      }
+    }
+    return where;
+  }
+
   static async findMany() {
     return await db.query.transactionTable.findMany();
   }
+
   static async findById(id: number) {
     return await db.query.transactionTable.findFirst({
       where: eq(transactionTable.id, id),
     });
+  }
+
+  static async cPaginate(
+    query: TransactionModel.TransactionFilterDto,
+    user_id: number,
+  ) {
+    const conditions = this.buildFilter(query);
+    const result = await db
+      .select()
+      .from(transactionTable)
+      .leftJoin(walletTable, eq(transactionTable.wallet_id, walletTable.id))
+      .leftJoin(
+        categoryTable,
+        eq(transactionTable.category_id, categoryTable.id),
+      )
+      .where(and(...conditions, eq(walletTable.user_id, user_id)))
+      .limit(query.page_size)
+      .orderBy(desc(transactionTable.created_at), desc(transactionTable.id));
+
+    const transaction = result.map((row) => ({
+      ...row.transactions,
+      category: row.categories,
+    }));
+
+    return transaction;
   }
 
   static async getTransactionsByUserId(userId: number) {
@@ -120,7 +113,7 @@ export class TransactionRepository {
     return result.map((row) => row.transactions);
   }
 
-  static async findTotalAmountByDays(
+  static async findDailyNetTotalsByDates(
     dates: string[],
     user_id: number,
     searchQuery?: string,
@@ -149,7 +142,7 @@ export class TransactionRepository {
       .orderBy(sql`DATE(${transactionTable.created_at})`);
   }
 
-  static async findUserOverview(
+  static async findCashflowTotalsByUserId(
     query: TransactionModel.TransactionBaseQuery,
     user_id: number,
   ) {
@@ -168,14 +161,6 @@ export class TransactionRepository {
           sql<number>`COALESCE(SUM(CASE WHEN type = 'TOP_UP' THEN ${transactionTable.amount} ELSE 0 END), 0)`.mapWith(
             Number,
           ),
-        average:
-          sql<number>`COALESCE(AVG(${transactionTable.amount}), 0)`.mapWith(
-            Number,
-          ),
-        highest:
-          sql<number>`COALESCE(MAX(CASE WHEN type = 'TOP_UP' THEN ${transactionTable.amount} ELSE 0 END), 0)`.mapWith(
-            Number,
-          ),
       })
       .from(transactionTable)
       .leftJoin(walletTable, eq(transactionTable.wallet_id, walletTable.id))
@@ -184,52 +169,74 @@ export class TransactionRepository {
     return result;
   }
 
-  static async findUserExpense(
-    user_id: number,
-    query: WalletModel.WalletQueryDto,
-  ) {
-    const conditions = this.buildFilter({
-      ...query,
-      page_size: 0,
-    });
-    const { monthStart, nextMonthStart } = getMonth();
-
+  static async getBalanceSummaryByUserId(user_id: number) {
     const [result] = await db
       .select({
-        total:
-          sql<number>`COALESCE(SUM(${transactionTable.amount}), 0)`.mapWith(
+        total_remaining_balance:
+          sql<number>`COALESCE(SUM(CASE WHEN type = 'TOP_UP' THEN ${transactionTable.amount} ELSE -${transactionTable.amount} END), 0)`.mapWith(
+            Number,
+          ),
+        expense:
+          sql<number>`COALESCE(SUM(CASE WHEN type = 'EXPENSE' and date_trunc('month', ${transactionTable.created_at}) = date_trunc('month', CURRENT_TIMESTAMP) THEN ${transactionTable.amount} ELSE 0 END), 0)`.mapWith(
+            Number,
+          ),
+        top_up:
+          sql<number>`COALESCE(SUM(CASE WHEN type = 'TOP_UP' and date_trunc('month', ${transactionTable.created_at}) = date_trunc('month', CURRENT_TIMESTAMP) THEN ${transactionTable.amount} ELSE 0 END), 0)`.mapWith(
             Number,
           ),
       })
       .from(transactionTable)
       .leftJoin(walletTable, eq(transactionTable.wallet_id, walletTable.id))
-      .where(and(...conditions, eq(walletTable.user_id, user_id)));
+      .where(eq(walletTable.user_id, user_id));
     return result;
   }
 
-  static async cPaginate(
-    query: TransactionModel.TransactionFilterDto,
+  // Statistic
+  static async findStatistic(
+    query: TransactionModel.StatisticFilterDto,
     user_id: number,
   ) {
-    const conditions = this.buildFilter(query);
-    const result = await db
-      .select()
+    const where = this.buildStatisticFilter(query);
+    const conditions: SQL[] = [
+      ...where,
+      eq(walletTable.user_id, user_id),
+      eq(transactionTable.type, TransactionModel.TransactionTypeEnum.EXPENSE),
+    ];
+    return db
+      .select({
+        date: transactionTable.created_at,
+        amount: sum(transactionTable.amount).mapWith(Number),
+      })
       .from(transactionTable)
       .leftJoin(walletTable, eq(transactionTable.wallet_id, walletTable.id))
+      .where(and(...conditions))
+      .groupBy(transactionTable.amount, transactionTable.created_at)
+      .orderBy(asc(transactionTable.created_at));
+  }
+
+  static async getTotalAmountByCategory(user_id: number) {
+    return db
+      .select({
+        amount: sum(transactionTable.amount).mapWith(Number),
+        name: categoryTable.name,
+      })
+      .from(transactionTable)
       .leftJoin(
         categoryTable,
-        eq(transactionTable.category_id, categoryTable.id),
+        eq(categoryTable.id, transactionTable.category_id),
       )
-      .where(and(...conditions, eq(walletTable.user_id, user_id)))
-      .limit(query.page_size)
-      .orderBy(desc(transactionTable.created_at), desc(transactionTable.id));
-
-    const transaction = result.map((row) => ({
-      ...row.transactions,
-      category: row.categories,
-    }));
-
-    return transaction;
+      .leftJoin(walletTable, eq(transactionTable.wallet_id, walletTable.id))
+      .where(
+        and(
+          eq(walletTable.user_id, user_id),
+          eq(
+            transactionTable.type,
+            TransactionModel.TransactionTypeEnum.EXPENSE,
+          ),
+        ),
+      )
+      .groupBy(categoryTable.name)
+      .orderBy(desc(sum(transactionTable.amount)));
   }
 
   static async create(

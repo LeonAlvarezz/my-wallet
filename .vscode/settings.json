@@ -7,5 +7,10 @@
   },
   "search.exclude": {
     "**/routeTree.gen.ts": true
+  },
+  "workbench.editor.customLabels.patterns": {
+    "**/apps/web/src/**/index.{js,jsx,ts,tsx}": "(Web) ${dirname}/${filename}.${extname}",
+    "**/apps/backend/src/**/*.{js,jsx,ts,tsx}": "(Backend) ${dirname}/${filename}.${extname}",
+    "**/index.{js,jsx,ts,tsx}": "${dirname} (${filename}.${extname})"
   }
 }

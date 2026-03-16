@@ -16,12 +16,16 @@ const transaction = {
     >(`${key}`, {
       params: filter,
     }),
-  getOverview: (filter?: Pick<TransactionModel.TransactionFilterDto, "time_frame">) =>
-    requestClient.get<TransactionModel.UserOverviewDto>(`${key}/overview`, {
+  getCashflow: (
+    filter?: Pick<TransactionModel.TransactionFilterDto, "time_frame">,
+  ) =>
+    requestClient.get<TransactionModel.UserCashflowDto>(`${key}/cashflow`, {
       params: filter,
     }),
-  // getAll: () =>
-  //   requestClient.get<TransactionModel.TransactionWithCategoryDto[]>(`${key}`),
+  getCashflowSummary: () =>
+    requestClient.get<TransactionModel.UserCashflowSummaryDto>(
+      `${key}/summary`,
+    ),
   getById: (id: number) =>
     requestClient.get<TransactionModel.TransactionDto>(`${key}/${id}`),
   create: (payload: TransactionModel.CreateTransactionDto) =>
@@ -29,5 +33,13 @@ const transaction = {
   update: (id: number, payload: TransactionModel.UpdateTransactionDto) =>
     requestClient.put<TransactionModel.TransactionDto>(`${key}/${id}`, payload),
   delete: (id: number) => requestClient.delete<SimpleSuccess>(`${key}/${id}`),
+  getStatistic: (filter?: TransactionModel.StatisticFilterDto) =>
+    requestClient.get<TransactionModel.StatisticDto[]>(`${key}/statistic`, {
+      params: filter,
+    }),
+  getTotalByCategory: () =>
+    requestClient.get<TransactionModel.TotalAmountByCategoryDto[]>(
+      `${key}/by-category`,
+    ),
 };
 export default transaction;

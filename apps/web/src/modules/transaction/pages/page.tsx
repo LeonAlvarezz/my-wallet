@@ -18,7 +18,7 @@ import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { groupTransactionsByDate } from "@/utils/transaction";
 import { StatsCard } from "../components/stats-card";
-import { useGetSpendingOverview } from "../hooks/use-get-spending-overview";
+import { useCashflowOverview } from "../hooks/use-get-cashflow";
 
 export default function TransactionPage() {
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ export default function TransactionPage() {
     query: debouncedValue.trim() || undefined,
     time_frame: timeFrame,
   });
-  const overview = useGetSpendingOverview({ time_frame: timeFrame });
+  const overview = useCashflowOverview({ time_frame: timeFrame });
 
   const transactions = infinite.data?.pages.flatMap((p) => p.data) || [];
   const extras =
@@ -121,7 +121,7 @@ export default function TransactionPage() {
 
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-2">
             <StatsCard
-              title="Income"
+              title="Top Up"
               amount={totalTopUp.toFixed(2)}
               icon="solar:arrow-up-bold-duotone"
               trend="up"

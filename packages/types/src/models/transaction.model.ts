@@ -42,21 +42,46 @@ export namespace TransactionModel {
     day: z.string(),
     total: z.number(),
   });
-  export const UserOverviewSchema = z.object({
+
+  export const UserCashflowSchema = z.object({
     expense: z.number(),
     top_up: z.number(),
-    average: z.number(),
-    highest: z.number(),
+  });
+
+  export const UserCashflowSummarySchema = UserCashflowSchema.extend({
+    total_remaining_balance: z.number(),
+  });
+
+  export const TotalAmountByCategorySchema = z.object({
+    amount: z.number(),
+    name: z.string().nullable(),
+  });
+
+  export const StatisticFilterSchema = z.object({
+    time_frame: z.enum(BaseModel.TimeFrameEnum).optional(),
+  });
+
+  export const StatisticSchema = z.object({
+    date: z.iso.datetime(),
+    amount: z.number(),
   });
 
   export type TransactionDto = z.infer<typeof TransactionSchema>;
   export type TransactionWithCategoryDto = z.infer<
     typeof TransactionWithCategorySchema
   >;
+  export type TransactionBaseQuery = z.infer<typeof TransactionBaseQuerySchema>;
   export type TransactionFilterDto = z.infer<typeof TransactionFilterSchema>;
   export type CreateTransactionDto = z.infer<typeof CreateTransactionSchema>;
   export type UpdateTransactionDto = z.infer<typeof UpdateTransactionSchema>;
   export type ExtraDailyTotalDto = z.infer<typeof ExtraDailyTotalSchema>;
-  export type UserOverviewDto = z.infer<typeof UserOverviewSchema>;
-  export type TransactionBaseQuery = z.infer<typeof TransactionBaseQuerySchema>;
+  export type UserCashflowDto = z.infer<typeof UserCashflowSchema>;
+  export type UserCashflowSummaryDto = z.infer<
+    typeof UserCashflowSummarySchema
+  >;
+  export type TotalAmountByCategoryDto = z.infer<
+    typeof TotalAmountByCategorySchema
+  >;
+  export type StatisticFilterDto = z.infer<typeof StatisticFilterSchema>;
+  export type StatisticDto = z.infer<typeof StatisticSchema>;
 }

@@ -20,20 +20,13 @@ export class TransactionService {
     );
     const extra =
       dates.length > 0
-        ? await TransactionRepository.findTotalAmountByDays(
+        ? await TransactionRepository.findDailyNetTotalsByDates(
             dates,
             user_id,
             query.query,
           )
         : [];
     return processCursorResult(data, query.page_size, extra);
-  }
-
-  static findUserOverview(
-    query: TransactionModel.TransactionBaseQuery,
-    user_id: number,
-  ) {
-    return TransactionRepository.findUserOverview(query, user_id);
   }
 
   static async findAll() {
@@ -49,6 +42,30 @@ export class TransactionService {
   static async findByUserId(user_id: number) {
     return await TransactionRepository.getTransactionsByUserId(user_id);
   }
+
+  static findCashflowTotalsByUserId(
+    query: TransactionModel.TransactionBaseQuery,
+    user_id: number,
+  ) {
+    return TransactionRepository.findCashflowTotalsByUserId(query, user_id);
+  }
+
+  static getBalanceSummaryByUserId(user_id: number) {
+    return TransactionRepository.getBalanceSummaryByUserId(user_id);
+  }
+
+  //Statistic
+  static findStatistic(
+    query: TransactionModel.StatisticFilterDto,
+    user_id: number,
+  ) {
+    return TransactionRepository.findStatistic(query, user_id);
+  }
+
+  static getTotalAmountByCategory(user_id: number) {
+    return TransactionRepository.getTotalAmountByCategory(user_id);
+  }
+
   static async create(
     payload: TransactionModel.CreateTransactionDto,
     user_id: number,

@@ -69,9 +69,12 @@ export const transaction = new Elysia()
     );
 
     app.get(
-      "/overview",
+      "/cashflow",
       async ({ user, query }) => {
-        const data = await TransactionService.findUserOverview(query, user.id);
+        const data = await TransactionService.findCashflowTotalsByUserId(
+          query,
+          user.id,
+        );
         return Success(data);
       },
       {
@@ -81,7 +84,60 @@ export const transaction = new Elysia()
           summary: "Get user spending overview",
           tags: [OpenApiKey.Transaction],
         },
-        response: SuccessSchema(TransactionModel.UserOverviewSchema),
+        response: SuccessSchema(TransactionModel.UserCashflowSchema),
+      },
+    );
+
+    app.get(
+      "/summary",
+      async ({ user }) => {
+        const data = await TransactionService.getBalanceSummaryByUserId(
+          user.id,
+        );
+        return Success(data);
+      },
+      {
+        authenticated: true,
+        detail: {
+          summary: "Get user total transaction summary",
+          tags: [OpenApiKey.Transaction],
+        },
+        response: SuccessSchema(TransactionModel.UserCashflowSummarySchema),
+      },
+    );
+
+    app.get(
+      "/by-category",
+      async ({ user }) => {
+        const data = await TransactionService.getTotalAmountByCategory(user.id);
+        return Success(data);
+      },
+      {
+        authenticated: true,
+        detail: {
+          summary: "Get user total spending by section by category",
+          tags: [OpenApiKey.Transaction],
+        },
+        response: SuccessSchema(
+          TransactionModel.TotalAmountByCategorySchema.array(),
+        ),
+      },
+    );
+
+    app.get(
+      "/statistic",
+      async ({ user, query }) => {
+        const data = await TransactionService.findStatistic(query, user.id);
+        return Success(data);
+      },
+      {
+        authenticated: true,
+        query: TransactionModel.StatisticFilterSchema,
+        detail: {
+          summary: "Get user statistic over specific period",
+          tags: [OpenApiKey.Transaction],
+        },
+        response: SuccessSchema(TransactionModel.StatisticSchema.array()),
       },
     );
 

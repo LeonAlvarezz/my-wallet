@@ -65,7 +65,7 @@ export default function UpdateTransactionDialog({
               title="Delete transaction?"
               description="This action cannot be undone. This will permanently delete this transaction."
               confirmText="Delete"
-              onConfirm={async () => {
+            onConfirm={async () => {
                 await deleteMutation.mutateAsync(transaction.id);
                 setOpen(false);
               }}

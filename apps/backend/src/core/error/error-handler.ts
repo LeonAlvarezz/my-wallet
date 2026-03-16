@@ -11,12 +11,12 @@ import { Fail } from "../response";
 import { RateLimitService } from "@/lib/rate-limit";
 import { ip } from "../request/ip";
 import { getKey } from "@my-wallet/types/enum";
+import { formatDrizzleError, isDrizzleError } from "@/lib/db/error";
 
 export const errorHandler = new Elysia({ name: "error-handling" })
   .use(ip)
   .onError(async ({ error, code, set, ip, request }) => {
-    console.log("request:", request.url);
-    logger.error("🔥 Error occurred: ", error);
+    logger.error("🔥 Error occurred", error);
 
     if (code === "VALIDATION") {
       return Fail({
@@ -42,13 +42,21 @@ export const errorHandler = new Elysia({ name: "error-handling" })
           });
         }
       }
-      console.log("Hello");
+
       return Fail({
         message: error.message,
         status: error.status,
         code: error.code,
       });
     }
+
+    // if (isDrizzleError(error)) {
+    //   return Fail({
+    //     message: formatDrizzleError(error),
+    //     status: 500,
+    //     code: getKey(DefaultErrorMessage, DefaultErrorMessage.INTERNAL_SERVER),
+    //   });
+    // }
 
     if (code === "NOT_FOUND") {
       return Fail({

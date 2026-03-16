@@ -7,6 +7,13 @@ export function getDisplayAmount(amount: number) {
   });
 }
 
-export function formatAmount(amount: number | string) {
-  return !Number.isNaN(Number(amount)) ? Number(amount) : 0;
+export function formatAmount(amount: number | string | null | undefined) {
+  if (amount === null || amount === undefined) {
+    return 0;
+  }
+
+  const parsedAmount =
+    typeof amount === "string" ? Number(amount.trim()) : amount;
+
+  return Number.isFinite(parsedAmount) ? parsedAmount : 0;
 }

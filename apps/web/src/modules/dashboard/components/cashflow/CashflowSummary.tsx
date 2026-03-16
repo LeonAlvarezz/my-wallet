@@ -4,15 +4,15 @@ import { AmountDisplay } from "@/components/amount/AmountDisplay";
 import { formatAmount } from "@/utils/currency";
 
 type CashflowSummaryProps = {
-  total: number;
-  income: number;
-  expense: number;
+  total: number | undefined;
+  top_up: number | undefined;
+  expense: number | undefined;
   className?: string;
 };
 
 export default function CashflowSummary({
   total,
-  income,
+  top_up,
   expense,
   className,
 }: CashflowSummaryProps) {
@@ -31,7 +31,10 @@ export default function CashflowSummary({
       <CardContent className="relative">
         <div className="space-y-4">
           <div className="flex flex-col gap-2">
-            <p className="text-muted-foreground text-sm">Total Balance</p>
+            <div className="flex items-center justify-between">
+              <p className="text-muted-foreground text-sm">Current Balance</p>
+              <p className="text-muted-foreground text-xs">This month</p>
+            </div>
             <AmountDisplay
               value={formatAmount(total)}
               showSign={false}
@@ -43,10 +46,10 @@ export default function CashflowSummary({
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <div className="size-2 rounded-full bg-emerald-500" />
-                <p className="text-muted-foreground text-xs">Income</p>
+                <p className="text-muted-foreground text-xs">Top Up</p>
               </div>
               <AmountDisplay
-                value={formatAmount(income)}
+                value={formatAmount(top_up)}
                 className="font-semibold"
               />
             </div>
@@ -56,7 +59,7 @@ export default function CashflowSummary({
                 <p className="text-muted-foreground text-xs">Spent</p>
               </div>
               <AmountDisplay
-                value={formatAmount(-expense)}
+                value={formatAmount(-(expense ?? 0))}
                 className="font-semibold"
               />
             </div>
