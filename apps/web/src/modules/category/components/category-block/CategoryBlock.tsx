@@ -22,6 +22,7 @@ type CategoryBlockProps = {
   value: string;
   className?: string;
   disabled?: boolean;
+  compact?: boolean;
 };
 
 export default function CategoryBlock({
@@ -29,6 +30,7 @@ export default function CategoryBlock({
   value,
   className,
   disabled,
+  compact = false,
 }: CategoryBlockProps) {
   const colors = getCategoryVariantColors(category.color);
 
@@ -38,7 +40,8 @@ export default function CategoryBlock({
       disabled={disabled}
       aria-label={category.name}
       className={cn(
-        "flex h-full w-full flex-col items-center justify-center rounded-sm! border p-4 transition-all",
+        "flex h-full w-full flex-col items-center justify-center rounded-sm! border transition-all",
+        compact ? "gap-1 p-2" : "gap-2 p-4",
         colors.bg,
         "border-transparent",
         "data-[state=on]:border-primary data-[state=on]:ring-primary data-[state=on]:scale-105 data-[state=on]:ring-1",
@@ -47,10 +50,17 @@ export default function CategoryBlock({
     >
       <Icon
         icon={category.icon}
-        className={`size-8 ${colors.text}`}
+        className={cn(compact ? "size-6" : "size-8", colors.text)}
         fallback={<IconSkeleton />}
       />
-      <p className={`${colors.text}`}>{category.name}</p>
+      <p
+        className={cn(
+          colors.text,
+          compact ? "max-w-full truncate text-xs leading-tight" : "text-sm",
+        )}
+      >
+        {category.name}
+      </p>
       {/* <IconSkeleton /> */}
     </ToggleGroupItem>
   );

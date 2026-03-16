@@ -199,13 +199,14 @@ function MutateTransactionForm({ className, children }: Props) {
                                   field.handleChange(Number(value));
                                   field.handleBlur();
                                 }}
-                                className="grid w-full grid-cols-2 gap-2 sm:grid-cols-3"
+                                className="grid w-full grid-cols-3 gap-2"
                               >
                                 {visibleCategories.map((category) => (
                                   <CategoryBlock
                                     key={category.id}
                                     category={category}
                                     value={category.id.toString()}
+                                    compact
                                     className={cn(
                                       isInvalid && "border border-red-500",
                                     )}
@@ -217,7 +218,7 @@ function MutateTransactionForm({ className, children }: Props) {
                               <Button
                                 type="button"
                                 variant="ghost"
-                                className=""
+                                className="h-fit p-0"
                                 aria-expanded={isCategoryExpanded}
                                 onClick={() =>
                                   setIsCategoryExpanded((prev) => !prev)
