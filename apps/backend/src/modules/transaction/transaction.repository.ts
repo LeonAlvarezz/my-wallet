@@ -197,21 +197,31 @@ export class TransactionRepository {
     user_id: number,
   ) {
     const where = this.buildStatisticFilter(query);
+    const bucket =
+      query.time_frame === BaseModel.TimeFrameEnum.TODAY ||
+      query.time_frame === BaseModel.TimeFrameEnum.YESTERDAY
+        ? sql`date_trunc('minute', ${transactionTable.created_at})`
+        : query.time_frame === BaseModel.TimeFrameEnum.YEAR ||
+            query.time_frame === BaseModel.TimeFrameEnum.ALL_TIME
+          ? sql`date_trunc('month', ${transactionTable.created_at})`
+          : sql`date_trunc('day', ${transactionTable.created_at})`;
+
     const conditions: SQL[] = [
       ...where,
       eq(walletTable.user_id, user_id),
       eq(transactionTable.type, TransactionModel.TransactionTypeEnum.EXPENSE),
     ];
+
     return db
       .select({
-        date: transactionTable.created_at,
+        date: sql<string>`to_char(${bucket} AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"')`,
         amount: sum(transactionTable.amount).mapWith(Number),
       })
       .from(transactionTable)
       .leftJoin(walletTable, eq(transactionTable.wallet_id, walletTable.id))
       .where(and(...conditions))
-      .groupBy(transactionTable.amount, transactionTable.created_at)
-      .orderBy(asc(transactionTable.created_at));
+      .groupBy(bucket)
+      .orderBy(asc(bucket));
   }
 
   static async getTotalAmountByCategory(

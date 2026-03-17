@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BaseModel, CategoryModel, TransactionModel } from "@my-wallet/types";
+import { BaseModel } from "@my-wallet/types";
 import CashflowSummary from "./components/cashflow/CashflowSummary";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -22,6 +22,8 @@ import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
 import Empty from "@/components/empty/Empty";
 import { formatAmount } from "@/utils/currency";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useGetRecentTransactions } from "./hooks/use-get-recent-transactions";
 
 const chartConfig = {
   amount: {
@@ -39,51 +41,6 @@ export default function Dashboard() {
   const chartData = statisticData ?? [];
   const { data: summary } = useGetCashflowSummary();
 
-  const mockRecentTransactions: TransactionModel.TransactionWithCategoryDto[] =
-    [
-      {
-        id: 101,
-        wallet_id: 1,
-        amount: 18.5,
-        description: "Morning coffee",
-        type: TransactionModel.TransactionTypeEnum.EXPENSE,
-        created_at: "2026-03-16T09:10:00.000Z",
-        category: {
-          id: 1,
-          created_at: "2026-03-01T00:00:00.000Z",
-          name: "Coffee",
-          color: CategoryModel.CategoryColorEnum.ORANGE,
-          order: 1,
-          icon: "solar:cup-hot-bold-duotone",
-        },
-      },
-      {
-        id: 102,
-        wallet_id: 1,
-        amount: 85,
-        description: "Groceries",
-        type: TransactionModel.TransactionTypeEnum.EXPENSE,
-        created_at: "2026-03-15T18:30:00.000Z",
-        category: {
-          id: 2,
-          created_at: "2026-03-01T00:00:00.000Z",
-          name: "Groceries",
-          color: CategoryModel.CategoryColorEnum.GREEN,
-          order: 2,
-          icon: "solar:cart-large-2-bold-duotone",
-        },
-      },
-      {
-        id: 103,
-        wallet_id: 1,
-        amount: 200,
-        description: "Top up",
-        type: TransactionModel.TransactionTypeEnum.TOP_UP,
-        created_at: "2026-03-14T20:00:00.000Z",
-        category: null,
-      },
-    ];
-
   const { data: categories } = useCategories();
   const {
     data: totalByCategory,
@@ -92,6 +49,9 @@ export default function Dashboard() {
   } = useGetTotalByCategory({
     time_frame: timeFrame,
   });
+  const { data: recentTransactionResult, isLoading: isRecentLoading } =
+    useGetRecentTransactions();
+  const recentTransactions = recentTransactionResult?.data ?? [];
   const categoryTotal =
     totalByCategory?.reduce((sum, c) => sum + c.amount, 0) ?? 0;
   const visibleCategories = isCategoryExpanded
@@ -105,9 +65,6 @@ export default function Dashboard() {
           <p className="text-white/50">Good morning</p>
           <p className="text-primary text-xl font-bold">Leon 👋</p>
         </div>
-        <Avatar size="lg">
-          <AvatarFallback>L</AvatarFallback>
-        </Avatar>
       </div>
       <CashflowSummary
         expense={summary?.expense}
@@ -115,7 +72,7 @@ export default function Dashboard() {
         total={summary?.total_remaining_balance}
       />
 
-      <section className="space-y-4 font-bold">
+      <section className="space-y-4">
         <div className="flex justify-between">
           <h1>Chart</h1>
           <div className="flex items-center gap-2">
@@ -126,46 +83,70 @@ export default function Dashboard() {
           config={chartConfig}
           className="aspect-auto h-52 w-full"
         >
-          <BarChart data={chartData}>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="date"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              minTickGap={32}
-              tickFormatter={(value) => {
-                const date = new Date(value);
-                return date.toLocaleDateString("en-US", {
-                  day: "2-digit",
-                  month: "short",
-                });
-              }}
-            />
-            <ChartTooltip
-              cursor={true}
-              content={
-                <ChartTooltipContent
-                  labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
+          {chartData.length === 0 ? (
+            <div className="flex h-full w-full">
+              <Empty
+                title="No chart data"
+                description="No spending data for selected timeframe"
+                className="w-full"
+              />
+            </div>
+          ) : (
+            <BarChart data={chartData}>
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="date"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                minTickGap={32}
+                tickFormatter={(value) => {
+                  const date = new Date(value);
+                  if (timeFrame === BaseModel.TimeFrameEnum.TODAY) {
+                    return date.toLocaleTimeString("en-US", {
+                      hour: "2-digit",
+                      minute: "2-digit",
                     });
-                  }}
-                  formatter={(value) => {
-                    return `$${formatAmount(value.toString())}`;
-                  }}
-                  indicator="dot"
-                />
-              }
-            />
-            <Bar
-              dataKey="amount"
-              fill="var(--color-amount)"
-              radius={[6, 6, 0, 0]}
-            />
-          </BarChart>
+                  }
+                  return date.toLocaleDateString("en-US", {
+                    day: "2-digit",
+                    month: "short",
+                  });
+                }}
+              />
+              <ChartTooltip
+                cursor={true}
+                content={
+                  <ChartTooltipContent
+                    labelFormatter={(value) => {
+                      const date = new Date(value);
+                      if (timeFrame === BaseModel.TimeFrameEnum.TODAY) {
+                        return date.toLocaleTimeString("en-US", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                        });
+                      }
+                      return date.toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      });
+                    }}
+                    formatter={(value) => {
+                      return `$${formatAmount(value.toString())}`;
+                    }}
+                    indicator="dot"
+                  />
+                }
+              />
+              <Bar
+                dataKey="amount"
+                fill="var(--color-amount)"
+                radius={[6, 6, 0, 0]}
+              />
+            </BarChart>
+          )}
         </ChartContainer>
       </section>
 
@@ -178,7 +159,10 @@ export default function Dashboard() {
             ))}
           </div>
         ) : !totalByCategory || totalByCategory.length === 0 ? (
-          <Empty />
+          <Empty
+            title="No category data"
+            description="No spending data for selected timeframe"
+          />
         ) : (
           <>
             <div
@@ -228,11 +212,24 @@ export default function Dashboard() {
             See all
           </Link>
         </div>
-        <div className="space-y-2">
-          {mockRecentTransactions.slice(0, 3).map((transaction) => (
-            <TransactionCard key={transaction.id} transaction={transaction} />
-          ))}
-        </div>
+        {isRecentLoading ? (
+          <div className="space-y-2">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <Skeleton key={index} className="h-16 w-full rounded-lg" />
+            ))}
+          </div>
+        ) : recentTransactions.length === 0 ? (
+          <Empty
+            title="No recent transactions"
+            description="Your latest transactions will appear here"
+          />
+        ) : (
+          <div className="space-y-2">
+            {recentTransactions.map((transaction) => (
+              <TransactionCard key={transaction.id} transaction={transaction} />
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );

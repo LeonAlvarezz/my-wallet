@@ -119,6 +119,7 @@ export function parseSmartInput(
       };
     }
 
+    // Default to expense
     default: {
       // 2) Category: explicit tag (#coffee/@coffee) preferred
       let category: CategoryModel.CategoryDto | undefined;
@@ -145,6 +146,7 @@ export function parseSmartInput(
           const tail = tokens.slice(-size).join(" ");
           const tailNormalized = normalizeForMatch(tail);
           const match = bestCategoryMatch(tailNormalized, categories);
+          
           if (match) {
             category = match;
             categorySource = "tail";
