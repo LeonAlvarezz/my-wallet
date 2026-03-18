@@ -6,17 +6,23 @@ import {
   UnauthorizedException,
 } from "@my-wallet/exception";
 import logger from "@/lib/logger";
-import { DefaultErrorMessage } from "./type";
 import { Fail } from "../response";
 import { RateLimitService } from "@/lib/rate-limit";
 import { ip } from "../request/ip";
 import { getKey } from "@my-wallet/types/enum";
-import { formatDrizzleError, isDrizzleError } from "@/lib/db/error";
+import { isDrizzleError, parseDrizzleError } from "@/lib/db/error";
+import {
+  DefaultErrorMessage,
+  DefaultErrorMessageKey,
+  ErrorCode,
+  ErrorCodeKey,
+} from "@my-wallet/types";
 
 export const errorHandler = new Elysia({ name: "error-handling" })
   .use(ip)
   .onError(async ({ error, code, set, ip, request }) => {
     logger.error("🔥 Error occurred", error);
+    console.log("error:", error);
 
     if (code === "VALIDATION") {
       return Fail({
@@ -37,7 +43,7 @@ export const errorHandler = new Elysia({ name: "error-handling" })
         if (!allowed) {
           return Fail({
             message: DefaultErrorMessage.RATE_LIMIT,
-            status: 429,
+            status: ErrorCode.RATE_LIMIT,
             code: getKey(DefaultErrorMessage, DefaultErrorMessage.RATE_LIMIT),
           });
         }
@@ -50,13 +56,14 @@ export const errorHandler = new Elysia({ name: "error-handling" })
       });
     }
 
-    // if (isDrizzleError(error)) {
-    //   return Fail({
-    //     message: formatDrizzleError(error),
-    //     status: 500,
-    //     code: getKey(DefaultErrorMessage, DefaultErrorMessage.INTERNAL_SERVER),
-    //   });
-    // }
+    if (isDrizzleError(error)) {
+      const parsed = parseDrizzleError(error);
+      return Fail({
+        message: parsed.message,
+        status: parsed.status,
+        code: getKey(ErrorCode, parsed.status),
+      });
+    }
 
     if (code === "NOT_FOUND") {
       return Fail({

@@ -6,6 +6,7 @@ import { CategoryModel } from "@my-wallet/types";
 import { integer } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { transactionTable } from "./transaction.schema";
+import { categoryRuleTable } from "./category-rule.schema";
 export const categoryColorEnum = pgEnum(
   "CategoryColorEnum",
   enumToPgEnum(CategoryModel.CategoryColorEnum),
@@ -19,9 +20,10 @@ export const categoryTable = pgTable("categories", {
   ...simpleTimestamps,
 });
 
-export const categoryRelation = relations(categoryTable, ({ one }) => ({
+export const categoryRelation = relations(categoryTable, ({ one, many }) => ({
   transaction: one(transactionTable, {
     fields: [categoryTable.id],
     references: [transactionTable.category_id],
   }),
+  category_rules: many(categoryRuleTable),
 }));

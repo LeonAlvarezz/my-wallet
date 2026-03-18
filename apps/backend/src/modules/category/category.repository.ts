@@ -10,6 +10,15 @@ export class CategoryRepository {
     });
   }
 
+  static async checkIfExists(id: number) {
+    const row = await db.query.categoryTable.findFirst({
+      columns: { id: true },
+      where: eq(categoryTable.id, id),
+    });
+
+    return !!row;
+  }
+
   static async findById(id: number) {
     return await db.query.categoryTable.findFirst({
       where: eq(categoryTable.id, id),
@@ -37,7 +46,7 @@ export class CategoryRepository {
     const [result] = await client
       .update(categoryTable)
       .set(payload)
-      .where(eq(categoryTable.id, id))
+    .where(eq(categoryTable.id, id))
       .returning();
     return result;
   }

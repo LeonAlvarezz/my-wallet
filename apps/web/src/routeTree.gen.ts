@@ -19,6 +19,7 @@ import { Route as PublicLayoutAuthRegisterIndexRouteImport } from './routes/_pub
 import { Route as PublicLayoutAuthLoginIndexRouteImport } from './routes/_publicLayout/auth/login/index'
 import { Route as HomeLayoutTransactionAddIndexRouteImport } from './routes/_homeLayout/transaction/add/index'
 import { Route as HomeLayoutSettingsNotificationsIndexRouteImport } from './routes/_homeLayout/settings/notifications/index'
+import { Route as HomeLayoutSettingsCategoryRuleIndexRouteImport } from './routes/_homeLayout/settings/category-rule/index'
 import { Route as HomeLayoutSettingsBudgetGoalsIndexRouteImport } from './routes/_homeLayout/settings/budget-goals/index'
 
 const PublicLayoutRouteRoute = PublicLayoutRouteRouteImport.update({
@@ -74,6 +75,12 @@ const HomeLayoutSettingsNotificationsIndexRoute =
     path: '/settings/notifications/',
     getParentRoute: () => HomeLayoutRouteRoute,
   } as any)
+const HomeLayoutSettingsCategoryRuleIndexRoute =
+  HomeLayoutSettingsCategoryRuleIndexRouteImport.update({
+    id: '/settings/category-rule/',
+    path: '/settings/category-rule/',
+    getParentRoute: () => HomeLayoutRouteRoute,
+  } as any)
 const HomeLayoutSettingsBudgetGoalsIndexRoute =
   HomeLayoutSettingsBudgetGoalsIndexRouteImport.update({
     id: '/settings/budget-goals/',
@@ -87,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/settings/': typeof HomeLayoutSettingsIndexRoute
   '/transaction/': typeof HomeLayoutTransactionIndexRoute
   '/settings/budget-goals/': typeof HomeLayoutSettingsBudgetGoalsIndexRoute
+  '/settings/category-rule/': typeof HomeLayoutSettingsCategoryRuleIndexRoute
   '/settings/notifications/': typeof HomeLayoutSettingsNotificationsIndexRoute
   '/transaction/add/': typeof HomeLayoutTransactionAddIndexRoute
   '/auth/login/': typeof PublicLayoutAuthLoginIndexRoute
@@ -98,6 +106,7 @@ export interface FileRoutesByTo {
   '/settings': typeof HomeLayoutSettingsIndexRoute
   '/transaction': typeof HomeLayoutTransactionIndexRoute
   '/settings/budget-goals': typeof HomeLayoutSettingsBudgetGoalsIndexRoute
+  '/settings/category-rule': typeof HomeLayoutSettingsCategoryRuleIndexRoute
   '/settings/notifications': typeof HomeLayoutSettingsNotificationsIndexRoute
   '/transaction/add': typeof HomeLayoutTransactionAddIndexRoute
   '/auth/login': typeof PublicLayoutAuthLoginIndexRoute
@@ -112,6 +121,7 @@ export interface FileRoutesById {
   '/_homeLayout/settings/': typeof HomeLayoutSettingsIndexRoute
   '/_homeLayout/transaction/': typeof HomeLayoutTransactionIndexRoute
   '/_homeLayout/settings/budget-goals/': typeof HomeLayoutSettingsBudgetGoalsIndexRoute
+  '/_homeLayout/settings/category-rule/': typeof HomeLayoutSettingsCategoryRuleIndexRoute
   '/_homeLayout/settings/notifications/': typeof HomeLayoutSettingsNotificationsIndexRoute
   '/_homeLayout/transaction/add/': typeof HomeLayoutTransactionAddIndexRoute
   '/_publicLayout/auth/login/': typeof PublicLayoutAuthLoginIndexRoute
@@ -125,6 +135,7 @@ export interface FileRouteTypes {
     | '/settings/'
     | '/transaction/'
     | '/settings/budget-goals/'
+    | '/settings/category-rule/'
     | '/settings/notifications/'
     | '/transaction/add/'
     | '/auth/login/'
@@ -136,6 +147,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/transaction'
     | '/settings/budget-goals'
+    | '/settings/category-rule'
     | '/settings/notifications'
     | '/transaction/add'
     | '/auth/login'
@@ -149,6 +161,7 @@ export interface FileRouteTypes {
     | '/_homeLayout/settings/'
     | '/_homeLayout/transaction/'
     | '/_homeLayout/settings/budget-goals/'
+    | '/_homeLayout/settings/category-rule/'
     | '/_homeLayout/settings/notifications/'
     | '/_homeLayout/transaction/add/'
     | '/_publicLayout/auth/login/'
@@ -232,6 +245,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeLayoutSettingsNotificationsIndexRouteImport
       parentRoute: typeof HomeLayoutRouteRoute
     }
+    '/_homeLayout/settings/category-rule/': {
+      id: '/_homeLayout/settings/category-rule/'
+      path: '/settings/category-rule'
+      fullPath: '/settings/category-rule/'
+      preLoaderRoute: typeof HomeLayoutSettingsCategoryRuleIndexRouteImport
+      parentRoute: typeof HomeLayoutRouteRoute
+    }
     '/_homeLayout/settings/budget-goals/': {
       id: '/_homeLayout/settings/budget-goals/'
       path: '/settings/budget-goals'
@@ -248,6 +268,7 @@ interface HomeLayoutRouteRouteChildren {
   HomeLayoutSettingsIndexRoute: typeof HomeLayoutSettingsIndexRoute
   HomeLayoutTransactionIndexRoute: typeof HomeLayoutTransactionIndexRoute
   HomeLayoutSettingsBudgetGoalsIndexRoute: typeof HomeLayoutSettingsBudgetGoalsIndexRoute
+  HomeLayoutSettingsCategoryRuleIndexRoute: typeof HomeLayoutSettingsCategoryRuleIndexRoute
   HomeLayoutSettingsNotificationsIndexRoute: typeof HomeLayoutSettingsNotificationsIndexRoute
   HomeLayoutTransactionAddIndexRoute: typeof HomeLayoutTransactionAddIndexRoute
 }
@@ -259,6 +280,8 @@ const HomeLayoutRouteRouteChildren: HomeLayoutRouteRouteChildren = {
   HomeLayoutTransactionIndexRoute: HomeLayoutTransactionIndexRoute,
   HomeLayoutSettingsBudgetGoalsIndexRoute:
     HomeLayoutSettingsBudgetGoalsIndexRoute,
+  HomeLayoutSettingsCategoryRuleIndexRoute:
+    HomeLayoutSettingsCategoryRuleIndexRoute,
   HomeLayoutSettingsNotificationsIndexRoute:
     HomeLayoutSettingsNotificationsIndexRoute,
   HomeLayoutTransactionAddIndexRoute: HomeLayoutTransactionAddIndexRoute,

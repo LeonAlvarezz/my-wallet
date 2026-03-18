@@ -3,7 +3,7 @@ import LoginForm from "../components/forms/LoginForm";
 
 export default function LoginPage() {
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center p-6">
+    <div className="flex min-h-lvh w-full flex-col items-center justify-center p-6">
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <div className="bg-primary/10 absolute -top-40 -right-40 h-80 w-80 rounded-full blur-3xl" />
         <div className="bg-primary/5 absolute -bottom-40 -left-40 h-80 w-80 rounded-full blur-3xl" />

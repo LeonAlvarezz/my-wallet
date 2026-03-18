@@ -59,7 +59,7 @@ export default function DeleteButton({
             type="button"
             variant="simple"
             loading={loading}
-            className={[triggerClassName, className].filter(Boolean).join(" ")}
+            className={className}
             {...props}
           >
             {!loading && (

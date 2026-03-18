@@ -6,6 +6,7 @@ import { sessionTable } from "./session.schema";
 import { isoTimestamp as timestamp } from "@/lib/db/common/iso-timestamp";
 import { transactionTable } from "./transaction.schema";
 import { walletTable } from "./wallet.schema";
+import { categoryRuleTable } from "./category-rule.schema";
 
 export const userTable = pgTable("users", {
   id: serial().primaryKey(),
@@ -27,4 +28,5 @@ export const userRelation = relations(userTable, ({ one, many }) => ({
     fields: [userTable.id],
     references: [walletTable.user_id],
   }),
+  category_rules: many(categoryRuleTable),
 }));

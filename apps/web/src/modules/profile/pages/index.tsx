@@ -63,7 +63,7 @@ export function ProfilePage() {
             icon: "solar:tag-bold-duotone",
             onClick: () => {
               navigate({
-                to: "/settings/budget-goals",
+                to: "/settings/category-rule",
               });
             },
           },

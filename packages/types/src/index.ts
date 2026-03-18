@@ -7,6 +7,7 @@ export { AuthModel } from "./models/auth.model";
 export { SessionModel } from "./models/session.model";
 export { CursorModel } from "./models/cursor.model";
 export { WalletEventModel } from "./models/wallet-event.model";
+export { CategoryRuleModel } from "./models/category-rule.model";
 
 export {
   FailSchema,
@@ -27,6 +28,7 @@ export {
   type CustomError,
   type ErrorParams,
   type DefaultErrorMessageKey,
+  type ErrorCodeKey,
   DefaultErrorMessage,
   ErrorCode,
 } from "./types/error";

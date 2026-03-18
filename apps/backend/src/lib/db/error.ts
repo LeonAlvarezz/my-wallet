@@ -1,3 +1,5 @@
+import { ErrorCode } from "@my-wallet/types";
+
 // Format any Drizzle/PG error into a readable message
 export function isDrizzleError(err: unknown): boolean {
   if (!err || typeof err !== "object") return false;
@@ -32,35 +34,72 @@ export function isDrizzleError(err: unknown): boolean {
   return hasQuery || hasParams || hasPgCode || looksLikeDrizzle;
 }
 
-export function formatDrizzleError(err: any): string {
+type ParsedDbError = {
+  status: number;
+  message: string;
+};
+
+export function parseDrizzleError(err: any): ParsedDbError {
   if (!err || typeof err !== "object") {
-    return "An unknown database error occurred.";
+    return {
+      status: 500,
+      message: "Database operation failed.",
+    };
   }
 
   const pgError = extractOriginalPgError(err);
-
-  const code = pgError?.code;
-  const detail = pgError?.detail ?? "";
-  const constraint = pgError?.constraint ?? "";
-  const column = pgError?.column ?? "";
-  const rawMsg = pgError?.message ?? "";
+  const code = pgError?.code as string | undefined;
+  const detail = (pgError?.detail ?? "") as string;
+  const constraint = (pgError?.constraint ?? "") as string;
+  const column = (pgError?.column ?? "") as string;
+  const rawMsg = (pgError?.message ?? "") as string;
 
   switch (code) {
-    case "23505": // unique_violation
-      return `Duplicate value error: ${parseConstraint(constraint) || detail || "a unique field already exists."}`;
+    case "23505":
+      return {
+        status: ErrorCode.CONFLICT,
+        message:
+          parseUniqueViolation(constraint) ??
+          "Duplicate value. Please use a different value.",
+      };
 
-    case "23503": // foreign_key_violation
-      return `Foreign key violation: ${parseConstraint(constraint) || detail || "referenced record not found."}`;
+    case "23503": {
+      const fk = parseForeignKeyDetail(detail);
+      if (fk) {
+        return {
+          status: ErrorCode.NOT_FOUND,
+          message: `Invalid ${fk.column}. Referenced ${fk.resource} does not exist.`,
+        };
+      }
 
-    case "23502": // not_null_violation
-      return `Missing required field: ${column || parseColumnFromMessage(rawMsg) || "a required field was missing."}`;
+      return {
+        status: ErrorCode.NOT_FOUND,
+        message: "Invalid reference. Referenced record was not found.",
+      };
+    }
 
-    case "22P02": // invalid_text_representation
-      return `Invalid data format: ${detail || "Check input types and formats."}`;
+    case "23502":
+      return {
+        status: ErrorCode.BAD_REQUEST,
+        message: `Missing required field: ${column || parseColumnFromMessage(rawMsg) || "required field"}.`,
+      };
+
+    case "22P02":
+      return {
+        status: ErrorCode.FORBIDDEN,
+        message: `Invalid data format${detail ? `: ${detail}` : "."}`,
+      };
 
     default:
-      return `Database error${code ? ` [${code}]` : ""}: ${stripQuery(rawMsg) || "Unexpected database error."}`;
+      return {
+        status: ErrorCode.INTERNAL_SERVER,
+        message: "Database operation failed.",
+      };
   }
+}
+
+export function formatDrizzleError(err: any): string {
+  return parseDrizzleError(err).message;
 }
 
 // Extracts underlying PG error from Drizzle's wrapped error
@@ -83,6 +122,36 @@ function parseConstraint(constraint: string): string {
     return `${prettyField ?? constraint} must reference a valid record.`;
 
   return `Constraint violation on ${prettyField ?? constraint}.`;
+}
+
+function parseUniqueViolation(constraint: string): string | null {
+  if (!constraint) return null;
+  const uniqueField = constraint.match(/_(\w+?)_key$/)?.[1];
+  if (!uniqueField) return null;
+  return `${uniqueField} already exists.`;
+}
+
+function parseForeignKeyDetail(detail: string): {
+  column: string;
+  resource: string;
+} | null {
+  const match = detail.match(
+    /Key \(([^)]+)\)=\(([^)]+)\) is not present in table "([^"]+)"\./,
+  );
+
+  if (!match) return null;
+
+  const [, column, _value, table] = match;
+  return {
+    column,
+    resource: tableToResourceName(table),
+  };
+}
+
+function tableToResourceName(table: string): string {
+  if (table.endsWith("ies")) return `${table.slice(0, -3)}y`;
+  if (table.endsWith("s")) return table.slice(0, -1);
+  return table;
 }
 
 // Converts snake_case to Title Case

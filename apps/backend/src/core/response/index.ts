@@ -1,4 +1,4 @@
-import { DefaultErrorMessage, DefaultErrorMessageKey } from "../error/type";
+import { DefaultErrorMessageKey } from "@my-wallet/types";
 
 export const Success = <T>(data: T) => ({ success: true as const, data });
 export const Fail = ({
