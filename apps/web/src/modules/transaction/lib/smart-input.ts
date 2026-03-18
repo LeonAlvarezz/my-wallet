@@ -1,10 +1,14 @@
-import { TransactionModel, type CategoryModel } from "@my-wallet/types";
+import {
+  CategoryRuleModel,
+  TransactionModel,
+  type CategoryModel,
+} from "@my-wallet/types";
 
 export type SmartInputParseResult = {
   amount?: number;
   category?: CategoryModel.CategoryDto;
   note?: string;
-  categorySource: "tag" | "tail" | "none";
+  categorySource: "tag" | "rule" | "tail" | "none";
   parsed: {
     amount: boolean;
     category: boolean;
@@ -36,37 +40,118 @@ function parseAmountToken(token: string): number | undefined {
 function bestCategoryMatch(
   candidateNormalized: string,
   categories: CategoryModel.CategoryDto[],
-): CategoryModel.CategoryDto | undefined {
-  if (!candidateNormalized) return undefined;
+  rules: CategoryRuleModel.CategoryRuleListDto[],
+): {
+  category: CategoryModel.CategoryDto | undefined;
+  source: "rule" | "keyword" | "none";
+  note: string | undefined;
+} {
+  let note: string | undefined;
+  if (!candidateNormalized)
+    return {
+      category: undefined,
+      source: "none",
+      note,
+    };
 
   const normalizedCategories = categories.map((c) => ({
     category: c,
     normalized: normalizeForMatch(c.name),
   }));
 
-  // Exact match first
+  const categoryByNormalizedName = new Map(
+    normalizedCategories.map((entry) => [entry.normalized, entry.category]),
+  );
+
+  // User Rule first (exact keyword match)
+  const normalizedRules = rules.map((rule) => ({
+    categoryNameNormalized: normalizeForMatch(rule.name ?? ""),
+    keywords: rule.keywords.map((k) => normalizeForMatch(k)),
+  }));
+
+  const exactRule = normalizedRules.find((rule) => {
+    const result = rule.keywords.find((data) => data === candidateNormalized);
+    if (result) note = result;
+    return result;
+  });
+
+  if (exactRule) {
+    const matchCategory = categoryByNormalizedName.get(
+      exactRule.categoryNameNormalized,
+    );
+
+    if (matchCategory) {
+      return {
+        category: matchCategory,
+        source: "rule",
+        note,
+      };
+    }
+  }
+
+  // Then prefix rule match
+  const prefixRuleMatches = normalizedRules
+    .flatMap((rule) =>
+      rule.keywords
+        .filter((keyword) => keyword.startsWith(candidateNormalized))
+        .map((keyword) => ({
+          keyword,
+          categoryNameNormalized: rule.categoryNameNormalized,
+        })),
+    )
+    .sort((a, b) => a.keyword.length - b.keyword.length);
+  if (prefixRuleMatches.length > 0) {
+    const matchCategory = categoryByNormalizedName.get(
+      prefixRuleMatches[0].categoryNameNormalized,
+    );
+    if (matchCategory) {
+      return {
+        category: matchCategory,
+        source: "rule",
+        note: prefixRuleMatches[0].keyword,
+      };
+    }
+  }
+
+  // Then exact category-name match
   const exact = normalizedCategories.find(
     (c) => c.normalized === candidateNormalized,
   );
-  if (exact) return exact.category;
+  if (exact)
+    return {
+      category: exact.category,
+      source: "keyword",
+      note: undefined,
+    };
 
-  // Then prefix match (e.g., #trans -> Transportation)
+  // Then prefix category-name match (e.g., #trans -> Transportation)
   const prefixMatches = normalizedCategories
     .filter((c) => c.normalized.startsWith(candidateNormalized))
     .sort((a, b) => a.normalized.length - b.normalized.length);
-  return prefixMatches.length > 0 ? prefixMatches[0].category : undefined;
+
+  return prefixMatches.length > 0
+    ? {
+        category: prefixMatches[0].category,
+        source: "keyword",
+        note: undefined,
+      }
+    : {
+        category: undefined,
+        source: "none",
+        note: undefined,
+      };
 }
 
 /**
  * Parses a natural language string into amount/category/note.
- * Supported examples:
  * - "5 Starbucks #coffee" (tag)
  * - "5 Starbucks coffee" (tail match)
- * - "Starbucks 12 coffee" (amount token can appear anywhere)
+ * - "Starbucks 12 coffee" (amount can appear anywhere)
  */
 export function parseSmartInput(
   text: string,
   categories: CategoryModel.CategoryDto[],
+  rules: CategoryRuleModel.CategoryRuleListDto[],
 ): SmartInputParseResult {
   const warnings: string[] = [];
   const raw = text.trim();
@@ -86,7 +171,6 @@ export function parseSmartInput(
   const amountIndex = tokens.findIndex(
     (t) => parseAmountToken(t) !== undefined,
   );
-  console.log("amountIndex:", amountIndex);
 
   if (amountIndex >= 0) {
     amount = parseAmountToken(tokens[amountIndex]);
@@ -107,7 +191,7 @@ export function parseSmartInput(
       return {
         amount,
         category: undefined,
-        note: note,
+        note,
         categorySource: "none",
         parsed: {
           amount: amount !== undefined,
@@ -124,6 +208,7 @@ export function parseSmartInput(
       // 2) Category: explicit tag (#coffee/@coffee) preferred
       let category: CategoryModel.CategoryDto | undefined;
       let categorySource: SmartInputParseResult["categorySource"] = "none";
+      let note: string | undefined;
 
       const tagIndex = tokens.findIndex(
         (t) => t.startsWith("#") || t.startsWith("@"),
@@ -131,9 +216,9 @@ export function parseSmartInput(
       if (tagIndex >= 0) {
         const tag = tokens[tagIndex].slice(1);
         const tagNormalized = normalizeForMatch(tag);
-        const match = bestCategoryMatch(tagNormalized, categories);
-        if (match) {
-          category = match;
+        const match = bestCategoryMatch(tagNormalized, categories, rules);
+        if (match.category) {
+          category = match.category;
           categorySource = "tag";
           tokens = tokens.filter((_, idx) => idx !== tagIndex);
         }
@@ -145,21 +230,29 @@ export function parseSmartInput(
         for (let size = maxTailTokens; size >= 1; size -= 1) {
           const tail = tokens.slice(-size).join(" ");
           const tailNormalized = normalizeForMatch(tail);
-          const match = bestCategoryMatch(tailNormalized, categories);
-          
-          if (match) {
-            category = match;
+          const match = bestCategoryMatch(tailNormalized, categories, rules);
+          console.log("match:", match);
+          if (match.category) {
+            if (match.source === "rule") {
+              category = match.category;
+              categorySource = "rule";
+              note = match.note;
+              break;
+            }
+            category = match.category;
             categorySource = "tail";
             tokens = tokens.slice(0, -size);
-            warnings.push(`Category guessed: ${match}`);
+            warnings.push(`Category guessed: ${match.category.name}`);
             break;
           }
         }
       }
 
       // 4) Note: whatever remains
-      const noteText = tokens.join(" ").trim();
-      const note = noteText ? noteText : undefined;
+      if (!note) {
+        const noteText = tokens.join(" ").trim();
+        note = noteText ? noteText : undefined;
+      }
 
       return {
         amount,

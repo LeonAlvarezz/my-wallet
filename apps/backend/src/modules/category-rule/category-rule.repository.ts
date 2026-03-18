@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { categoryRuleTable, categoryTable } from "@/lib/db/schema";
 import { CategoryRuleModel } from "@my-wallet/types";
-import { and, count, eq } from "drizzle-orm";
+import { and, count, eq, sql } from "drizzle-orm";
 
 export class CategoryRuleRepository {
   static findMany() {
@@ -55,6 +55,24 @@ export class CategoryRuleRepository {
         ),
       )
       .orderBy(categoryTable.id)
+      .groupBy(categoryTable.id);
+  }
+
+  static quickFindAllRules(user_id: number) {
+    return db
+      .select({
+        id: categoryTable.id,
+        name: categoryTable.name,
+        keywords: sql<string[]>`array_agg(${categoryRuleTable.keyword})`,
+      })
+      .from(categoryRuleTable)
+      .leftJoin(
+        categoryTable,
+        and(
+          eq(categoryRuleTable.category_id, categoryTable.id),
+          eq(categoryRuleTable.user_id, user_id),
+        ),
+      )
       .groupBy(categoryTable.id);
   }
 

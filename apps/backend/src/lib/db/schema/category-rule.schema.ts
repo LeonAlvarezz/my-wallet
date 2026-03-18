@@ -1,5 +1,6 @@
 import { relations, sql } from "drizzle-orm";
 import {
+  index,
   integer,
   pgEnum,
   pgTable,
@@ -39,6 +40,8 @@ export const categoryRuleTable = pgTable(
     uniqueIndex("unique_user_personal_rule")
       .on(table.keyword, table.user_id)
       .where(sql`${table.type} = 'USER'::"CategoryRuleTypeEnum"`),
+    index("idx_category_rules_user_id").on(table.user_id), // add this
+    index("idx_category_rules_category_id").on(table.category_id), // add this
   ],
 );
 

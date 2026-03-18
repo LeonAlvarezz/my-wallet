@@ -4,6 +4,10 @@ import { NotFoundException } from "@my-wallet/exception";
 import { CategoryRepository } from "../category/category.repository";
 
 export class CategoryRuleService {
+  static async quickFindAllRules(user_id: number) {
+    return CategoryRuleRepository.quickFindAllRules(user_id);
+  }
+
   static async findByCategoryId(category_id: number, user_id: number) {
     const categoryExists = await CategoryRepository.checkIfExists(category_id);
     if (!categoryExists) {

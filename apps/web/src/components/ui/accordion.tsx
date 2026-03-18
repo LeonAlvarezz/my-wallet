@@ -44,7 +44,7 @@ function AccordionTrigger({
         {...props}
       >
         {children}
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           {badge !== undefined && badge >= 0 && (
             <div
               className={cn(

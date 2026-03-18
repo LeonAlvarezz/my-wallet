@@ -25,10 +25,17 @@ export namespace CategoryRuleModel {
     total: z.number(),
   });
 
+  export const CategoryRuleListSchema = z.object({
+    id: z.number().nullable(),
+    name: z.string().nullable(),
+    keywords: z.array(z.string()),
+  });
+
   export const UpdateCategoryRuleSchema = CreateCategoryRuleSchema.partial();
 
   export type CategoryRuleDto = z.infer<typeof CategoryRuleSchema>;
   export type CategoryRuleCountDto = z.infer<typeof CategoryRuleCountSchema>;
   export type CreateCategoryRuleDto = z.infer<typeof CreateCategoryRuleSchema>;
   export type UpdateCategoryRuleDto = z.infer<typeof UpdateCategoryRuleSchema>;
+  export type CategoryRuleListDto = z.infer<typeof CategoryRuleListSchema>;
 }

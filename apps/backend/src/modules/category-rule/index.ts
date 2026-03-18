@@ -14,6 +14,24 @@ export const categoryRule = new Elysia()
   .use(auth)
   .group("/category-rules", (app) => {
     app.get(
+      "/",
+      async ({ user }) => {
+        const data = await CategoryRuleService.quickFindAllRules(user.id);
+        return Success(data);
+      },
+      {
+        authenticated: true,
+        detail: {
+          summary: "Quick get all user rule group by category",
+          tags: [OpenApiKey.CategoryRule],
+        },
+        response: SuccessSchema(
+          CategoryRuleModel.CategoryRuleListSchema.array(),
+        ),
+      },
+    );
+
+    app.get(
       "/category/:id",
       async ({ params: { id }, user }) => {
         const data = await CategoryRuleService.findByCategoryId(id, user.id);

@@ -7,6 +7,7 @@ import z from "zod";
 import { useUpdateTransaction } from "@/modules/transaction/hooks/use-update-transaction";
 import { useCreateTransaction } from "@/modules/transaction/hooks/use-create-transaction";
 import { parseSmartInput } from "@/modules/transaction/lib/smart-input";
+import { useGetCategoryRuleList } from "@/modules/category-rule/hooks/use-get-category-rule-list";
 type CreateProps = {
   defaultValue?: TransactionModel.CreateTransactionDto;
   action?: "create";
@@ -37,6 +38,8 @@ export const useMutateTransactionForm = (props: Props) => {
 
   const { data: categories = [], isLoading: isCategoryLoading } =
     useCategories();
+
+  const { data: rules = [] } = useGetCategoryRuleList();
   const addMutation = useCreateTransaction();
   const updateMutation = useUpdateTransaction();
 
@@ -107,7 +110,7 @@ export const useMutateTransactionForm = (props: Props) => {
     const showToasts = options?.showToasts ?? true;
     const focusNote = options?.focusNote ?? false;
 
-    const result = parseSmartInput(smartText, categories);
+    const result = parseSmartInput(smartText, categories, rules);
     const didParseAnything =
       result.parsed.amount || result.parsed.category || result.parsed.note;
 
@@ -122,10 +125,12 @@ export const useMutateTransactionForm = (props: Props) => {
       const isInPreview = categories
         .slice(0, CATEGORY_PREVIEW_COUNT)
         .some((c) => c.name === result.category?.name);
+
       if (!isCategoryExpanded && !isInPreview) {
         setIsCategoryExpanded(true);
       }
     }
+
     if (result.note !== undefined) {
       form.setFieldValue(
         "description",
@@ -161,8 +166,6 @@ export const useMutateTransactionForm = (props: Props) => {
   const handleSmartSubmit = () => {
     // 1st tap: apply smart input into the form
     // 2nd tap: if the form is complete, submit
-    console.log("submitAttempts:", submitAttempts);
-    console.log("smartAppliedOnce:", smartAppliedOnce);
     setSubmitAttempts((n) => n + 1);
 
     if (!smartAppliedOnce) {
