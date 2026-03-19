@@ -23,7 +23,6 @@ COPY packages/types ./packages/types
 COPY packages/exception ./packages/exception
 COPY packages/api-client ./packages/api-client
 
-ARG VITE_API_URL=/api
 ENV VITE_API_URL=${VITE_API_URL}
 ENV NODE_ENV=production
 
