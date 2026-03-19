@@ -23,8 +23,7 @@ export function isDrizzleError(err: unknown): boolean {
   const hasParams =
     Array.isArray(errorObj.params) || Array.isArray(errorObj.cause?.params);
   const hasPgCode =
-    typeof errorObj.code === "string" ||
-    typeof errorObj.cause?.code === "string";
+    typeof errorObj.code === "string" && /^[A-Z0-9]{5}$/.test(errorObj.code);
 
   const name = typeof errorObj.name === "string" ? errorObj.name : "";
   const message = typeof errorObj.message === "string" ? errorObj.message : "";
