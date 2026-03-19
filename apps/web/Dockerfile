@@ -27,8 +27,7 @@ ARG VITE_API_URL=/api
 ENV VITE_API_URL=${VITE_API_URL}
 ENV NODE_ENV=production
 
-RUN bun run --cwd packages/api-client build
-RUN bun run --cwd apps/web build
+RUN bun run build
 
 FROM nginx:1.27-alpine AS runtime
 
