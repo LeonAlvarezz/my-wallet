@@ -22,17 +22,18 @@ RUN bun build \
     --compile \
     --minify-whitespace \
     --minify-syntax \
-    --outfile backend \
-    src/index.ts
+    --target bun \
+    --outfile server \
+    src/app.ts
 
 FROM gcr.io/distroless/base
 
 WORKDIR /app
 
-COPY --from=build /app/backend backend
+COPY --from=build /app/apps/backend/server ./server
 
 ENV NODE_ENV=production
 
-CMD ["./backend"]
+CMD ["./server"]
 
 EXPOSE 3000
