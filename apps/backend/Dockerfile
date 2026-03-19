@@ -21,7 +21,7 @@ COPY packages/exception ./packages/exception
 COPY packages/types ./packages/types
 COPY packages/utils ./packages/utils
 
-# WORKDIR /app/apps/backend
+WORKDIR /app/apps/backend
 
 ENV NODE_ENV=production
 
