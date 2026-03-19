@@ -4,6 +4,8 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
+import InputPassword from "@/components/input-password/InputPassword";
+import PasswordStrengthMeter from "@/components/input-password/PasswordStrengthMeter";
 import { useForm } from "@tanstack/react-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -114,65 +116,26 @@ export default function RegisterForm() {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid;
             const password = field.state.value;
-            const strength =
-              password.length >= 8
-                ? 3
-                : password.length >= 6
-                  ? 2
-                  : password.length >= 4
-                    ? 1
-                    : 0;
-            const strengthColors = [
-              "bg-destructive",
-              "bg-orange-500",
-              "bg-yellow-500",
-              "bg-green-500",
-            ];
-            const strengthLabels = ["Very Weak", "Weak", "Fair", "Strong"];
+
             return (
               <Field data-invalid={isInvalid}>
                 <div className="flex flex-col gap-2">
                   <FieldLabel htmlFor={field.name}>Password</FieldLabel>
-                  <div className="relative">
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      type="password"
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      placeholder="••••••••"
-                      className="w-full pl-10 duration-300"
-                    />
-                    <Icon
-                      icon="solar:lock-password-bold-duotone"
-                      className="text-muted-foreground absolute top-1/2 left-3 size-5 -translate-y-1/2"
-                    />
-                  </div>
-                  {password.length > 0 && (
-                    <div className="animate-in fade-in slide-in-from-top-2 mt-2 space-y-1 duration-500">
-                      <div className="bg-border flex h-1.5 w-full gap-1 overflow-hidden rounded-full">
-                        {[0, 1, 2, 3].map((i) => (
-                          <div
-                            key={i}
-                            className={`h-full flex-1 rounded-full transition-all duration-500 ${
-                              i <= strength
-                                ? strengthColors[strength]
-                                : "bg-transparent"
-                            }`}
-                          />
-                        ))}
-                      </div>
-                      <p className="text-muted-foreground text-xs">
-                        Strength:{" "}
-                        <span className="font-medium">
-                          {strengthLabels[strength]}
-                        </span>
-                      </p>
-                    </div>
-                  )}
+                  <InputPassword
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    placeholder="••••••••"
+                    autoComplete="new-password"
+                    aria-invalid={isInvalid || undefined}
+                    leadingIcon="solar:lock-password-bold-duotone"
+                    className="duration-300"
+                  />
+                  <PasswordStrengthMeter password={password} />
                   <p className="text-muted-foreground mt-1 text-xs">
-                    Must be at least 6 characters
+                    Must be at least 8 characters
                   </p>
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
                 </div>
@@ -189,22 +152,21 @@ export default function RegisterForm() {
               <Field data-invalid={isInvalid}>
                 <div className="flex flex-col gap-2">
                   <FieldLabel htmlFor={field.name}>Confirm Password</FieldLabel>
-                  <div className="relative">
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      type="password"
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      placeholder="••••••••"
-                      className="w-full pl-10"
-                    />
-                    <Icon
-                      icon="solar:shield-check-bold-duotone"
-                      className="text-muted-foreground absolute top-1/2 left-3 size-5 -translate-y-1/2"
-                    />
-                  </div>
+                  <InputPassword
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    placeholder="••••••••"
+                    autoComplete="new-password"
+                    aria-invalid={isInvalid || undefined}
+                    leadingIcon="solar:shield-check-bold-duotone"
+                    visibilityLabels={{
+                      show: "Show confirmed password",
+                      hide: "Hide confirmed password",
+                    }}
+                  />
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
                 </div>
               </Field>

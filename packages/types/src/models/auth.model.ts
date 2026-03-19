@@ -18,7 +18,15 @@ export namespace AuthModel {
     password_updated_at: z.iso.date().optional(),
   });
 
+  export const ChangePasswordSchema = z.object({
+    current_password: z.string(),
+    new_password: z
+      .string()
+      .min(8, { error: "Password must be greater than 8 characters" }),
+  });
+
   export type SignUpDto = z.infer<typeof SignUpSchema>;
   export type SignInDto = z.infer<typeof SignInSchema>;
   export type UpsertAuthDto = z.infer<typeof UpsertAuthSchema>;
+  export type ChangePasswordDto = z.infer<typeof ChangePasswordSchema>;
 }

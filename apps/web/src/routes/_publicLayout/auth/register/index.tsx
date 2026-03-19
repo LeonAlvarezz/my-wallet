@@ -1,4 +1,4 @@
-import RegisterPage from "@/modules/auth/pages/register";
+import RegisterPage from "@/modules/auth/pages/register.page";
 import { createFileRoute } from "@tanstack/react-router";
 import { publicOnly } from "@/middleware/public-only";
 

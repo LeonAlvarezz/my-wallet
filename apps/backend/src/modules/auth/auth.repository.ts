@@ -18,4 +18,13 @@ export class AuthRepository {
       where: eq(authTable.user_id, user_id),
     });
   }
+
+  static async changePassword(newPasswordHash: string, user_id: number) {
+    return await db
+      .update(authTable)
+      .set({
+        password_hash: newPasswordHash,
+      })
+      .where(eq(authTable.user_id, user_id));
+  }
 }

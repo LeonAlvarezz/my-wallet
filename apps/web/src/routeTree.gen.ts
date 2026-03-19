@@ -16,6 +16,7 @@ import { Route as HomeLayoutTransactionIndexRouteImport } from './routes/_homeLa
 import { Route as HomeLayoutSettingsIndexRouteImport } from './routes/_homeLayout/settings/index'
 import { Route as HomeLayoutProfileIndexRouteImport } from './routes/_homeLayout/profile/index'
 import { Route as HomeLayoutProfileEditRouteImport } from './routes/_homeLayout/profile/edit'
+import { Route as HomeLayoutProfileChangePasswordRouteImport } from './routes/_homeLayout/profile/change-password'
 import { Route as HomeLayoutProfileAvatarSelectRouteImport } from './routes/_homeLayout/profile/avatar-select'
 import { Route as PublicLayoutAuthRegisterIndexRouteImport } from './routes/_publicLayout/auth/register/index'
 import { Route as PublicLayoutAuthLoginIndexRouteImport } from './routes/_publicLayout/auth/login/index'
@@ -58,6 +59,12 @@ const HomeLayoutProfileEditRoute = HomeLayoutProfileEditRouteImport.update({
   path: '/profile/edit',
   getParentRoute: () => HomeLayoutRouteRoute,
 } as any)
+const HomeLayoutProfileChangePasswordRoute =
+  HomeLayoutProfileChangePasswordRouteImport.update({
+    id: '/profile/change-password',
+    path: '/profile/change-password',
+    getParentRoute: () => HomeLayoutRouteRoute,
+  } as any)
 const HomeLayoutProfileAvatarSelectRoute =
   HomeLayoutProfileAvatarSelectRouteImport.update({
     id: '/profile/avatar-select',
@@ -104,6 +111,7 @@ const HomeLayoutSettingsBudgetGoalsIndexRoute =
 export interface FileRoutesByFullPath {
   '/': typeof HomeLayoutIndexRoute
   '/profile/avatar-select': typeof HomeLayoutProfileAvatarSelectRoute
+  '/profile/change-password': typeof HomeLayoutProfileChangePasswordRoute
   '/profile/edit': typeof HomeLayoutProfileEditRoute
   '/profile/': typeof HomeLayoutProfileIndexRoute
   '/settings/': typeof HomeLayoutSettingsIndexRoute
@@ -118,6 +126,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof HomeLayoutIndexRoute
   '/profile/avatar-select': typeof HomeLayoutProfileAvatarSelectRoute
+  '/profile/change-password': typeof HomeLayoutProfileChangePasswordRoute
   '/profile/edit': typeof HomeLayoutProfileEditRoute
   '/profile': typeof HomeLayoutProfileIndexRoute
   '/settings': typeof HomeLayoutSettingsIndexRoute
@@ -135,6 +144,7 @@ export interface FileRoutesById {
   '/_publicLayout': typeof PublicLayoutRouteRouteWithChildren
   '/_homeLayout/': typeof HomeLayoutIndexRoute
   '/_homeLayout/profile/avatar-select': typeof HomeLayoutProfileAvatarSelectRoute
+  '/_homeLayout/profile/change-password': typeof HomeLayoutProfileChangePasswordRoute
   '/_homeLayout/profile/edit': typeof HomeLayoutProfileEditRoute
   '/_homeLayout/profile/': typeof HomeLayoutProfileIndexRoute
   '/_homeLayout/settings/': typeof HomeLayoutSettingsIndexRoute
@@ -151,6 +161,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/profile/avatar-select'
+    | '/profile/change-password'
     | '/profile/edit'
     | '/profile/'
     | '/settings/'
@@ -165,6 +176,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/profile/avatar-select'
+    | '/profile/change-password'
     | '/profile/edit'
     | '/profile'
     | '/settings'
@@ -181,6 +193,7 @@ export interface FileRouteTypes {
     | '/_publicLayout'
     | '/_homeLayout/'
     | '/_homeLayout/profile/avatar-select'
+    | '/_homeLayout/profile/change-password'
     | '/_homeLayout/profile/edit'
     | '/_homeLayout/profile/'
     | '/_homeLayout/settings/'
@@ -249,6 +262,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeLayoutProfileEditRouteImport
       parentRoute: typeof HomeLayoutRouteRoute
     }
+    '/_homeLayout/profile/change-password': {
+      id: '/_homeLayout/profile/change-password'
+      path: '/profile/change-password'
+      fullPath: '/profile/change-password'
+      preLoaderRoute: typeof HomeLayoutProfileChangePasswordRouteImport
+      parentRoute: typeof HomeLayoutRouteRoute
+    }
     '/_homeLayout/profile/avatar-select': {
       id: '/_homeLayout/profile/avatar-select'
       path: '/profile/avatar-select'
@@ -304,6 +324,7 @@ declare module '@tanstack/react-router' {
 interface HomeLayoutRouteRouteChildren {
   HomeLayoutIndexRoute: typeof HomeLayoutIndexRoute
   HomeLayoutProfileAvatarSelectRoute: typeof HomeLayoutProfileAvatarSelectRoute
+  HomeLayoutProfileChangePasswordRoute: typeof HomeLayoutProfileChangePasswordRoute
   HomeLayoutProfileEditRoute: typeof HomeLayoutProfileEditRoute
   HomeLayoutProfileIndexRoute: typeof HomeLayoutProfileIndexRoute
   HomeLayoutSettingsIndexRoute: typeof HomeLayoutSettingsIndexRoute
@@ -317,6 +338,7 @@ interface HomeLayoutRouteRouteChildren {
 const HomeLayoutRouteRouteChildren: HomeLayoutRouteRouteChildren = {
   HomeLayoutIndexRoute: HomeLayoutIndexRoute,
   HomeLayoutProfileAvatarSelectRoute: HomeLayoutProfileAvatarSelectRoute,
+  HomeLayoutProfileChangePasswordRoute: HomeLayoutProfileChangePasswordRoute,
   HomeLayoutProfileEditRoute: HomeLayoutProfileEditRoute,
   HomeLayoutProfileIndexRoute: HomeLayoutProfileIndexRoute,
   HomeLayoutSettingsIndexRoute: HomeLayoutSettingsIndexRoute,

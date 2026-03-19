@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { sessionTable } from "@/lib/db/schema";
+import { authTable, sessionTable } from "@/lib/db/schema";
 import {
   SESSION_EXPIRES_DATE_MS,
   SESSION_EXTENDS_EXPIRES_DATE_MS,

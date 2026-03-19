@@ -78,7 +78,6 @@ export const auth = new Elysia()
     app.post(
       "/sign-out",
       async ({ cookie: { session_token } }) => {
-        console.log("session_token.value:", session_token.value);
         if (!session_token.value)
           throw new BadRequestException({ message: "Missing Token" });
         await AuthService.signOut(session_token.value);
@@ -89,7 +88,25 @@ export const auth = new Elysia()
         cookie: BaseModel.CookieSchema,
         detail: {
           summary: "Sign out",
-          tags: ["Auth"],
+          tags: [OpenApiKey.Auth],
+        },
+        response: SimpleSuccessSchema(),
+      },
+    );
+
+    app.post(
+      "/change-password",
+      async ({ user, body }) => {
+        await AuthService.changePassword(body, user.id);
+        return SimpleSuccess();
+      },
+      {
+        body: AuthModel.ChangePasswordSchema,
+        authenticated: true,
+        cookie: BaseModel.CookieSchema,
+        detail: {
+          summary: "Change user password",
+          tags: [OpenApiKey.Auth],
         },
         response: SimpleSuccessSchema(),
       },

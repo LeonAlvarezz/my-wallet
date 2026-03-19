@@ -13,6 +13,8 @@ const auth = {
   signUp: (payload: AuthModel.SignUpDto) =>
     requestClient.post<SimpleSuccess>(`${key}/sign-up`, payload),
   getMe: () => requestClient.get<UserModel.UserPublicDto>(`${key}/me`),
+  changePassword: (payload: AuthModel.ChangePasswordDto) =>
+    requestClient.post<SimpleSuccess>(`${key}/change-password`, payload),
 };
 
 export default auth;

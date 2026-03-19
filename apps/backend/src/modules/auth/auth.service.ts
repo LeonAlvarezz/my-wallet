@@ -1,6 +1,7 @@
 import {
   ForbiddenException,
   InvalidCredentialException,
+  NotFoundException,
   UnauthorizedException,
 } from "@my-wallet/exception";
 import { db } from "@/lib/db";
@@ -106,6 +107,29 @@ export class AuthService {
     console.log("hashedSession:", hashedSession);
     await RedisService.deleteSession(sessionToken);
     await SessionRepository.deleteSessionById(session.id);
+  }
+
+  static async changePassword(
+    payload: AuthModel.ChangePasswordDto,
+    user_id: number,
+  ) {
+    const auth = await AuthRepository.findByUserId(user_id);
+    if (!auth) {
+      throw new NotFoundException({
+        message: "Authentication record not found",
+      });
+    }
+    const isValid = await verifyPassword(
+      payload.current_password,
+      auth.password_hash,
+    );
+    if (!isValid) {
+      throw new InvalidCredentialException({
+        message: "Current password is incorrect",
+      });
+    }
+    const newPasswordHash = await hashPassword(payload.new_password);
+    return AuthRepository.changePassword(newPasswordHash, user_id);
   }
 
   static async findAll() {

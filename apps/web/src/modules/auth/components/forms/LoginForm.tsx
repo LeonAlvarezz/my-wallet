@@ -4,6 +4,7 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
+import InputPassword from "@/components/input-password/InputPassword";
 import { useForm } from "@tanstack/react-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -75,22 +76,17 @@ export default function LoginForm() {
               <Field data-invalid={isInvalid}>
                 <div className="flex flex-col gap-2">
                   <FieldLabel htmlFor={field.name}>Password</FieldLabel>
-                  <div className="relative">
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      type="password"
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      placeholder="••••••••"
-                      className="w-full pl-10"
-                    />
-                    <Icon
-                      icon="solar:lock-password-bold-duotone"
-                      className="text-muted-foreground absolute top-1/2 left-3 size-5 -translate-y-1/2"
-                    />
-                  </div>
+                  <InputPassword
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    placeholder="••••••••"
+                    autoComplete="current-password"
+                    aria-invalid={isInvalid || undefined}
+                    leadingIcon="solar:lock-password-bold-duotone"
+                  />
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
                 </div>
               </Field>

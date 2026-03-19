@@ -84,7 +84,11 @@ export function ProfilePage() {
             title: "Change password",
             description: "Change account password",
             icon: "solar:lock-keyhole-minimalistic-unlocked-bold-duotone",
-            disabled: true,
+            onClick: () => {
+              navigate({
+                to: "/profile/change-password",
+              });
+            },
           },
         ]}
       />
