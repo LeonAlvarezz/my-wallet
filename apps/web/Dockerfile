@@ -18,6 +18,8 @@ FROM deps AS build
 
 WORKDIR /app
 
+ARG VITE_API_URL
+
 COPY apps/web ./apps/web
 COPY packages/types ./packages/types
 COPY packages/exception ./packages/exception
