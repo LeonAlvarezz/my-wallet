@@ -6,15 +6,15 @@ WORKDIR /app
 COPY package.json package.json
 COPY bun.lock bun.lock
 
-COPY /apps/backend/package.json ./apps/backend/package.json
-COPY /packages/types/package.json ./packages/types/package.json
-COPY /packages/exception/package.json ./packages/exception/package.json
+COPY apps/backend/package.json ./apps/backend/package.json
+COPY packages/types/package.json ./packages/types/package.json
+COPY packages/exception/package.json ./packages/exception/package.json
 
 RUN bun install
 
-COPY /apps/backend ./apps/backend
-COPY /packages/exception ./packages/exception
-COPY /packages/types ./packages/types
+COPY apps/backend ./apps/backend
+COPY packages/exception ./packages/exception
+COPY packages/types ./packages/types
 
 ENV NODE_ENV=production
 
