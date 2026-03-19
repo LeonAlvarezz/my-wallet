@@ -9,6 +9,9 @@ COPY bun.lock bun.lock
 COPY /apps/backend/package.json ./apps/backend/package.json
 COPY /packages/types/package.json ./packages/types/package.json
 COPY /packages/exception/package.json ./packages/exception/package.json
+COPY /packages/api-client/package.json ./packages/api-client/package.json
+COPY /apps/web/package.json ./apps/web/package.json
+
 
 RUN bun install
 
