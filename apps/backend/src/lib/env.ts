@@ -12,10 +12,7 @@ const envSchema = z.object({
       z.literal("production"),
     ])
     .default("development"),
-  DATABASE_URL: z
-    .string()
-    .startsWith("postgres://")
-    .or(z.string().startsWith("postgresql://")),
+  DATABASE_URL: z.string().startsWith("postgres"),
   HASH_PASSWORD_ALGORITHM: z.enum(["argon2id", "argon2d", "argon2i", "bcrypt"]),
   HASH_PASSWORD_COST: z.coerce.number(),
   REDIS_URL: z.string(),
