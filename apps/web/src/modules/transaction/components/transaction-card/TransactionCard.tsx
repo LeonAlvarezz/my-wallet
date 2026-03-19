@@ -3,8 +3,6 @@ import { formatTime } from "@/utils/date";
 import { Icon } from "@iconify/react";
 import { TransactionModel, type CategoryModel } from "@my-wallet/types";
 import UpdateTransactionDialog from "../update-transaction-dialog/UpdateTransactionDialog";
-import { useDeleteTransaction } from "../../hooks/use-delete-transaction";
-import DeleteButton from "@/components/delete-button/DeleteButton";
 import { AmountDisplay } from "@/components/amount/AmountDisplay";
 
 type TransactionCardProps = {
@@ -27,7 +25,6 @@ const colorMap: Record<CategoryModel.CategoryColorEnum, string> = {
 export default function TransactionCard({ transaction }: TransactionCardProps) {
   const isExpense =
     transaction.type === TransactionModel.TransactionTypeEnum.EXPENSE;
-  const deleteMutation = useDeleteTransaction();
   return (
     <div className="group relative">
       <UpdateTransactionDialog transaction={transaction}>

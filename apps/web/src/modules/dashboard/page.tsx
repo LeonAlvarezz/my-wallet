@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { BaseModel } from "@my-wallet/types";
 import CashflowSummary from "./components/cashflow/CashflowSummary";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   ChartContainer,
   ChartTooltip,

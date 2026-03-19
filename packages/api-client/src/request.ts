@@ -1,7 +1,4 @@
-import {
-  authenticateResponseInterceptor,
-  defaultResponseInterceptor,
-} from "./preset-interceptor";
+import { defaultResponseInterceptor } from "./preset-interceptor";
 import { RequestClient } from "./modules/request-client";
 import type { RequestClientOptions } from "./modules/types";
 
