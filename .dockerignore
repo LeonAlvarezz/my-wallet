@@ -34,9 +34,7 @@ pnpm-debug.log*
 !.env.example
 
 # Files and folders not needed for the current backend image build
-apps/web
 documents
-packages/api-client
 README.md
 apps/*/README.md
 

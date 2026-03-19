@@ -19,6 +19,8 @@ COPY apps/backend ./apps/backend
 COPY packages/exception ./packages/exception
 COPY packages/types ./packages/types
 
+WORKDIR /app/apps/backend
+
 ENV NODE_ENV=production
 
 RUN bun build \
