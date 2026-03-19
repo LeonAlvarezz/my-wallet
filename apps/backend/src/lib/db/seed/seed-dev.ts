@@ -9,7 +9,7 @@ import logger from "@/lib/logger";
 import { CategoryModel, TransactionModel } from "@my-wallet/types";
 import { eq } from "drizzle-orm";
 
-async function seedDatabaseDev() {
+export async function seedDatabaseDev() {
   const baseCategories = [
     {
       name: "Food",
@@ -17,7 +17,6 @@ async function seedDatabaseDev() {
       color: CategoryModel.CategoryColorEnum.GREEN,
       order: 1,
     },
-
     {
       name: "Coffee",
       icon: "solar:cup-paper-bold-duotone",
@@ -42,21 +41,18 @@ async function seedDatabaseDev() {
       color: CategoryModel.CategoryColorEnum.ORANGE,
       order: 5,
     },
-
     {
       name: "Other",
       icon: "solar:menu-dots-bold-duotone",
       color: CategoryModel.CategoryColorEnum.DEFAULT,
       order: 6,
     },
-
     {
       name: "Travel",
       icon: "solar:bicycling-bold-duotone",
       color: CategoryModel.CategoryColorEnum.BLUE,
       order: 7,
     },
-
     {
       name: "Entertainment",
       icon: "solar:play-bold-duotone",
@@ -70,6 +66,7 @@ async function seedDatabaseDev() {
       order: 9,
     },
   ];
+
   const testUser = {
     username: "Test",
     email: "test@example.com",
@@ -104,6 +101,7 @@ async function seedDatabaseDev() {
         .onConflictDoNothing({ target: categoryTable.order });
     });
     await Promise.all(categoryInsert);
+
     logger.info("✅ Categories seeded successfully", {
       count: baseCategories.length,
     });
@@ -223,7 +221,9 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  logger.error("❌ Unexpected error during seeding:", err);
-  process.exit(1);
-});
+if (import.meta.main) {
+  main().catch((err) => {
+    logger.error("❌ Unexpected error during seeding:", err);
+    process.exit(1);
+  });
+}
