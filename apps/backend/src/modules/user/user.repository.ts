@@ -18,6 +18,28 @@ export class UserRepository {
       where: eq(userTable.email, email),
     });
   }
+
+  static async findById(id: number) {
+    return await db.query.userTable.findFirst({
+      where: eq(userTable.id, id),
+    });
+  }
+
+  static async update(
+    id: number,
+    payload: UserModel.UpdateProfileDto,
+    tx?: DrizzleTransaction,
+  ) {
+    const client = tx ? tx : db;
+    const [result] = await client
+      .update(userTable)
+      .set(payload)
+      .where(eq(userTable.id, id))
+      .returning();
+
+    return result;
+  }
+
   static async findAll() {
     return await db.query.userTable.findMany();
   }

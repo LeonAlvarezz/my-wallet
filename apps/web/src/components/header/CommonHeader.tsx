@@ -2,7 +2,7 @@ import BackButton from "@/components/back-button/BackButton";
 
 export function CommonHeader({
   title,
-  backLabel,
+  backLabel = true,
 }: {
   title: string;
   backLabel?: boolean | string;

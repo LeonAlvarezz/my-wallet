@@ -12,7 +12,8 @@ import { SimpleSuccess } from "@/core/response";
 import { UserRepository } from "@/modules/user/user.repository";
 import { RedisService } from "@/lib/redis/redis.service";
 import { AuthModel, UserModel } from "@my-wallet/types";
-import { WalletRepository } from '../wallet/wallet.repository';
+import { WalletRepository } from "../wallet/wallet.repository";
+import { randomNumber } from "../../../../web/src/utils/number";
 
 export class AuthService {
   static async signUp(payload: AuthModel.SignUpDto) {
@@ -27,6 +28,7 @@ export class AuthService {
           email: payload.email,
           username: payload.username,
           public_id: crypto.randomUUID(),
+          avatar_url: randomNumber(1, 9).toString(),
         },
         tx,
       );

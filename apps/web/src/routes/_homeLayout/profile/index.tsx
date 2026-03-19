@@ -1,4 +1,4 @@
-import { ProfilePage } from "@/modules/profile/pages";
+import { ProfilePage } from "@/modules/profile/page";
 import { createFileRoute } from "@tanstack/react-router";
 import { guard } from "@/middleware/guard";
 

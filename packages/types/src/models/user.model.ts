@@ -6,7 +6,7 @@ export namespace UserModel {
     public_id: z.string(),
     email: z.email(),
     username: z.string(),
-    avatar_url: z.url().nullable().optional(),
+    avatar_url: z.string().nullable().optional(),
     last_login_at: z.iso.datetime().nullable().optional(),
   });
 
@@ -24,6 +24,11 @@ export namespace UserModel {
     last_login_at: true,
   });
 
+  export const UpdateProfileSchema = z.object({
+    username: z.string().min(1).optional(),
+    avatar_url: z.string().nullable().optional(),
+  });
+
   export const UserSessionSchema = z.object({
     session_token: z.string(),
     expires_at: z.iso.datetime(),
@@ -37,6 +42,7 @@ export namespace UserModel {
   });
 
   export type UserPublicDto = z.infer<typeof UserPublicSchema>;
+  export type UpdateProfileDto = z.infer<typeof UpdateProfileSchema>;
   export type UpsertUserDto = z.infer<typeof UpsertUserSchema>;
   export type UserSessionDto = z.infer<typeof UserSessionSchema>;
   export type UserPublicSessionDto = z.infer<typeof UserPublicSessionSchema>;
