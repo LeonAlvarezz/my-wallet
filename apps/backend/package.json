@@ -20,7 +20,8 @@
         "winston": "^3.19.0",
         "zod": "^4.3.6",
         "@my-wallet/types": "workspace:*",
-        "@my-wallet/exception": "workspace:*"
+        "@my-wallet/exception": "workspace:*",
+        "@my-wallet/utils": "workspace:*"
     },
     "devDependencies": {
         "@biomejs/biome": "2.3.15",

@@ -14,7 +14,7 @@ import { UserRepository } from "@/modules/user/user.repository";
 import { RedisService } from "@/lib/redis/redis.service";
 import { AuthModel, UserModel } from "@my-wallet/types";
 import { WalletRepository } from "../wallet/wallet.repository";
-import { randomNumber } from "../../../../web/src/utils/number";
+import { randomNumber } from "@my-wallet/utils/number";
 
 export class AuthService {
   static async signUp(payload: AuthModel.SignUpDto) {
