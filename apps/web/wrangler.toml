@@ -1,5 +1,5 @@
 name = "my-wallet-web"
-main = "./worker/index.js"
+main = "./worker/index.ts"
 compatibility_date = "2026-03-19"
 
 [build]
@@ -9,6 +9,3 @@ command = "bun run build"
 directory = "./dist"
 binding = "ASSETS"
 not_found_handling = "single-page-application"
-
-# Set `VITE_API_URL=/api` at build time and configure `API_BASE_URL`
-# in your Cloudflare Worker environment to proxy API requests.
