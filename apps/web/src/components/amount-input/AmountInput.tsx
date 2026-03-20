@@ -84,20 +84,20 @@ export function AmountInput({
         }
       }}
       className={cn(
-        "relative inline-grid items-center",
+        "relative inline-block w-fit",
         !isEditing && "cursor-pointer",
         className,
       )}
     >
       {/* 1. Mirror Span: Invisible but defines the width */}
       <span
-        className="invisible col-start-1 row-start-1 px-0 text-5xl leading-none font-semibold whitespace-pre tabular-nums"
+        className="invisible block px-0 text-5xl leading-none font-semibold whitespace-pre tabular-nums"
         aria-hidden="true"
       >
         {displayValue || "0"}
       </span>
 
-      {/* 2. Actual Input: Overlays the span and fills the width */}
+      {/* 2. Actual Input: Absolutely overlays the mirror so it doesn't affect intrinsic sizing */}
       <input
         ref={inputRef}
         type="text"
@@ -109,7 +109,7 @@ export function AmountInput({
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
         className={cn(
-          "col-start-1 row-start-1 w-full appearance-none bg-transparent p-0 text-5xl leading-none font-semibold tabular-nums outline-none placeholder:opacity-100",
+          "absolute inset-0 w-full appearance-none bg-transparent p-0 text-5xl leading-none font-semibold tabular-nums outline-none placeholder:opacity-100",
           !isEditing && "pointer-events-none caret-transparent",
         )}
         style={{
