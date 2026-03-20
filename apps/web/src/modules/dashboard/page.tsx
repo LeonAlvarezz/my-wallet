@@ -23,6 +23,7 @@ import Empty from "@/components/empty/Empty";
 import { formatAmount } from "@/utils/currency";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetRecentTransactions } from "./hooks/use-get-recent-transactions";
+import { useGetMe } from "../auth/hooks/use-get-me";
 
 const chartConfig = {
   amount: {
@@ -35,6 +36,8 @@ export default function Dashboard() {
   const [timeFrame, setTimeFrame] = useState<BaseModel.TimeFrameEnum>(
     BaseModel.TimeFrameEnum.MONTH,
   );
+
+  const { data: me } = useGetMe();
   const [isCategoryExpanded, setIsCategoryExpanded] = useState(false);
   const { data: statisticData } = useGetStatistic({ time_frame: timeFrame });
   const chartData = statisticData ?? [];
@@ -62,7 +65,7 @@ export default function Dashboard() {
       <div className="flex w-full items-center justify-between">
         <div className="flex flex-col gap-1">
           <p className="text-white/50">Good morning</p>
-          <p className="text-primary text-xl font-bold">Leon 👋</p>
+          <p className="text-primary text-xl font-bold">{me.username} 👋</p>
         </div>
       </div>
       <CashflowSummary
