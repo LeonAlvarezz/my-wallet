@@ -5,7 +5,6 @@ import { useSignOut } from "@/modules/auth/hooks/use-sign-out";
 import { useGetMe } from "@/modules/auth/hooks/use-get-me";
 import { HubSection } from "@/modules/settings/components/HubSection";
 import { useTheme } from "@/modules/theme/use-theme";
-import defaultAvatar from "@/assets/1.svg";
 import SystemAvatar from "@/components/system-avatar/SystemAvatar";
 
 export function ProfilePage() {
@@ -19,7 +18,7 @@ export function ProfilePage() {
       <section className="flex flex-col gap-3">
         <div className="flex items-center gap-4">
           <SystemAvatar
-            id={me?.avatar_url ?? defaultAvatar}
+            id={me?.avatar_url ?? "1"}
             alt={`${me?.username}-avatar`}
             fallback={me?.username[0]}
             className="size-12"

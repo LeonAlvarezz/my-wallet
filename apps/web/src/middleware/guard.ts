@@ -15,11 +15,11 @@ export async function guard({
   location: { pathname: string; searchStr?: string };
 }) {
   try {
-    await context.queryClient.fetchQuery({
+    await context.queryClient.ensureQueryData({
       queryKey: queryKey.auth.me,
       queryFn: () => api.auth.getMe(),
       retry: false,
-      staleTime: 0,
+      staleTime: 60_000,
     });
   } catch (error: unknown) {
     const maybeApiError = error as { status?: number };

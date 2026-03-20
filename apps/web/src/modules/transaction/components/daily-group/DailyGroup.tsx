@@ -1,9 +1,12 @@
+import { TransactionModel } from "@my-wallet/types";
 import type { DailyGroupData } from "@/utils/transaction";
 import { TransactionCard } from "../transaction-card";
 import { AmountDisplay } from "@/components/amount/AmountDisplay";
 
 interface DailyGroupProps extends DailyGroupData {
-  onTransactionClick?: (transactionId: string) => void;
+  onTransactionClick?: (
+    transaction: TransactionModel.TransactionWithCategoryDto,
+  ) => void;
 }
 
 export default function DailyGroup({
@@ -32,12 +35,11 @@ export default function DailyGroup({
       {/* Transactions */}
       <div className="flex flex-col gap-2">
         {transactions.map((transaction) => (
-          <div
+          <TransactionCard
             key={transaction.id}
-            onClick={() => onTransactionClick?.(transaction.id.toString())}
-          >
-            <TransactionCard transaction={transaction} />
-          </div>
+            transaction={transaction}
+            onClick={() => onTransactionClick?.(transaction)}
+          />
         ))}
       </div>
     </div>

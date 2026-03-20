@@ -1,21 +1,29 @@
-const avatarModules = import.meta.glob<{ default: string }>("@/assets/*.svg", {
-  eager: true,
-});
+export function isDirectAvatarSrc(id?: string | number | null): id is string {
+  if (typeof id !== "string") {
+    return false;
+  }
 
-export const systemAvatars = Object.entries(avatarModules)
-  .map(([path, module]) => {
-    const match = path.match(/(\d+)\.svg$/);
-    return {
-      id: match ? match[1] : path,
-      src: module.default,
-    };
-  })
-  .sort((left, right) => Number(left.id) - Number(right.id));
+  return (
+    id.startsWith("/") ||
+    id.startsWith("./") ||
+    id.startsWith("../") ||
+    id.startsWith("http://") ||
+    id.startsWith("https://") ||
+    id.startsWith("data:") ||
+    id.startsWith("blob:")
+  );
+}
 
-export const getSystemAvatar = (id?: string | number | null) => {
+export function resolveSystemAvatarSrc(
+  id?: string | number | null,
+): string | undefined {
   if (id === null || id === undefined) {
     return undefined;
   }
 
-  return systemAvatars.find((avatar) => avatar.id === String(id));
-};
+  if (isDirectAvatarSrc(id)) {
+    return id;
+  }
+
+  return `/avatars/${String(id)}.svg`;
+}
