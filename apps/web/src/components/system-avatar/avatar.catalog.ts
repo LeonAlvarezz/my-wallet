@@ -1,13 +1,12 @@
-const avatarModules = import.meta.glob<{ default: string }>("@/assets/*.svg", {
-  eager: true,
-});
+const TOTAL_SYSTEM_AVATARS = 9;
 
-export const systemAvatars = Object.entries(avatarModules)
-  .map(([path, module]) => {
-    const match = path.match(/(\d+)\.svg$/);
+export const systemAvatars = Array.from(
+  { length: TOTAL_SYSTEM_AVATARS },
+  (_, index) => {
+    const id = String(index + 1);
     return {
-      id: match ? match[1] : path,
-      src: module.default,
+      id,
+      src: `/avatars/${id}.svg`,
     };
-  })
-  .sort((left, right) => Number(left.id) - Number(right.id));
+  },
+);

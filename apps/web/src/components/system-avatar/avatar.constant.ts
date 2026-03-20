@@ -1,5 +1,3 @@
-const avatarModules = import.meta.glob<{ default: string }>("@/assets/*.svg");
-
 export function isDirectAvatarSrc(id?: string | number | null): id is string {
   if (typeof id !== "string") {
     return false;
@@ -16,9 +14,9 @@ export function isDirectAvatarSrc(id?: string | number | null): id is string {
   );
 }
 
-export async function resolveSystemAvatarSrc(
+export function resolveSystemAvatarSrc(
   id?: string | number | null,
-): Promise<string | undefined> {
+): string | undefined {
   if (id === null || id === undefined) {
     return undefined;
   }
@@ -27,16 +25,5 @@ export async function resolveSystemAvatarSrc(
     return id;
   }
 
-  const normalizedId = String(id);
-  const entry = Object.entries(avatarModules).find(([path]) =>
-    path.endsWith(`/${normalizedId}.svg`),
-  );
-
-  if (!entry) {
-    return undefined;
-  }
-
-  const [, loadModule] = entry;
-  const module = await loadModule();
-  return module.default;
+  return `/avatars/${String(id)}.svg`;
 }
