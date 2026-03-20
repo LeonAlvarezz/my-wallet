@@ -4,6 +4,27 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      try {
+        const storageKey = "vite-ui-theme";
+        const storedTheme = localStorage.getItem(storageKey);
+        const theme =
+          storedTheme === "light" ||
+          storedTheme === "dark" ||
+          storedTheme === "system"
+            ? storedTheme
+            : "dark";
+        const root = document.documentElement;
+        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
+          .matches
+          ? "dark"
+          : "light";
+        const resolvedTheme = theme === "system" ? systemTheme : theme;
+
+        root.classList.remove("light", "dark");
+        root.classList.add(resolvedTheme);
+      } catch {}
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

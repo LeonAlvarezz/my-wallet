@@ -7,7 +7,6 @@
   ],
   "compilerOptions": {
     "paths": {
-      "@iconify/react": ["./src/lib/iconify-react.tsx"],
       "@/*": ["./src/*"]
     }
   }
