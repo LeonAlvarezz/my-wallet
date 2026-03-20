@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { getSystemAvatar } from "./avatar.constant";
+import { isDirectAvatarSrc, resolveSystemAvatarSrc } from "./avatar.constant";
 
 type SystemAvatarProps = React.ComponentProps<typeof Avatar> & {
   id: string | undefined;
@@ -18,7 +18,35 @@ export default function SystemAvatar({
   fallbackClassName,
   ...props
 }: SystemAvatarProps) {
-  const src = getSystemAvatar(id)?.src;
+  const [src, setSrc] = React.useState<string | undefined>(() =>
+    isDirectAvatarSrc(id) ? id : undefined,
+  );
+
+  React.useEffect(() => {
+    let cancelled = false;
+
+    if (!id) {
+      setSrc(undefined);
+      return;
+    }
+
+    if (isDirectAvatarSrc(id)) {
+      setSrc(id);
+      return;
+    }
+
+    setSrc(undefined);
+
+    void resolveSystemAvatarSrc(id).then((resolvedSrc) => {
+      if (!cancelled) {
+        setSrc(resolvedSrc);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
 
   return (
     <Avatar {...props}>

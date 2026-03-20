@@ -60,7 +60,7 @@ export function EditProfileForm() {
           </Avatar> */}
 
           <SystemAvatar
-            id={form.getFieldValue("avatar_url") || undefined}
+            id={form.getFieldValue("avatar_url") || "1"}
             alt={`${form.getFieldValue("username")}-avatar`}
             fallback={form.getFieldValue("username")[0]}
             className="size-16"

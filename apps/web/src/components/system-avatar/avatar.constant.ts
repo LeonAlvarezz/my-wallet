@@ -1,21 +1,42 @@
-const avatarModules = import.meta.glob<{ default: string }>("@/assets/*.svg", {
-  eager: true,
-});
+const avatarModules = import.meta.glob<{ default: string }>("@/assets/*.svg");
 
-export const systemAvatars = Object.entries(avatarModules)
-  .map(([path, module]) => {
-    const match = path.match(/(\d+)\.svg$/);
-    return {
-      id: match ? match[1] : path,
-      src: module.default,
-    };
-  })
-  .sort((left, right) => Number(left.id) - Number(right.id));
+export function isDirectAvatarSrc(id?: string | number | null): id is string {
+  if (typeof id !== "string") {
+    return false;
+  }
 
-export const getSystemAvatar = (id?: string | number | null) => {
+  return (
+    id.startsWith("/") ||
+    id.startsWith("./") ||
+    id.startsWith("../") ||
+    id.startsWith("http://") ||
+    id.startsWith("https://") ||
+    id.startsWith("data:") ||
+    id.startsWith("blob:")
+  );
+}
+
+export async function resolveSystemAvatarSrc(
+  id?: string | number | null,
+): Promise<string | undefined> {
   if (id === null || id === undefined) {
     return undefined;
   }
 
-  return systemAvatars.find((avatar) => avatar.id === String(id));
-};
+  if (isDirectAvatarSrc(id)) {
+    return id;
+  }
+
+  const normalizedId = String(id);
+  const entry = Object.entries(avatarModules).find(([path]) =>
+    path.endsWith(`/${normalizedId}.svg`),
+  );
+
+  if (!entry) {
+    return undefined;
+  }
+
+  const [, loadModule] = entry;
+  const module = await loadModule();
+  return module.default;
+}

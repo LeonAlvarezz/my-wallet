@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import { systemAvatars } from "./avatar.constant";
+import { systemAvatars } from "./avatar.catalog";
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
