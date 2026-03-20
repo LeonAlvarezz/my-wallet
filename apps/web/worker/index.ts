@@ -22,7 +22,7 @@ function buildApiUrl(requestUrl: string, apiBaseUrl: string): URL {
   );
 }
 
-const worker = {
+export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
 
@@ -40,5 +40,3 @@ const worker = {
     return env.ASSETS.fetch(request);
   },
 };
-
-export default worker;
