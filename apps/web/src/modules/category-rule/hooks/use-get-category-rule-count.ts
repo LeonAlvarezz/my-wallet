@@ -11,5 +11,6 @@ export function useGetCategoryRuleCount() {
     queryKey: queryKey.categoryRule.count(me?.public_id),
     queryFn: () => api.categoryRule.getCountByCategory(),
     enabled: !!me?.public_id,
+    staleTime: 60_000,
   });
 }

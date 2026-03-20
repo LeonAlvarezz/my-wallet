@@ -13,5 +13,6 @@ export function useGetCategoryRuleByCategory(
     queryKey: queryKey.categoryRule.byCategory(category_id, me?.public_id),
     queryFn: () => api.categoryRule.getRuleByCategory(category_id),
     enabled: !!me?.public_id && enabled && category_id > 0,
+    staleTime: 60_000,
   });
 }
