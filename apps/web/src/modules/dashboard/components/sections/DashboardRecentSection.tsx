@@ -13,7 +13,11 @@ export default function DashboardRecentSection() {
     <section className="space-y-4">
       <div className="flex justify-between">
         <h1 className="font-bold">Recent</h1>
-        <Link to="/transaction" className="text-primary text-sm">
+        <Link
+          to="/transaction"
+          className="text-primary text-sm"
+          preload={false}
+        >
           See all
         </Link>
       </div>

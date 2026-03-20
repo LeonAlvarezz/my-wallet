@@ -23,7 +23,7 @@ export default function BottomNavItem({ icon, title, to }: BottomNavItemData) {
         isActive ? "opacity-100" : "opacity-30 hover:opacity-75",
       )}
     >
-      <Link to={to} preload="intent">
+      <Link to={to} preload={false}>
         <div className="flex flex-col items-center justify-center gap-1">
           {icon && <Icon icon={icon} className="size-7"></Icon>}
           <p className="hidden text-xs sm:block">{title}</p>
