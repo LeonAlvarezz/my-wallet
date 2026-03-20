@@ -1,6 +1,8 @@
-import { lazy, useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Icon } from "@iconify/react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { DialogContent } from "@/components/ui/dialog";
 import DailyGroup from "../components/daily-group/DailyGroup";
 import { BaseModel, TransactionModel } from "@my-wallet/types";
 import InfiniteScroll from "@/components/infinite-scroll/InfiniteScroll";
@@ -125,20 +127,24 @@ export default function TransactionPage() {
               </Select>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-2">
-              <StatsCard
-                title="Top Up"
-                amount={totalTopUp.toFixed(2)}
-                icon="solar:arrow-up-bold-duotone"
-                trend="up"
-              />
-              <StatsCard
-                title="Spent"
-                amount={-totalSpent.toFixed(2)}
-                icon="solar:arrow-down-bold-duotone"
-                trend="down"
-              />
-            </div>
+            {overview.isLoading ? (
+              <TransactionOverviewSkeleton />
+            ) : (
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-2">
+                <StatsCard
+                  title="Top Up"
+                  amount={totalTopUp.toFixed(2)}
+                  icon="solar:arrow-up-bold-duotone"
+                  trend="up"
+                />
+                <StatsCard
+                  title="Spent"
+                  amount={-totalSpent.toFixed(2)}
+                  icon="solar:arrow-down-bold-duotone"
+                  trend="down"
+                />
+              </div>
+            )}
           </section>
         )}
 
@@ -150,9 +156,7 @@ export default function TransactionPage() {
         >
           <section className="flex flex-col gap-6">
             {infinite.isLoading ? (
-              <div className="flex w-full justify-center py-6">
-                <Spinner />
-              </div>
+              <TransactionListSkeleton />
             ) : groupedTransactions.length > 0 ? (
               <div className="flex flex-col gap-6">
                 {groupedTransactions.map((dailyGroup) => (
@@ -190,13 +194,77 @@ export default function TransactionPage() {
         </InfiniteScroll>
       </div>
 
-      <UpdateTransactionDialog
-        key={selectedTransaction?.id ?? "empty"}
-        open={open}
-        onOpenChange={setOpen}
-        transaction={selectedTransaction}
-        onClose={() => setSelectedTransaction(null)}
-      />
+      <Suspense
+        fallback={
+          open ? (
+            <DialogContent>
+              <div className="flex min-h-48 items-center justify-center">
+                <Spinner className="size-5" />
+              </div>
+            </DialogContent>
+          ) : null
+        }
+      >
+        <UpdateTransactionDialog
+          key={selectedTransaction?.id ?? "empty"}
+          open={open}
+          onOpenChange={setOpen}
+          transaction={selectedTransaction}
+          onClose={() => setSelectedTransaction(null)}
+        />
+      </Suspense>
     </>
+  );
+}
+
+function TransactionOverviewSkeleton() {
+  return (
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-2">
+      {Array.from({ length: 2 }).map((_, index) => (
+        <div
+          key={index}
+          className="bg-card flex min-w-0 flex-col gap-4 rounded-xl border px-4 py-3"
+        >
+          <div className="flex items-center justify-between">
+            <Skeleton className="h-3 w-16" />
+            <Skeleton className="size-8 rounded-md" />
+          </div>
+          <Skeleton className="h-7 w-24" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function TransactionListSkeleton() {
+  return (
+    <div className="flex flex-col gap-6">
+      {Array.from({ length: 2 }).map((_, groupIndex) => (
+        <div key={groupIndex} className="flex flex-col gap-3">
+          <div className="flex items-center justify-between px-1">
+            <div className="flex flex-col gap-2">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-3 w-16" />
+            </div>
+            <Skeleton className="h-5 w-16" />
+          </div>
+          <div className="flex flex-col gap-2">
+            {Array.from({ length: 3 }).map((_, itemIndex) => (
+              <div
+                key={itemIndex}
+                className="bg-card flex items-center gap-3 rounded-lg border p-3"
+              >
+                <Skeleton className="size-9 shrink-0 rounded-lg" />
+                <div className="min-w-0 flex-1 space-y-2">
+                  <Skeleton className="h-4 w-32 max-w-full" />
+                  <Skeleton className="h-3 w-24" />
+                </div>
+                <Skeleton className="h-5 w-18 shrink-0" />
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
