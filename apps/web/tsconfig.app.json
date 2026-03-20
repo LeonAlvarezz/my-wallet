@@ -24,6 +24,7 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
     "paths": {
+      "@iconify/react": ["./src/lib/iconify-react.tsx"],
       "@/*": ["./src/*"]
     }
   },
