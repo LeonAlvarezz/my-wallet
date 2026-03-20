@@ -1,7 +1,9 @@
 import BottomNav from "@/components/bottom-nav/BottomNav";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { guard } from "@/middleware/guard";
 
 export const Route = createFileRoute("/_homeLayout")({
+  beforeLoad: guard,
   component: RouteComponent,
 });
 

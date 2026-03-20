@@ -1,6 +1,5 @@
 import { TransactionPage } from "@/modules/transaction";
 import { createFileRoute } from "@tanstack/react-router";
-import { guard } from "@/middleware/guard";
 import { TransactionModel } from "@my-wallet/types";
 
 // const TransactionSearchSchema = z.object({
@@ -17,7 +16,6 @@ import { TransactionModel } from "@my-wallet/types";
 // });
 
 export const Route = createFileRoute("/_homeLayout/transaction/")({
-  beforeLoad: guard,
   validateSearch: (search) =>
     TransactionModel.TransactionBaseQuerySchema.parse(search),
   component: TransactionPage,
