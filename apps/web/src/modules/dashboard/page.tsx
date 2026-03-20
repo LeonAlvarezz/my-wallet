@@ -65,7 +65,7 @@ export default function Dashboard() {
       <div className="flex w-full items-center justify-between">
         <div className="flex flex-col gap-1">
           <p className="text-white/50">Good morning</p>
-          <p className="text-primary text-xl font-bold">{me.username} 👋</p>
+          <p className="text-primary text-xl font-bold">{me?.username} 👋</p>
         </div>
       </div>
       <CashflowSummary
