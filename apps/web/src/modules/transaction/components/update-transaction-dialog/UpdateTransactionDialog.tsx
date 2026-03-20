@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -6,11 +5,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { TransactionModel } from "@my-wallet/types";
 import { Icon } from "@iconify/react";
-import { useState, type ReactNode } from "react";
 import { useDeleteTransaction } from "../../hooks/use-delete-transaction";
 import DeleteButton from "@/components/delete-button/DeleteButton";
 import MutateTransactionContext, {
@@ -19,34 +17,46 @@ import MutateTransactionContext, {
 import MutateTransactionForm from "../forms/mutate-transaction-form/MutateTransactionForm";
 
 type Props = {
-  children: ReactNode;
-  transaction: TransactionModel.TransactionWithCategoryDto;
+  open: boolean;
+  onOpenChange: (value: boolean) => void;
+  transaction?: TransactionModel.TransactionWithCategoryDto | null;
+  onClose: () => void;
 };
 
 export default function UpdateTransactionDialog({
-  children,
+  open,
+  onOpenChange,
   transaction,
+  onClose,
 }: Props) {
-  const [open, setOpen] = useState(false);
   const defaultValue = {
-    amount: transaction.amount,
-    category_id: transaction.category?.id ?? 0,
-    description: transaction.description ?? "",
-    type: transaction.type,
+    amount: transaction?.amount ?? 0,
+    category_id: transaction?.category?.id ?? 0,
+    description: transaction?.description ?? "",
+    type: transaction?.type ?? TransactionModel.TransactionTypeEnum.EXPENSE,
   };
-  const handleOpenChange = () => setOpen((prev) => !prev);
   const formHook = useMutateTransactionForm({
     defaultValue,
     action: "update",
-    transactionId: transaction.id,
-    afterSubmit: handleOpenChange,
+    transactionId: transaction?.id ?? 0,
+    afterSubmit: () => {
+      onOpenChange(false);
+      onClose();
+    },
   });
   const { form, loading } = formHook;
   const deleteMutation = useDeleteTransaction();
 
+  const handleOpenChange = (nextOpen: boolean) => {
+    onOpenChange(nextOpen);
+
+    if (!nextOpen) {
+      onClose();
+    }
+  };
+
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Transaction</DialogTitle>
@@ -65,9 +75,10 @@ export default function UpdateTransactionDialog({
               title="Delete transaction?"
               description="This action cannot be undone. This will permanently delete this transaction."
               confirmText="Delete"
-            onConfirm={async () => {
+              onConfirm={async () => {
+                if (!transaction) return;
                 await deleteMutation.mutateAsync(transaction.id);
-                setOpen(false);
+                handleOpenChange(false);
               }}
               className="text-red-500"
             />

@@ -2,8 +2,10 @@ import { Suspense, lazy, useState } from "react";
 import { BaseModel } from "@my-wallet/types";
 import CashflowSummary from "./components/cashflow/CashflowSummary";
 import { useGetCashflowSummary } from "./hooks/use-get-cashflow-summary";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useGetMe } from "../auth/hooks/use-get-me";
+import { CategorySectionSkeleton } from "./components/sections/skeletons/CategorySectionSkeleton";
+import { ChartSectionSkeleton } from "./components/sections/skeletons/ChartSectionSkeleton";
+import { RecentSectionSkeleton } from "./components/sections/skeletons/RecentSectionSkeleton";
 const DashboardChartSection = lazy(
   () => import("./components/sections/DashboardChartSection"),
 );
@@ -48,46 +50,5 @@ export default function Dashboard() {
         <DashboardRecentSection />
       </Suspense>
     </div>
-  );
-}
-
-function ChartSectionSkeleton() {
-  return (
-    <section className="space-y-4">
-      <div className="flex items-center justify-between gap-4">
-        <Skeleton className="h-6 w-20" />
-        <Skeleton className="h-10 w-40 rounded-full" />
-      </div>
-      <Skeleton className="h-52 w-full rounded-2xl" />
-    </section>
-  );
-}
-
-function CategorySectionSkeleton() {
-  return (
-    <section className="space-y-4">
-      <Skeleton className="h-6 w-28" />
-      <div className="space-y-4">
-        {Array.from({ length: 3 }).map((_, index) => (
-          <Skeleton key={index} className="h-12 w-full rounded-xl" />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function RecentSectionSkeleton() {
-  return (
-    <section className="space-y-4">
-      <div className="flex items-center justify-between gap-4">
-        <Skeleton className="h-6 w-20" />
-        <Skeleton className="h-5 w-14" />
-      </div>
-      <div className="space-y-2">
-        {Array.from({ length: 3 }).map((_, index) => (
-          <Skeleton key={index} className="h-16 w-full rounded-lg" />
-        ))}
-      </div>
-    </section>
   );
 }
