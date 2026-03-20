@@ -1,17 +1,29 @@
 const API_PREFIX = "/api";
 
-function ensureTrailingSlash(value) {
+interface AssetsBinding {
+  fetch(request: Request): Promise<Response>;
+}
+
+interface Env {
+  API_BASE_URL?: string;
+  ASSETS: AssetsBinding;
+}
+
+function ensureTrailingSlash(value: string): string {
   return value.endsWith("/") ? value : `${value}/`;
 }
 
-function buildApiUrl(requestUrl, apiBaseUrl) {
+function buildApiUrl(requestUrl: string, apiBaseUrl: string): URL {
   const url = new URL(requestUrl);
   const normalizedPath = url.pathname.replace(/^\/api/, "") || "/";
-  return new URL(`${normalizedPath.replace(/^\//, "")}${url.search}`, ensureTrailingSlash(apiBaseUrl));
+  return new URL(
+    `${normalizedPath.replace(/^\//, "")}${url.search}`,
+    ensureTrailingSlash(apiBaseUrl),
+  );
 }
 
-export default {
-  async fetch(request, env) {
+const worker = {
+  async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
 
     if (url.pathname.startsWith(API_PREFIX)) {
@@ -28,3 +40,5 @@ export default {
     return env.ASSETS.fetch(request);
   },
 };
+
+export default worker;
