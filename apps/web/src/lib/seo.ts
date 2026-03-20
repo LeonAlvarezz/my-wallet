@@ -66,7 +66,6 @@ export function buildSeo({
   const canonicalUrl = buildCanonicalUrl(path);
   const fullTitle = title ? `${title} | ${SITE_NAME}` : SITE_NAME;
   const meta: Array<HeadMeta> = [
-    // TanStack Router supports title descriptors in the meta array.
     { title: fullTitle } as HeadMeta,
     { name: "application-name", content: SITE_NAME },
     { name: "description", content: description },
